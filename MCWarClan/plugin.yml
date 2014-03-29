@@ -1,0 +1,63 @@
+main: com.github.lolopasdugato.mcwarclan.MCWarClan
+name: MCWarClan
+version: 0.1
+author: Eldorabe
+description: This plugin allows you and your friend to create a battle between many teams.
+
+database: false
+
+commands:
+ showteams:
+  description: List all teams in the game.
+  aliases: [lt, st]
+  permission: mcwarclan.showteams
+  usage: Type /<command> to list all teams in the game.
+ team:
+  description: List all players in your team.
+  permission: mcwarclan.team
+  usage: Type /<command> (optional parameter -> player_name) to list players that are in your (or player's) team.
+ assign:
+  description: Assign a player to a team.
+  permission: mcwarclan.assign
+  usage: Type /<command> (playername) && (teamname || teamcolor) to switch a player to a team.
+ unassign:
+  description: Unassign a player from a team.
+  permission: mcwarclan.unassign
+  usage: Type /<command> (playername) && (teamname || teamcolor) to unassign someone to a team.
+ join:
+  description: Makes you join a team.
+  permission: mcwarclan.join
+  usage: Type /<command> (teamname || teamcolor) to join a team.
+ leave:
+  description: Makes you leave a team.
+  permission: mcwarclan.leave
+  usage: Type /<command> to leave your team and join Barbarians.
+  
+permissions:
+ mcwarclan.*:
+  description: Gives access to all MCWarClan commands.
+  children:
+   mcwarclan.showteams: true
+   mcwarclan.team: true
+   mcwarclan.assign: true
+   mcwarclan.unassign: true
+   mcwarclan.join: true
+   mcwarclan.leave: true
+ mcwarclan.showteams:
+  description: List all teams in the game.
+  default: true
+ mcwarclan.team:
+  description: List all players in your team.
+  default: true
+ mcwarclan.assign:
+  description: Assign a player to a team.
+  default: false
+ mcwarclan.unassign:
+  description: Unassign a player from a team.
+  default: false
+ mcwarclan.join:
+  description: Makes you join a team.
+  default: true
+ mcwarclan.leave:
+  description: Makes you leave your team.
+  default: true
