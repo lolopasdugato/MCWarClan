@@ -7,17 +7,14 @@ Current  features :
 
 	* Complete 'admin-side' team management (assign a player to a team, kick a player from one team)
 
-	* Partial 'player-side' team management (Join, leave, list teams, list team mates...)
+	* Complete 'player-side' team management (Join, leave, list teams, list team mates, and create a team)
 		
 TODO list :
-
-	1. Complete 'player-side':
-		- create a team using a command.
 	
-	2. Persistant teams (using XML)
+	1. Persistant teams (using XML)
 	
-	3. Config file
+	2. Config file
 	
-	4. Client-side GUI
+	3. Client-side GUI
 	
-	5. Zone separation for teams
+	4. Zone separation for teams

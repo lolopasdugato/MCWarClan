@@ -32,6 +32,10 @@ commands:
   description: Makes you leave a team.
   permission: mcwarclan.leave
   usage: Type /<command> to leave your team and join Barbarians.
+ createteam:
+  description: Allows you to create a new team.
+  permission: mcwarclan.createteam
+  usage: Type /<command> (teamname) && (teamcolor) to create the new team.
   
 permissions:
  mcwarclan.*:
@@ -43,6 +47,7 @@ permissions:
    mcwarclan.unassign: true
    mcwarclan.join: true
    mcwarclan.leave: true
+   mcwarclan.createteam: true
  mcwarclan.showteams:
   description: List all teams in the game.
   default: true
@@ -60,4 +65,7 @@ permissions:
   default: true
  mcwarclan.leave:
   description: Makes you leave your team.
+  default: true
+ mcwarclan.createteam:
+  description: Allows you to create a new team.
   default: true

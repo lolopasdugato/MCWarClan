@@ -12,7 +12,7 @@ public class TeamContainer {
 	private ArrayList<Team> _teamArray;		// Different teams
 	private int _maxTeams;					// Number of maximum teams
 	
-	public static final int MAXTEAMSIZE = 14;	// There is only 15 color in the game...
+	public static final int MAXTEAMSIZE = 11;	// There is only 15 color in the game, and some others for the server messages...
 	
 	public ArrayList<Team> get_teamArray() {
 		return _teamArray;
@@ -34,7 +34,7 @@ public class TeamContainer {
 		_teamArray = new ArrayList<Team>();
 		if(maxTeams > MAXTEAMSIZE || maxTeams < 2){
 			_maxTeams = MAXTEAMSIZE;
-			System.out.println("Cannot have more than 15 teams, or less than 2 !");
+			System.out.println("Cannot have more than " + MAXTEAMSIZE + " teams, or less than 2 !");
 		}
 		else 
 			_maxTeams = maxTeams;
@@ -42,14 +42,17 @@ public class TeamContainer {
 	
 	// Verify if a team could be added to the container
 	public boolean isTeamValid(Team t){
+		System.out.println("Checking team validity...");
 		for(int i = 0; i < _teamArray.size(); i++){
 			// Check color
-			if(t.get_color().equals(_teamArray.get(i).get_color()))
+			if(t.get_color().get_colorName().equals(_teamArray.get(i).get_color().get_colorName()) || !t.get_color().is_validColor()){
 				return false;
+			}
 			// Check name
 			if(t.get_name().toUpperCase().equals(_teamArray.get(i).get_name().toUpperCase()))
 				return false;
 		}
+		System.out.println("... OK !");
 		return true;
 	}
 	

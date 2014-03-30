@@ -4,8 +4,17 @@ public class Color {
 
 	private String _colorName;
 	private String _colorMark;
+	private boolean _validColor = true;
 	public static final String TEXTCOLORWHITE = "§f";
-	
+	 
+	public boolean is_validColor() {
+		return _validColor;
+	}
+
+	public void set_validColor(boolean _validColor) {
+		this._validColor = _validColor;
+	}
+
 	public String get_colorName() {
 		return _colorName;
 	}
@@ -42,15 +51,18 @@ public class Color {
 			break;
 		case "WHITE":
 			_colorMark = "§f";
+			_validColor = false;
 			break;
 		case "MAGENTA":
 			_colorMark = "§d";
 			break;
 		case "GREY":
 			_colorMark = "§8";
+			_validColor = false;
 			break;
 		case "ORANGE":
 			_colorMark = "§6";
+			_validColor = false;
 			break;
 		case "PURPLE":
 			_colorMark = "§5";
@@ -69,6 +81,7 @@ public class Color {
 			break;
 		default:
 			_colorMark = "§f";
+			_validColor = false;
 			break;
 		}
 	}

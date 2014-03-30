@@ -34,7 +34,7 @@ public class MCWarClan extends JavaPlugin implements Listener {
 		TeamContainer tc = new TeamContainer(TeamContainer.MAXTEAMSIZE);
 		tc.addTeam(new Team(new Color("RED"), "HellRangers", Team.DEFAULTTEAMSIZE, tc));
 		tc.addTeam(new Team(new Color("BLUE"), "ElvenSoldiers", Team.DEFAULTTEAMSIZE, tc));
-		tc.addTeam(new Team(new Color("GREY"), "Barbarians", Team.DEFAULTTEAMSIZE, tc));
+		tc.addTeam(new Team(new Color("LIGHTGREY"), "Barbarians", Team.DEFAULTTEAMSIZE, tc));
 		return tc;
 	}
 	
@@ -54,121 +54,167 @@ public class MCWarClan extends JavaPlugin implements Listener {
 		return null;
 	}
 	
+	// show to the sender the list of all teams in the game.
+	public boolean showteamsCommand(CommandSender sender){
+		sender.sendMessage("§8##########################################################################################################");
+		sender.sendMessage(_tc.teamsList());
+		sender.sendMessage("§8##########################################################################################################");
+		return true;
+	}
+	
+	// Sort of admin command. Allows someone to assign someone else to a specific team.
+	public boolean assignCommand(CommandSender sender, String[] args){
+		OfflinePlayer p = findPlayerByName(args[0]);
+		if(args.length > 1 && p != null){
+			Team t = _tc.searchTeam(args[1]);
+			Team actual = _tc.searchPlayerTeam(p);
+			if(t == null){
+				t = _tc.searchTeam(new Color(args[1]));
+			}
+			if(t != null){
+				t.addTeamMate(p);
+				sender.sendMessage("§a[MCWarClan]§6 " + args[0] + " §6has successfully been added to " + t.get_color().get_colorMark() + t.get_name());
+				actual.deleteTeamMate(p);
+				if(p.isOnline()){
+					p.getPlayer().sendMessage("§a[MCWarClan]§6 " + "§6You have been added to team " + t.get_color().get_colorMark() + t.get_name() + " §6by " + sender.getName());
+				}
+				return true;
+			}
+			else{
+				sender.sendMessage("§a[MCWarClan]§6 " + "§6Invalid team or color name.");
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	// Shows the team members of the sender's team or of the specified team.
+	public boolean teamCommand(CommandSender sender, String[] args){
+		if(args.length == 0){
+			if(sender instanceof Player){
+				sender.sendMessage("§8##########################################################################################################");
+				sender.sendMessage(_tc.searchPlayerTeam(((Player) sender).getPlayer()).playerList());
+				sender.sendMessage("§8##########################################################################################################");
+				return true;
+			}
+			sender.sendMessage("§6You have to be a player to perform this command !");
+			return true;
+		}
+		else if (args.length == 1 && exist(args[0])) {
+			sender.sendMessage("§8##########################################################################################################");
+			sender.sendMessage(_tc.searchPlayerTeam(findPlayerByName(args[0])).playerList());
+			sender.sendMessage("§8##########################################################################################################");
+			return true;
+		}
+		return false;
+	}
+	
+	// Sort of admin command. Allows someone to kick someone else from a specific team.
+	public boolean unassignCommand(CommandSender sender, String[] args){
+		OfflinePlayer p = findPlayerByName(args[0]);
+		if(p != null){
+			Team t = _tc.searchPlayerTeam(p);
+			if(t != null){
+				t.deleteTeamMate(p);
+				sender.sendMessage("§a[MCWarClan]§6 " + args[0] + " §6has successfully been kicked from " + t.get_color().get_colorMark() + t.get_name());
+				_tc.searchTeam("Barbarians").addTeamMate(p.getPlayer());
+				if(p.isOnline()){	// Send a message to the player concerned.
+					p.getPlayer().sendMessage("§a[MCWarClan]§6 " + "§6You have been kicked from team " + t.get_color().get_colorMark() + t.get_name() + " §6by " + sender.getName() + ". §6You are now a §8Barbarian !");
+				}
+				return true;					
+			}
+		}
+		return false;
+	}
+	
+	// Allows the sender to leave it's current team an join the barbarian team.
+	public boolean leaveCommand(CommandSender sender){
+		if(sender instanceof Player){
+			Team t = _tc.searchPlayerTeam(((Player) sender).getPlayer());
+			if(t.get_name().equals("Barbarians")){
+				sender.sendMessage("§a[MCWarClan]§6 " + "§6You cannot leave the §8Barbarian§6 team !");
+				return true;
+			}
+			_tc.searchPlayerTeam(((Player) sender).getPlayer()).deleteTeamMate(((Player) sender).getPlayer());
+			_tc.searchTeam("Barbarians").addTeamMate(((Player) sender).getPlayer());
+			sender.sendMessage("§a[MCWarClan]§6 " + "§6You have successfully left " + t.get_color().get_colorMark() + t.get_name() + ".§6 You are now a §8Barbarian !");
+			return true;
+		}
+		else
+			sender.sendMessage("§a[MCWarClan]§6 " + "You have to be a player to peform this command !");
+		return false;
+	}
+	
+	// Allows the sender to join the specified team.
+	public boolean joinCommand(CommandSender sender, String[] args){
+		if(sender instanceof Player){
+			Team actual = _tc.searchPlayerTeam(((Player) sender).getPlayer());
+			Team toJoin = _tc.searchTeam(args[0]);
+			if(toJoin == null){
+				toJoin = _tc.searchTeam(new Color(args[0]));
+			}
+			if(toJoin != null){
+				actual.deleteTeamMate(((Player) sender).getPlayer());
+				toJoin.addTeamMate(((Player) sender).getPlayer());
+				sender.sendMessage("§a[MCWarClan]§6 " + "§6Well done, you left " + actual.get_color().get_colorMark() + actual.get_name() + " §6and joined " + toJoin.get_color().get_colorMark() + toJoin.get_name() + ".");
+				return true;
+			}
+			else{
+				sender.sendMessage("§a[MCWarClan]§6 " + "§6This team cannot be find.");
+				return true;
+			}
+		}
+		sender.sendMessage("§a[MCWarClan]§6 " + "§6You have to be a player to perform this command !");
+		return false;
+	}
+	
+	public boolean createteamCommand(CommandSender sender, String[] args){
+		if(args.length == 2){
+			if(_tc.addTeam(new Team(new Color(args[1]), args[0], Team.DEFAULTTEAMSIZE, _tc))){
+				if(sender instanceof Player){
+					joinCommand(sender, args);
+				}
+				System.out.println("§a[MCWarClan]§6 " + new Color(args[1]).get_colorMark() + args[0] + " §6has been successfully created !");
+				return true;
+			}
+			else{
+				sender.sendMessage("§a[MCWarClan]§6 " + "§6Sorry, but name or color is already taken by another team. Here is the colorname list: ");
+				sender.sendMessage("§a[MCWarClan]§6 " + "§cRED, §1BLUE, §2GREEN, §eYELLOW, §0BLACK, §fWHITE, §dMAGENTA, §8GREY, §5PURPRLE, §7LIGHTGREY, §aLIGHTGREEN, §3CYAN, §bLIGHTBLUE");
+			}
+			
+		}
+		return false;
+	}
+	
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		// Show an exhaustive list of all teams
-		if(label.equals("showteams") || label.equals("lt") || label.equals("st")){
-			// show the list of teams.
-			sender.sendMessage(_tc.teamsList());
-			return true;
+		
+		if((label.equals("showteams") || label.equals("lt") || label.equals("st")) && args.length == 0){
+			return showteamsCommand(sender);
 		}
-		// Shows any players that are in your team
-		/*else if(label.equals("teammates") || label.equals("tm")){
-			if(sender instanceof Player){
-				Team t = _tc.searchPlayerTeam((Player)sender);
-				if(t != null){
-					sender.sendMessage(t.playerList());
-				}
-				else
-					sender.sendMessage("You do not have any team !");
-			}
-			else {
-				sender.sendMessage("You have to be a player to perform this command !");
-				return false;
-			}
-		}*/
-		// Assign a player to a team using color or team name
+		
 		else if(label.equals("assign")) {
-			OfflinePlayer p = findPlayerByName(args[0]);
-			if(args.length > 1 && p != null){
-				Team t = _tc.searchTeam(args[1]);
-				Team actual = _tc.searchPlayerTeam(p);
-				if(t != null){
-					t.addTeamMate(p);
-					sender.sendMessage(args[0] + " has successfully been added to " + t.get_color().get_colorMark() + t.get_name());
-					actual.deleteTeamMate(p);
-					if(p.isOnline())
-						p.getPlayer().sendMessage("You have been added to team " + t.get_color().get_colorMark() + t.get_name() + " §fby " + sender.getName());
-					return true;
-				}
-				else {
-					t = _tc.searchTeam(new Color(args[1]));
-					if(t != null){
-						t.addTeamMate(p);
-						sender.sendMessage(args[0] + " has successfully been added to " + t.get_color().get_colorMark() + t.get_name());
-						actual.deleteTeamMate(p);
-						if(p.isOnline())
-							p.getPlayer().sendMessage("You have been added to team " + t.get_color().get_colorMark() + t.get_name() + " §fby " + sender.getName());
-						return true;
-					}
-				}
-			}
-			return false;
+			return assignCommand(sender, args);
 		}
-		// Shows a list
-		else if(label.equals("team") && args.length == 0){
-			if(sender instanceof Player){
-				sender.sendMessage(_tc.searchPlayerTeam(((Player) sender).getPlayer()).playerList());
-				return true;
-			}
-			sender.sendMessage("You have to be a player to perform this command !");
-			return false;
+		
+		else if(label.equals("team")){
+			return teamCommand(sender, args);
 		}
-		else if (label.equals("team") && args.length == 1 && exist(args[0])){
-			sender.sendMessage(_tc.searchPlayerTeam(findPlayerByName(args[0])).playerList());
-			return true;
-		}
+		
 		else if(label.equals("unassign") && args.length == 1) {
-			OfflinePlayer p = findPlayerByName(args[0]);
-			if(p != null){
-				Team t = _tc.searchPlayerTeam(p);
-				if(t != null){
-					t.deleteTeamMate(p);
-					sender.sendMessage(args[0] + " has successfully been kicked from " + t.get_color().get_colorMark() + t.get_name());
-					_tc.searchTeam("Barbarians").addTeamMate(p.getPlayer());
-					if(p.isOnline())
-						p.getPlayer().sendMessage("You have been kicked from team " + t.get_color().get_colorMark() + t.get_name() + " §fby " + sender.getName() + ". You are now a §8Barbarian !");
-					return true;					
-				}
-			}
-			return false;
+			return unassignCommand(sender, args);
 		}
+		
 		else if(label.equals("leave") && args.length == 0){
-			if(sender instanceof Player){
-				Team t = _tc.searchPlayerTeam(((Player) sender).getPlayer());
-				if(t.get_name().equals("Barbarians")){
-					sender.sendMessage("You cannot leave the §8Barbarian§f team !");
-					return true;
-				}
-				_tc.searchPlayerTeam(((Player) sender).getPlayer()).deleteTeamMate(((Player) sender).getPlayer());
-				_tc.searchTeam("Barbarians").addTeamMate(((Player) sender).getPlayer());
-				sender.sendMessage("You have successfully left " + t.get_color().get_colorMark() + t.get_name() + ".§f You are now a §8Barbarian !");
-				return true;
-			}
-			else
-				sender.sendMessage("You have to be a player to peform this command !");
-			return false;
+			return leaveCommand(sender);
 		}
+		
 		else if(label.equals("join") && args.length == 1){
-			if(sender instanceof Player){
-				Team actual = _tc.searchPlayerTeam(((Player) sender).getPlayer());
-				Team toJoin = _tc.searchTeam(args[0]);
-				if(toJoin == null){
-					toJoin = _tc.searchTeam(new Color(args[0]));
-				}
-				if(toJoin != null){
-					actual.deleteTeamMate(((Player) sender).getPlayer());
-					toJoin.addTeamMate(((Player) sender).getPlayer());
-					sender.sendMessage("Well done, you left " + actual.get_color().get_colorMark() + actual.get_name() + " §fand joined " + toJoin.get_color().get_colorMark() + toJoin.get_name() + ".");
-					return true;
-				}
-				else{
-					sender.sendMessage("This team cannot be find.");
-					return true;
-				}
-			}
-			sender.sendMessage("You have to be a player to perform this command !");
-			return false;
+			return joinCommand(sender, args);
+		}
+		
+		else if(label.equals("createteam")){
+			return createteamCommand(sender, args);
 		}
 		return false;
 	}
@@ -179,7 +225,7 @@ public class MCWarClan extends JavaPlugin implements Listener {
 	
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent evt) {
-		evt.getPlayer().sendMessage("Welcome, this server is using MCWarClan v0.1, have fun !");
+		evt.getPlayer().sendMessage("§a[MCWarClan]§6 " + "Welcome, this server is using MCWarClan v0.1, have fun !");
 		if(_tc.searchPlayerTeam(evt.getPlayer()) == null){
 			_tc.searchTeam("Barbarians").addTeamMate(evt.getPlayer());
 		}
@@ -187,10 +233,10 @@ public class MCWarClan extends JavaPlugin implements Listener {
 	
 	public void onEnable(){
 		Logger log = Logger.getLogger("minecraft");
-		getServer().getPluginManager().registerEvents(this, this);
 		log.info("Registering events...");
-		_tc = TeamContainerInit();
+		getServer().getPluginManager().registerEvents(this, this);
 		log.info("Initialising teams...");
+		_tc = TeamContainerInit();
 		log.info("MCWarClan has been successfully launched !");
 		return;
 	}
