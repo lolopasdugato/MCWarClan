@@ -11,9 +11,19 @@ public class TeamContainer {
 	
 	private ArrayList<Team> _teamArray;		// Different teams
 	private int _maxTeams;					// Number of maximum teams
+	private TeamsFile _file;				// File where are saved data
 	
 	public static final int MAXTEAMSIZE = 11;	// There is only 15 color in the game, and some others for the server messages...
 	
+	
+	public TeamsFile get_file() {
+		return _file;
+	}
+
+	public void set_file(TeamsFile _file) {
+		this._file = _file;
+	}
+
 	public ArrayList<Team> get_teamArray() {
 		return _teamArray;
 	}
@@ -32,6 +42,7 @@ public class TeamContainer {
 	
 	public TeamContainer(int maxTeams) {
 		_teamArray = new ArrayList<Team>();
+		_file = new TeamsFile();
 		if(maxTeams > MAXTEAMSIZE || maxTeams < 2){
 			_maxTeams = MAXTEAMSIZE;
 			System.out.println("Cannot have more than " + MAXTEAMSIZE + " teams, or less than 2 !");
@@ -60,6 +71,7 @@ public class TeamContainer {
 	public boolean addTeam(Team t){
 		if(_teamArray.size() <= _maxTeams && isTeamValid(t)){
 			_teamArray.add(t);
+			System.out.println("Team successfullty added.");
 			return true;
 		}
 		return false;

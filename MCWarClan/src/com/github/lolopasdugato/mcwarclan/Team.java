@@ -101,7 +101,7 @@ public class Team {
 			mates[i + 1] = _team.get(i).getName();
 		}
 		if(_team.size() == 0){
-			mates[0] = _color.get_colorMark() + _name + "§f is empty !";
+			mates[0] = _color.get_colorMark() + _name + "Â§f is empty !";
 		}
 		return mates;
 	}

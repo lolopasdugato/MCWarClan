@@ -32,9 +32,15 @@ public class MCWarClan extends JavaPlugin implements Listener {
 
 	public TeamContainer TeamContainerInit(){
 		TeamContainer tc = new TeamContainer(TeamContainer.MAXTEAMSIZE);
-		tc.addTeam(new Team(new Color("RED"), "HellRangers", Team.DEFAULTTEAMSIZE, tc));
-		tc.addTeam(new Team(new Color("BLUE"), "ElvenSoldiers", Team.DEFAULTTEAMSIZE, tc));
-		tc.addTeam(new Team(new Color("LIGHTGREY"), "Barbarians", Team.DEFAULTTEAMSIZE, tc));
+		tc = tc.get_file().load(getServer());
+		if(tc == null){
+			System.out.println("File cannot be read !");
+			tc = new TeamContainer(TeamContainer.MAXTEAMSIZE);
+			tc.addTeam(new Team(new Color("RED"), "HellRangers", Team.DEFAULTTEAMSIZE, tc));
+			tc.addTeam(new Team(new Color("BLUE"), "ElvenSoldiers", Team.DEFAULTTEAMSIZE, tc));
+			tc.addTeam(new Team(new Color("LIGHTGREY"), "Barbarians", Team.DEFAULTTEAMSIZE, tc));
+		}
+		
 		return tc;
 	}
 	
@@ -56,9 +62,9 @@ public class MCWarClan extends JavaPlugin implements Listener {
 	
 	// show to the sender the list of all teams in the game.
 	public boolean showteamsCommand(CommandSender sender){
-		sender.sendMessage("§8##########################################################################################################");
+		sender.sendMessage("Â§8##########################################################################################################");
 		sender.sendMessage(_tc.teamsList());
-		sender.sendMessage("§8##########################################################################################################");
+		sender.sendMessage("Â§8##########################################################################################################");
 		return true;
 	}
 	
@@ -73,15 +79,15 @@ public class MCWarClan extends JavaPlugin implements Listener {
 			}
 			if(t != null){
 				t.addTeamMate(p);
-				sender.sendMessage("§a[MCWarClan]§6 " + args[0] + " §6has successfully been added to " + t.get_color().get_colorMark() + t.get_name());
+				sender.sendMessage("Â§a[MCWarClan]Â§6 " + args[0] + " Â§6has successfully been added to " + t.get_color().get_colorMark() + t.get_name());
 				actual.deleteTeamMate(p);
 				if(p.isOnline()){
-					p.getPlayer().sendMessage("§a[MCWarClan]§6 " + "§6You have been added to team " + t.get_color().get_colorMark() + t.get_name() + " §6by " + sender.getName());
+					p.getPlayer().sendMessage("Â§a[MCWarClan]Â§6 " + "Â§6You have been added to team " + t.get_color().get_colorMark() + t.get_name() + " Â§6by " + sender.getName());
 				}
 				return true;
 			}
 			else{
-				sender.sendMessage("§a[MCWarClan]§6 " + "§6Invalid team or color name.");
+				sender.sendMessage("Â§a[MCWarClan]Â§6 " + "Â§6Invalid team or color name.");
 				return true;
 			}
 		}
@@ -92,18 +98,18 @@ public class MCWarClan extends JavaPlugin implements Listener {
 	public boolean teamCommand(CommandSender sender, String[] args){
 		if(args.length == 0){
 			if(sender instanceof Player){
-				sender.sendMessage("§8##########################################################################################################");
+				sender.sendMessage("Â§8##########################################################################################################");
 				sender.sendMessage(_tc.searchPlayerTeam(((Player) sender).getPlayer()).playerList());
-				sender.sendMessage("§8##########################################################################################################");
+				sender.sendMessage("Â§8##########################################################################################################");
 				return true;
 			}
-			sender.sendMessage("§6You have to be a player to perform this command !");
+			sender.sendMessage("Â§6You have to be a player to perform this command !");
 			return true;
 		}
 		else if (args.length == 1 && exist(args[0])) {
-			sender.sendMessage("§8##########################################################################################################");
+			sender.sendMessage("Â§8##########################################################################################################");
 			sender.sendMessage(_tc.searchPlayerTeam(findPlayerByName(args[0])).playerList());
-			sender.sendMessage("§8##########################################################################################################");
+			sender.sendMessage("Â§8##########################################################################################################");
 			return true;
 		}
 		return false;
@@ -116,10 +122,10 @@ public class MCWarClan extends JavaPlugin implements Listener {
 			Team t = _tc.searchPlayerTeam(p);
 			if(t != null){
 				t.deleteTeamMate(p);
-				sender.sendMessage("§a[MCWarClan]§6 " + args[0] + " §6has successfully been kicked from " + t.get_color().get_colorMark() + t.get_name());
+				sender.sendMessage("Â§a[MCWarClan]Â§6 " + args[0] + " Â§6has successfully been kicked from " + t.get_color().get_colorMark() + t.get_name());
 				_tc.searchTeam("Barbarians").addTeamMate(p.getPlayer());
 				if(p.isOnline()){	// Send a message to the player concerned.
-					p.getPlayer().sendMessage("§a[MCWarClan]§6 " + "§6You have been kicked from team " + t.get_color().get_colorMark() + t.get_name() + " §6by " + sender.getName() + ". §6You are now a §8Barbarian !");
+					p.getPlayer().sendMessage("Â§a[MCWarClan]Â§6 " + "Â§6You have been kicked from team " + t.get_color().get_colorMark() + t.get_name() + " Â§6by " + sender.getName() + ". Â§6You are now a Â§8Barbarian !");
 				}
 				return true;					
 			}
@@ -132,16 +138,16 @@ public class MCWarClan extends JavaPlugin implements Listener {
 		if(sender instanceof Player){
 			Team t = _tc.searchPlayerTeam(((Player) sender).getPlayer());
 			if(t.get_name().equals("Barbarians")){
-				sender.sendMessage("§a[MCWarClan]§6 " + "§6You cannot leave the §8Barbarian§6 team !");
+				sender.sendMessage("Â§a[MCWarClan]Â§6 " + "Â§6You cannot leave the Â§8BarbarianÂ§6 team !");
 				return true;
 			}
 			_tc.searchPlayerTeam(((Player) sender).getPlayer()).deleteTeamMate(((Player) sender).getPlayer());
 			_tc.searchTeam("Barbarians").addTeamMate(((Player) sender).getPlayer());
-			sender.sendMessage("§a[MCWarClan]§6 " + "§6You have successfully left " + t.get_color().get_colorMark() + t.get_name() + ".§6 You are now a §8Barbarian !");
+			sender.sendMessage("Â§a[MCWarClan]Â§6 " + "Â§6You have successfully left " + t.get_color().get_colorMark() + t.get_name() + ".Â§6 You are now a Â§8Barbarian !");
 			return true;
 		}
 		else
-			sender.sendMessage("§a[MCWarClan]§6 " + "You have to be a player to peform this command !");
+			sender.sendMessage("Â§a[MCWarClan]Â§6 " + "You have to be a player to peform this command !");
 		return false;
 	}
 	
@@ -156,15 +162,15 @@ public class MCWarClan extends JavaPlugin implements Listener {
 			if(toJoin != null){
 				actual.deleteTeamMate(((Player) sender).getPlayer());
 				toJoin.addTeamMate(((Player) sender).getPlayer());
-				sender.sendMessage("§a[MCWarClan]§6 " + "§6Well done, you left " + actual.get_color().get_colorMark() + actual.get_name() + " §6and joined " + toJoin.get_color().get_colorMark() + toJoin.get_name() + ".");
+				sender.sendMessage("Â§a[MCWarClan]Â§6 " + "Â§6Well done, you left " + actual.get_color().get_colorMark() + actual.get_name() + " Â§6and joined " + toJoin.get_color().get_colorMark() + toJoin.get_name() + ".");
 				return true;
 			}
 			else{
-				sender.sendMessage("§a[MCWarClan]§6 " + "§6This team cannot be find.");
+				sender.sendMessage("Â§a[MCWarClan]Â§6 " + "Â§6This team cannot be find.");
 				return true;
 			}
 		}
-		sender.sendMessage("§a[MCWarClan]§6 " + "§6You have to be a player to perform this command !");
+		sender.sendMessage("Â§a[MCWarClan]Â§6 " + "Â§6You have to be a player to perform this command !");
 		return false;
 	}
 	
@@ -174,12 +180,12 @@ public class MCWarClan extends JavaPlugin implements Listener {
 				if(sender instanceof Player){
 					joinCommand(sender, args);
 				}
-				System.out.println("§a[MCWarClan]§6 " + new Color(args[1]).get_colorMark() + args[0] + " §6has been successfully created !");
+				System.out.println("Â§a[MCWarClan]Â§6 " + new Color(args[1]).get_colorMark() + args[0] + " Â§6has been successfully created !");
 				return true;
 			}
 			else{
-				sender.sendMessage("§a[MCWarClan]§6 " + "§6Sorry, but name or color is already taken by another team. Here is the colorname list: ");
-				sender.sendMessage("§a[MCWarClan]§6 " + "§cRED, §1BLUE, §2GREEN, §eYELLOW, §0BLACK, §fWHITE, §dMAGENTA, §8GREY, §5PURPRLE, §7LIGHTGREY, §aLIGHTGREEN, §3CYAN, §bLIGHTBLUE");
+				sender.sendMessage("Â§a[MCWarClan]Â§6 " + "Â§6Sorry, but name or color is already taken by another team. Here is the colorname list: ");
+				sender.sendMessage("Â§a[MCWarClan]Â§6 " + "Â§cRED, Â§1BLUE, Â§2GREEN, Â§eYELLOW, Â§0BLACK, Â§fWHITE, Â§dMAGENTA, Â§8GREY, Â§5PURPRLE, Â§7LIGHTGREY, Â§aLIGHTGREEN, Â§3CYAN, Â§bLIGHTBLUE");
 			}
 			
 		}
@@ -225,7 +231,7 @@ public class MCWarClan extends JavaPlugin implements Listener {
 	
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent evt) {
-		evt.getPlayer().sendMessage("§a[MCWarClan]§6 " + "Welcome, this server is using MCWarClan v0.1, have fun !");
+		evt.getPlayer().sendMessage("Â§a[MCWarClan]Â§6 " + "Welcome, this server is using MCWarClan v0.1, have fun !");
 		if(_tc.searchPlayerTeam(evt.getPlayer()) == null){
 			_tc.searchTeam("Barbarians").addTeamMate(evt.getPlayer());
 		}
@@ -237,11 +243,15 @@ public class MCWarClan extends JavaPlugin implements Listener {
 		getServer().getPluginManager().registerEvents(this, this);
 		log.info("Initialising teams...");
 		_tc = TeamContainerInit();
+		
 		log.info("MCWarClan has been successfully launched !");
 		return;
 	}
 	
 	public void onDisable() {
+		Logger log = Logger.getLogger("minecraft");
+		log.info("Saving datas...");
+		_tc.get_file().save(_tc);
 		return;
 	}
 

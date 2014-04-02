@@ -5,7 +5,7 @@ public class Color {
 	private String _colorName;
 	private String _colorMark;
 	private boolean _validColor = true;
-	public static final String TEXTCOLORWHITE = "งf";
+	public static final String TEXTCOLORWHITE = "ยงf";
 	 
 	public boolean is_validColor() {
 		return _validColor;
@@ -35,52 +35,52 @@ public class Color {
 		_colorName = colorName.toUpperCase();
 		switch(_colorName){
 		case "RED":
-			_colorMark = "งc";
+			_colorMark = "ยงc";
 			break;
 		case "BLUE":
-			_colorMark = "ง1";
+			_colorMark = "ยง1";
 			break;
 		case "GREEN":
-			_colorMark = "ง2";
+			_colorMark = "ยง2";
 			break;
 		case "YELLOW":
-			_colorMark = "งe";
+			_colorMark = "ยงe";
 			break;
 		case "BLACK":
-			_colorMark = "ง0";
+			_colorMark = "ยง0";
 			break;
 		case "WHITE":
-			_colorMark = "งf";
+			_colorMark = "ยงf";
 			_validColor = false;
 			break;
 		case "MAGENTA":
-			_colorMark = "งd";
+			_colorMark = "ยงd";
 			break;
 		case "GREY":
-			_colorMark = "ง8";
+			_colorMark = "ยง8";
 			_validColor = false;
 			break;
 		case "ORANGE":
-			_colorMark = "ง6";
+			_colorMark = "ยง6";
 			_validColor = false;
 			break;
 		case "PURPLE":
-			_colorMark = "ง5";
+			_colorMark = "ยง5";
 			break;
 		case "LIGHTGREY":
-			_colorMark = "ง7";
+			_colorMark = "ยง7";
 			break;
 		case "LIGHTGREEN":
-			_colorMark = "งa";
+			_colorMark = "ยงa";
 			break;
 		case "CYAN":
-			_colorMark = "ง3";
+			_colorMark = "ยง3";
 			break;
 		case "LIGHTBLUE":
-			_colorMark = "งb";
+			_colorMark = "ยงb";
 			break;
 		default:
-			_colorMark = "งf";
+			_colorMark = "ยงf";
 			_validColor = false;
 			break;
 		}
