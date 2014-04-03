@@ -1,7 +1,11 @@
 package com.github.lolopasdugato.mcwarclan;
 
-public class Color {
+import java.io.Serializable;
 
+public class Color implements Serializable {
+	
+	static private final long serialVersionUID = 003;
+	
 	private String _colorName;
 	private String _colorMark;
 	private boolean _validColor = true;

@@ -14,6 +14,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.server.PluginEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
 import java.util.logging.Logger;
 
 import com.github.lolopasdugato.mcwarclan.*;
@@ -31,8 +32,13 @@ public class MCWarClan extends JavaPlugin implements Listener {
 	}
 
 	public TeamContainer TeamContainerInit(){
-		TeamContainer tc = new TeamContainer(TeamContainer.MAXTEAMSIZE);
-		tc = tc.get_file().load(getServer());
+		TeamContainer tc = new TeamContainer(TeamContainer.MAXTEAMSIZE); 
+		if(new File("plugins/TeamContainer.ser").exists()){
+			tc = tc.deSerialize();
+		}
+		else
+			tc = null;
+		
 		if(tc == null){
 			System.out.println("File cannot be read !");
 			tc = new TeamContainer(TeamContainer.MAXTEAMSIZE);
@@ -73,14 +79,14 @@ public class MCWarClan extends JavaPlugin implements Listener {
 		OfflinePlayer p = findPlayerByName(args[0]);
 		if(args.length > 1 && p != null){
 			Team t = _tc.searchTeam(args[1]);
-			Team actual = _tc.searchPlayerTeam(p);
+			Team actual = _tc.searchPlayerTeam(args[0]);
 			if(t == null){
 				t = _tc.searchTeam(new Color(args[1]));
 			}
 			if(t != null){
-				t.addTeamMate(p);
+				t.addTeamMate(args[0]);
 				sender.sendMessage("§a[MCWarClan]§6 " + args[0] + " §6has successfully been added to " + t.get_color().get_colorMark() + t.get_name());
-				actual.deleteTeamMate(p);
+				actual.deleteTeamMate(args[0]);
 				if(p.isOnline()){
 					p.getPlayer().sendMessage("§a[MCWarClan]§6 " + "§6You have been added to team " + t.get_color().get_colorMark() + t.get_name() + " §6by " + sender.getName());
 				}
@@ -99,7 +105,7 @@ public class MCWarClan extends JavaPlugin implements Listener {
 		if(args.length == 0){
 			if(sender instanceof Player){
 				sender.sendMessage("§8##########################################################################################################");
-				sender.sendMessage(_tc.searchPlayerTeam(((Player) sender).getPlayer()).playerList());
+				sender.sendMessage(_tc.searchPlayerTeam(sender.getName()).playerList());
 				sender.sendMessage("§8##########################################################################################################");
 				return true;
 			}
@@ -108,7 +114,7 @@ public class MCWarClan extends JavaPlugin implements Listener {
 		}
 		else if (args.length == 1 && exist(args[0])) {
 			sender.sendMessage("§8##########################################################################################################");
-			sender.sendMessage(_tc.searchPlayerTeam(findPlayerByName(args[0])).playerList());
+			sender.sendMessage(_tc.searchPlayerTeam(args[0]).playerList());
 			sender.sendMessage("§8##########################################################################################################");
 			return true;
 		}
@@ -119,11 +125,11 @@ public class MCWarClan extends JavaPlugin implements Listener {
 	public boolean unassignCommand(CommandSender sender, String[] args){
 		OfflinePlayer p = findPlayerByName(args[0]);
 		if(p != null){
-			Team t = _tc.searchPlayerTeam(p);
+			Team t = _tc.searchPlayerTeam(args[0]);
 			if(t != null){
-				t.deleteTeamMate(p);
+				t.deleteTeamMate(args[0]);
 				sender.sendMessage("§a[MCWarClan]§6 " + args[0] + " §6has successfully been kicked from " + t.get_color().get_colorMark() + t.get_name());
-				_tc.searchTeam("Barbarians").addTeamMate(p.getPlayer());
+				_tc.searchTeam("Barbarians").addTeamMate(args[0]);
 				if(p.isOnline()){	// Send a message to the player concerned.
 					p.getPlayer().sendMessage("§a[MCWarClan]§6 " + "§6You have been kicked from team " + t.get_color().get_colorMark() + t.get_name() + " §6by " + sender.getName() + ". §6You are now a §8Barbarian !");
 				}
@@ -136,13 +142,13 @@ public class MCWarClan extends JavaPlugin implements Listener {
 	// Allows the sender to leave it's current team an join the barbarian team.
 	public boolean leaveCommand(CommandSender sender){
 		if(sender instanceof Player){
-			Team t = _tc.searchPlayerTeam(((Player) sender).getPlayer());
+			Team t = _tc.searchPlayerTeam(sender.getName());
 			if(t.get_name().equals("Barbarians")){
 				sender.sendMessage("§a[MCWarClan]§6 " + "§6You cannot leave the §8Barbarian§6 team !");
 				return true;
 			}
-			_tc.searchPlayerTeam(((Player) sender).getPlayer()).deleteTeamMate(((Player) sender).getPlayer());
-			_tc.searchTeam("Barbarians").addTeamMate(((Player) sender).getPlayer());
+			_tc.searchPlayerTeam(sender.getName()).deleteTeamMate(sender.getName());
+			_tc.searchTeam("Barbarians").addTeamMate(sender.getName());
 			sender.sendMessage("§a[MCWarClan]§6 " + "§6You have successfully left " + t.get_color().get_colorMark() + t.get_name() + ".§6 You are now a §8Barbarian !");
 			return true;
 		}
@@ -154,14 +160,14 @@ public class MCWarClan extends JavaPlugin implements Listener {
 	// Allows the sender to join the specified team.
 	public boolean joinCommand(CommandSender sender, String[] args){
 		if(sender instanceof Player){
-			Team actual = _tc.searchPlayerTeam(((Player) sender).getPlayer());
+			Team actual = _tc.searchPlayerTeam(sender.getName());
 			Team toJoin = _tc.searchTeam(args[0]);
 			if(toJoin == null){
 				toJoin = _tc.searchTeam(new Color(args[0]));
 			}
 			if(toJoin != null){
-				actual.deleteTeamMate(((Player) sender).getPlayer());
-				toJoin.addTeamMate(((Player) sender).getPlayer());
+				actual.deleteTeamMate(sender.getName());
+				toJoin.addTeamMate(sender.getName());
 				sender.sendMessage("§a[MCWarClan]§6 " + "§6Well done, you left " + actual.get_color().get_colorMark() + actual.get_name() + " §6and joined " + toJoin.get_color().get_colorMark() + toJoin.get_name() + ".");
 				return true;
 			}
@@ -174,6 +180,7 @@ public class MCWarClan extends JavaPlugin implements Listener {
 		return false;
 	}
 	
+	// allows someone to create a team.
 	public boolean createteamCommand(CommandSender sender, String[] args){
 		if(args.length == 2){
 			if(_tc.addTeam(new Team(new Color(args[1]), args[0], Team.DEFAULTTEAMSIZE, _tc))){
@@ -232,8 +239,8 @@ public class MCWarClan extends JavaPlugin implements Listener {
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent evt) {
 		evt.getPlayer().sendMessage("§a[MCWarClan]§6 " + "Welcome, this server is using MCWarClan v0.1, have fun !");
-		if(_tc.searchPlayerTeam(evt.getPlayer()) == null){
-			_tc.searchTeam("Barbarians").addTeamMate(evt.getPlayer());
+		if(_tc.searchPlayerTeam(evt.getPlayer().getName()) == null){
+			_tc.searchTeam("Barbarians").addTeamMate(evt.getPlayer().getName());
 		}
 	}
 	
@@ -251,7 +258,7 @@ public class MCWarClan extends JavaPlugin implements Listener {
 	public void onDisable() {
 		Logger log = Logger.getLogger("minecraft");
 		log.info("Saving datas...");
-		_tc.get_file().save(_tc);
+		_tc.serialize();
 		return;
 	}
 

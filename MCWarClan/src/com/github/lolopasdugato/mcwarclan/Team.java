@@ -3,16 +3,19 @@ package com.github.lolopasdugato.mcwarclan;
 import com.github.lolopasdugato.mcwarclan.MCWarClan;
 import com.github.lolopasdugato.mcwarclan.TeamContainer;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
-public class Team {
+public class Team implements Serializable{
+	
+	static private final long serialVersionUID = 002;
 	
 	private Color _color; 					// Represent the team color.
 	private String _name;					// Represent the team name.
-	private ArrayList<OfflinePlayer> _team; // Represent the players in the team
+	private ArrayList<String> _team; 		// Represent the players in the team
 	private int _teamSize;					// Represent the maximum size of a team
 	private TeamContainer _teamContainer;	// 
 	
@@ -34,11 +37,11 @@ public class Team {
 		this._name = _name;
 	}
 
-	public ArrayList<OfflinePlayer> get_team() {
+	public ArrayList<String> get_team() {
 		return _team;
 	}
 
-	public void set_team(ArrayList<OfflinePlayer> _team) {
+	public void set_team(ArrayList<String> _team) {
 		this._team = _team;
 	}
 
@@ -61,14 +64,14 @@ public class Team {
 	// Constructor
 	public Team(Color color, String name, int teamSize, TeamContainer teamContainer){
 		_color = color;
-		_team = new ArrayList<OfflinePlayer>();
+		_team = new ArrayList<String>();
 		_teamSize = teamSize;
 		_teamContainer = teamContainer;
 		_name = name;
 	}
 	
 	// Add a player to this team. 
-	public boolean addTeamMate(OfflinePlayer p){
+	public boolean addTeamMate(String p){
 		// If the current team is one of those two, there is no limit
 		if(_color.get_colorName().equals("RED") || _color.get_colorName().equals("BLUE")){
 			_team.add(p);
@@ -83,9 +86,9 @@ public class Team {
 	}
 	
 	// Delete a player
-	public boolean deleteTeamMate(OfflinePlayer p){
+	public boolean deleteTeamMate(String p){
 		for(int i = 0; i < _team.size(); i++){
-			if(_team.get(i).getName().equals(p.getName())) {
+			if(_team.get(i).equals(p)) {
 				_team.remove(i);
 				return true;
 			}
@@ -98,7 +101,7 @@ public class Team {
 		String[] mates = new String[_team.size() + 1];
 		mates[0] = _color.get_colorMark() + _name + ":";
 		for(int i = 0; i < _team.size(); i++){
-			mates[i + 1] = _team.get(i).getName();
+			mates[i + 1] = _team.get(i);
 		}
 		if(_team.size() == 0){
 			mates[0] = _color.get_colorMark() + _name + "§f is empty !";

@@ -8,13 +8,13 @@ Current  features :
 	* Complete 'admin-side' team management (assign a player to a team, kick a player from one team)
 
 	* Complete 'player-side' team management (Join, leave, list teams, list team mates, and create a team)
+	
+	* Persistant data (Using Serialization)
 		
 TODO list :
 	
-	1. Persistant teams (using XML)
+	1. Config file
 	
-	2. Config file
+	( Client-side GUI, optional ATM)
 	
-	3. Client-side GUI
-	
-	4. Zone separation for teams
+	3. Zone separation for teams
