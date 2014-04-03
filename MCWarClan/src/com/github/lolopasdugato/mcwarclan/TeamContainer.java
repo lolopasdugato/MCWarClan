@@ -19,8 +19,8 @@ public class TeamContainer implements Serializable {
 	
 	static private final long serialVersionUID = 001;
 	
-	private ArrayList<Team> _teamArray;		// Different teams
-	private int _maxTeams;					// Number of maximum teams
+	private ArrayList<Team> _teamArray;			// Different teams
+	private int _maxTeams;						// Number of maximum teams
 	
 	public static final int MAXTEAMSIZE = 11;	// There is only 15 color in the game, and some others for the server messages...
 

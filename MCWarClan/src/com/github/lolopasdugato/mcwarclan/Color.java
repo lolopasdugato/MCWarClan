@@ -6,10 +6,10 @@ public class Color implements Serializable {
 	
 	static private final long serialVersionUID = 003;
 	
-	private String _colorName;
-	private String _colorMark;
-	private boolean _validColor = true;
-	public static final String TEXTCOLORWHITE = "§f";
+	private String _colorName;							// Name of the color which is used
+	private String _colorMark;							// Chat mark of this color for minecraft
+	private boolean _validColor = true;					// If this color is not used by the server, it will stay as true
+	public static final String TEXTCOLORWHITE = "§f";	// Default colorMark for white(default...)
 	 
 	public boolean is_validColor() {
 		return _validColor;

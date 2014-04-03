@@ -13,11 +13,11 @@ public class Team implements Serializable{
 	
 	static private final long serialVersionUID = 002;
 	
-	private Color _color; 					// Represent the team color.
-	private String _name;					// Represent the team name.
-	private ArrayList<String> _team; 		// Represent the players in the team
-	private int _teamSize;					// Represent the maximum size of a team
-	private TeamContainer _teamContainer;	// 
+	private Color _color; 							// Represent the team color.
+	private String _name;							// Represent the team name.
+	private ArrayList<String> _team; 				// Represent the players in the team
+	private int _teamSize;							// Represent the maximum size of a team
+	private transient TeamContainer _teamContainer;	// 
 	
 	public static final int DEFAULTTEAMSIZE = 5;
 

@@ -9,12 +9,16 @@ Current  features :
 
 	* Complete 'player-side' team management (Join, leave, list teams, list team mates, and create a team)
 	
-	* Persistant data (Using Serialization)
+	* Persistent data (Using Serialization)
 		
 TODO list :
 	
-	1. Config file
+	1. Configuration file setup.
 	
-	( Client-side GUI, optional ATM)
+	2. Use a CommandExecutor class instead of Overriding the onCommand function.
 	
-	3. Zone separation for teams
+	3. Use an event Handler instead of putting all events in the main class.
+	
+	4. Handle zone separation.
+	
+	( Client-side GUI, optional ATM )
