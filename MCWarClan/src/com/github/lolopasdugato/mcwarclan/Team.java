@@ -5,6 +5,8 @@ import com.github.lolopasdugato.mcwarclan.TeamContainer;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import org.bukkit.Location;
+
 public class Team implements Serializable{
 	
 	static private final long serialVersionUID = 002;
@@ -104,6 +106,10 @@ public class Team implements Serializable{
 			mates[0] = _color.get_colorMark() + _name + "§f is empty !";
 		}
 		return mates;
+	}
+	
+	public boolean createBase(boolean HQ, int radius, Team team, Flag flag, Location loc){
+		return false;
 	}
 
 }
