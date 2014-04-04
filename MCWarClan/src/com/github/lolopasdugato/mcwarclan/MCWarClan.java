@@ -112,7 +112,7 @@ public class MCWarClan extends JavaPlugin implements Listener {
 			sender.sendMessage("§6You have to be a player to perform this command !");
 			return true;
 		}
-		else if (args.length == 1 && exist(args[0])) {
+		else if (args.length == 1 && exist(args[0]) && _tc.searchPlayerTeam(args[0]) != null) {
 			sender.sendMessage("§8##########################################################################################################");
 			sender.sendMessage(_tc.searchPlayerTeam(args[0]).playerList());
 			sender.sendMessage("§8##########################################################################################################");

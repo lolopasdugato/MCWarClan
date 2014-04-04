@@ -23,7 +23,7 @@ commands:
  unassign:
   description: Unassign a player from a team.
   permission: mcwarclan.unassign
-  usage: Type /<command> (playername) && (teamname || teamcolor) to unassign someone to a team.
+  usage: Type /<command> (playername) to unassign someone to a team.
  join:
   description: Makes you join a team.
   permission: mcwarclan.join
