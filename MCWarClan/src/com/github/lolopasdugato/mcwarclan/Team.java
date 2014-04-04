@@ -1,13 +1,9 @@
 package com.github.lolopasdugato.mcwarclan;
 
-import com.github.lolopasdugato.mcwarclan.MCWarClan;
 import com.github.lolopasdugato.mcwarclan.TeamContainer;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-
-import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
 
 public class Team implements Serializable{
 	

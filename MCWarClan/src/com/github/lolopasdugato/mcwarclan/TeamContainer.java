@@ -1,17 +1,12 @@
 package com.github.lolopasdugato.mcwarclan;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
-
-import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
 
 import com.github.lolopasdugato.mcwarclan.Team;
 
@@ -22,7 +17,7 @@ public class TeamContainer implements Serializable {
 	private ArrayList<Team> _teamArray;			// Different teams
 	private int _maxTeams;						// Number of maximum teams
 	
-	public static final int MAXTEAMSIZE = 11;	// There is only 15 color in the game, and some others for the server messages...
+	public static final int MAXTEAMSIZE = 10;	// There is only 15 color in the game, and some others for the server messages...
 
 	public ArrayList<Team> get_teamArray() {
 		return _teamArray;
@@ -76,7 +71,7 @@ public class TeamContainer implements Serializable {
 	public boolean addTeam(Team t){
 		if(_teamArray.size() <= _maxTeams && isTeamValid(t)){
 			_teamArray.add(t);
-			System.out.println("Team successfullty added.");
+			System.out.println("Team successfully added.");
 			return true;
 		}
 		return false;

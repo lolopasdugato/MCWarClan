@@ -76,6 +76,7 @@ public class Color implements Serializable {
 			break;
 		case "LIGHTGREEN":
 			_colorMark = "§a";
+			_validColor = false;
 			break;
 		case "CYAN":
 			_colorMark = "§3";
