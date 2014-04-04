@@ -14,6 +14,7 @@ public class Team implements Serializable{
 	private ArrayList<String> _team; 				// Represent the players in the team
 	private int _teamSize;							// Represent the maximum size of a team
 	private transient TeamContainer _teamContainer;	// 
+	private ArrayList<Base> _bases;					// Represent bases of a team
 	
 	public static final int DEFAULTTEAMSIZE = 5;
 
