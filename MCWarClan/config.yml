@@ -1,0 +1,20 @@
+teamSettings:
+    # Define the maximum number of team that can be created during the game. this number should be superior to 3 and inferior to 11
+    maxNumberOfTeam: 4
+    # Define how many players can join a single team when this team has no upgrade.
+    initialTeamSize: 10
+baseSettings:
+    # Define the first influence radius of a normal base.
+    initialRadius: 50
+    # Define the influence bonus for the first base (HeadQuarter) of a team.
+    radiusHQBonus: 25
+    # Define the average distance between the first spawn of the map and a random barbarian spawn location.
+    # Minimum value: 100
+    barbariansSpawnDistance: 200
+    # Define the minimum distance between a team HQ and another team's base
+    # The forumla in use is: (initialRadius + radiusHQBonus)*BaseMinHQDistanceToOthers
+    # Minimum value: 2
+    BaseMinHQDistanceToOthers: 4
+    # Define the minimum distance between a team base and the basic map spawn
+    # The formula in use is: initialRadius*BaseMinDistance
+    BaseMinDistanceToSpawn: 10

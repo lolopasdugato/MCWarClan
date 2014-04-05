@@ -72,7 +72,7 @@ public class Team implements Serializable{
 	// Add a player to this team. 
 	public boolean addTeamMate(String p){
 		// If the current team is one of those two, there is no limit
-		if(_color.get_colorName().equals("RED") || _color.get_colorName().equals("BLUE")){
+		if(_name.equals("Barbarians")){
 			_team.add(p);
 			return true;
 		}
