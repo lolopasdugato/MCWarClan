@@ -1,5 +1,6 @@
 package com.github.lolopasdugato.mcwarclan;
 
+import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
@@ -196,6 +197,40 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
 		else if(label.equals("createteam")){
 			return createteamCommand(sender, args);
 		}
+
+        else if(label.equals("createflag")){
+            sender.sendMessage("coucou");
+            return createflagCommand(sender, args);
+        }
 		return false;
 	}
+
+    private boolean createflagCommand(CommandSender sender, String[] args) {
+        sender.sendMessage("Creating flag");
+
+        if (args.length > 0)
+        {
+            sender.sendMessage("ERROR");
+            return false;
+        }
+        else
+        {
+            //Find player's location
+            OfflinePlayer a = findPlayerByName(sender.getName());
+
+            if(a.isOnline())
+            {
+                Location loc = a.getPlayer().getLocation();
+
+                //create new flag
+                new Flag(loc);
+                return true;
+            }
+            else
+            {
+                sender.sendMessage("ERROR");
+                return false;
+            }
+        }
+    }
 }

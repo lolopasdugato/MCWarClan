@@ -1,14 +1,7 @@
 package com.github.lolopasdugato.mcwarclan;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
+import java.io.*;
 import java.util.ArrayList;
-
-import com.github.lolopasdugato.mcwarclan.Team;
 
 public class TeamContainer implements Serializable {
 	
@@ -166,4 +159,18 @@ public class TeamContainer implements Serializable {
 		return t;
 	}
 
+    public Team getTeam(String name)
+    {
+        int i = 0;
+        while(_teamArray.get(i).get_name() == name && i < _maxTeams) {
+            i++;
+        }
+//        if(_teamArray.get(i).get_name() == name)
+//            return _teamArray.get(i);
+//        else
+            ///FAIL
+        return _teamArray.get(i);
+
+
+    }
 }

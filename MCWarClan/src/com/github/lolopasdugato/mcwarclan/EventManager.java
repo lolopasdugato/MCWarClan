@@ -24,5 +24,4 @@ public class EventManager implements Listener {
 			_tc.searchTeam("Barbarians").addTeamMate(evt.getPlayer().getName());
 		}
 	}
-	
 }
