@@ -1,0 +1,10 @@
+teamSettings:
+    # Define the maximum number of team that can be created during the game. this number should be superior to 3 and inferior to 11
+    maxNumberOfTeam: 4
+    # Define how many players can join a single team when this team has no upgrade.
+    initialTeamSize: 10
+baseSettings:
+    # Define the first influence radius of a normal base.
+    initialRadius: 50
+    # Define the influence bonus for the first base (HeadQuarter) of a team.
+    radiusHQBonus: 25

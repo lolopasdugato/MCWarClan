@@ -1,20 +1,24 @@
 package com.github.lolopasdugato.mcwarclan;
 
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.Configuration;
 import org.bukkit.entity.Player;
 
 public class MCWarClanCommandExecutor implements CommandExecutor {
 	
 	private TeamContainer _tc;
 	private Server _server;
+    private Configuration _cfg;
 	
-	public MCWarClanCommandExecutor(TeamContainer tc, Server server) {
+	public MCWarClanCommandExecutor(TeamContainer tc, Server server, Configuration cfg) {
 		_tc = tc;
 		_server = server;
+        _cfg = cfg;
 	}
 	
 	// Check if a player has been or is on the server.
@@ -120,7 +124,7 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
 			return true;
 		}
 		else
-			sender.sendMessage("§a[MCWarClan]§6 " + "You have to be a player to peform this command !");
+			sender.sendMessage("§a[MCWarClan]§6 " + "You have to be a player to perform this command !");
 		return false;
 	}
 	
@@ -157,6 +161,9 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
 				sender.sendMessage("§a[MCWarClan]§6 " + new Color(args[1]).get_colorMark() + args[0] + " §6has been successfully created !");
 				return true;
 			}
+            if(_cfg.getInt("teamSettings.maxNumberOfTeam") == _tc.get_teamArray().size()){
+                sender.sendMessage("§a[MCWarClan]§6 Sorry, maximum number of team reached (" + _tc.get_teamArray().size() + ")!");
+            }
 			else{
 				sender.sendMessage("§a[MCWarClan]§6 " + "§6Sorry, but name or color is already taken by another team. Here is the colorname list: ");
 				sender.sendMessage("§a[MCWarClan]§6 " + "§2GREEN, §eYELLOW, §0BLACK, §dMAGENTA, §5PURPRLE, §3CYAN, §bLIGHTBLUE");
@@ -169,31 +176,31 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		
-		if((label.equals("showteams") || label.equals("lt") || label.equals("st")) && args.length == 0){
+		if((label.toLowerCase().equals("showteams") || label.toLowerCase().equals("lt") || label.toLowerCase().equals("st")) && args.length == 0){
 			return showteamsCommand(sender);
 		}
 		
-		else if(label.equals("assign")) {
+		else if(label.toLowerCase().equals("assign")) {
 			return assignCommand(sender, args);
 		}
 		
-		else if(label.equals("team")){
+		else if(label.toLowerCase().equals("team")){
 			return teamCommand(sender, args);
 		}
 		
-		else if(label.equals("unassign") && args.length == 1) {
+		else if(label.toLowerCase().equals("unassign") && args.length == 1) {
 			return unassignCommand(sender, args);
 		}
 		
-		else if(label.equals("leave") && args.length == 0){
+		else if(label.toLowerCase().equals("leave") && args.length == 0){
 			return leaveCommand(sender);
 		}
 		
-		else if(label.equals("join") && args.length == 1){
+		else if(label.toLowerCase().equals("join") && args.length == 1){
 			return joinCommand(sender, args);
 		}
 		
-		else if(label.equals("createteam")){
+		else if(label.toLowerCase().equals("createteam")){
 			return createteamCommand(sender, args);
 		}
 		return false;

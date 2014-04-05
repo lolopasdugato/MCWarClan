@@ -37,7 +37,7 @@ public class TeamContainer implements Serializable {
 	
 	public TeamContainer(int maxTeams) {
 		_teamArray = new ArrayList<Team>();
-		if(maxTeams > MAXTEAMSIZE || maxTeams < 2){
+		if(maxTeams > MAXTEAMSIZE || maxTeams < 3){
 			_maxTeams = MAXTEAMSIZE;
 			System.out.println("Cannot have more than " + MAXTEAMSIZE + " teams, or less than 2 !");
 		}
@@ -69,7 +69,7 @@ public class TeamContainer implements Serializable {
 	
 	// Add a team to the container
 	public boolean addTeam(Team t){
-		if(_teamArray.size() <= _maxTeams && isTeamValid(t)){
+		if(_teamArray.size() < _maxTeams && isTeamValid(t)){
 			_teamArray.add(t);
 			System.out.println("Team successfully added.");
 			return true;
@@ -118,7 +118,7 @@ public class TeamContainer implements Serializable {
 	// Store a teamContainer into a file
 	public void serialize(){
 		try{
-			FileOutputStream fos = new FileOutputStream("plugins/TeamContainer.ser");
+			FileOutputStream fos = new FileOutputStream("plugins/MCWarClan/TeamContainer.ser");
 			ObjectOutputStream oos = new ObjectOutputStream(fos);
 			try{
 				oos.writeObject(this);
@@ -144,7 +144,7 @@ public class TeamContainer implements Serializable {
 	public TeamContainer deSerialize(){
 		TeamContainer t = null;
 		try {
-			FileInputStream fis = new FileInputStream("plugins/TeamContainer.ser");
+			FileInputStream fis = new FileInputStream("plugins/MCWarClan/TeamContainer.ser");
 			ObjectInputStream ois= new ObjectInputStream(fis);
 			try {	
 				t = (TeamContainer) ois.readObject(); 

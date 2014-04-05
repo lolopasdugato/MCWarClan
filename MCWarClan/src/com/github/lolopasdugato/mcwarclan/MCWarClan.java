@@ -24,8 +24,10 @@ public class MCWarClan extends JavaPlugin implements Listener {
 	}
 
 	public TeamContainer TeamContainerInit(){
-		TeamContainer tc = new TeamContainer(TeamContainer.MAXTEAMSIZE); 
-		if(new File("plugins/TeamContainer.ser").exists()){
+        saveDefaultConfig();
+        System.out.println("Number of teams: " + getConfig().getInt("teamSettings.maxNumberOfTeam"));
+        TeamContainer tc = new TeamContainer(getConfig().getInt("teamSettings.maxNumberOfTeam"));
+		if(new File("plugins/MCWarClan/TeamContainer.ser").exists()){
 			tc = tc.deSerialize();
 		}
 		else
@@ -33,23 +35,23 @@ public class MCWarClan extends JavaPlugin implements Listener {
 		
 		if(tc == null){
 			System.out.println("File cannot be read !");
-			tc = new TeamContainer(TeamContainer.MAXTEAMSIZE);
-			tc.addTeam(new Team(new Color("RED"), "HellRangers", Team.DEFAULTTEAMSIZE, tc));
-			tc.addTeam(new Team(new Color("BLUE"), "ElvenSoldiers", Team.DEFAULTTEAMSIZE, tc));
-			tc.addTeam(new Team(new Color("LIGHTGREY"), "Barbarians", Team.DEFAULTTEAMSIZE, tc));
+			tc = new TeamContainer(getConfig().getInt("teamSettings.maxNumberOfTeam"));
+			tc.addTeam(new Team(new Color("RED"), "HellRangers", getConfig().getInt("teamSettings.teamSize"), tc));
+			tc.addTeam(new Team(new Color("BLUE"), "ElvenSoldiers", getConfig().getInt("teamSettings.teamSize"), tc));
+			tc.addTeam(new Team(new Color("LIGHTGREY"), "Barbarians", getConfig().getInt("teamSettings.teamSize"), tc));
 		}
 		
 		return tc;
 	}
 	
 	public void InitCommandExecutor(){
-		getCommand("showteams").setExecutor(new MCWarClanCommandExecutor(_tc, getServer()));
-		getCommand("team").setExecutor(new MCWarClanCommandExecutor(_tc, getServer()));
-		getCommand("join").setExecutor(new MCWarClanCommandExecutor(_tc, getServer()));
-		getCommand("leave").setExecutor(new MCWarClanCommandExecutor(_tc, getServer()));
-		getCommand("assign").setExecutor(new MCWarClanCommandExecutor(_tc, getServer()));
-		getCommand("unassign").setExecutor(new MCWarClanCommandExecutor(_tc, getServer()));
-		getCommand("createteam").setExecutor(new MCWarClanCommandExecutor(_tc, getServer()));
+		getCommand("showteams").setExecutor(new MCWarClanCommandExecutor(_tc, getServer(), getConfig()));
+		getCommand("team").setExecutor(new MCWarClanCommandExecutor(_tc, getServer(), getConfig()));
+		getCommand("join").setExecutor(new MCWarClanCommandExecutor(_tc, getServer(), getConfig()));
+		getCommand("leave").setExecutor(new MCWarClanCommandExecutor(_tc, getServer(), getConfig()));
+		getCommand("assign").setExecutor(new MCWarClanCommandExecutor(_tc, getServer(), getConfig()));
+		getCommand("unassign").setExecutor(new MCWarClanCommandExecutor(_tc, getServer(), getConfig()));
+		getCommand("createteam").setExecutor(new MCWarClanCommandExecutor(_tc, getServer(), getConfig()));
 		return;
 	}
 	
