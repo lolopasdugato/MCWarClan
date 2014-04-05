@@ -37,58 +37,57 @@ public class Color implements Serializable {
 
 	public Color(String colorName) {
 		_colorName = colorName.toUpperCase();
-		switch(_colorName){
-		case "RED":
-			_colorMark = "§c";
-			break;
-		case "BLUE":
-			_colorMark = "§1";
-			break;
-		case "GREEN":
-			_colorMark = "§2";
-			break;
-		case "YELLOW":
-			_colorMark = "§e";
-			break;
-		case "BLACK":
-			_colorMark = "§0";
-			break;
-		case "WHITE":
-			_colorMark = "§f";
-			_validColor = false;
-			break;
-		case "MAGENTA":
-			_colorMark = "§d";
-			break;
-		case "GREY":
-			_colorMark = "§8";
-			_validColor = false;
-			break;
-		case "ORANGE":
-			_colorMark = "§6";
-			_validColor = false;
-			break;
-		case "PURPLE":
-			_colorMark = "§5";
-			break;
-		case "LIGHTGREY":
-			_colorMark = "§7";
-			break;
-		case "LIGHTGREEN":
-			_colorMark = "§a";
-			_validColor = false;
-			break;
-		case "CYAN":
-			_colorMark = "§3";
-			break;
-		case "LIGHTBLUE":
-			_colorMark = "§b";
-			break;
-		default:
-			_colorMark = "§f";
-			_validColor = false;
-			break;
-		}
+        if (_colorName.equals("RED")) {
+            _colorMark = "§c";
+
+        } else if (_colorName.equals("BLUE")) {
+            _colorMark = "§1";
+
+        } else if (_colorName.equals("GREEN")) {
+            _colorMark = "§2";
+
+        } else if (_colorName.equals("YELLOW")) {
+            _colorMark = "§e";
+
+        } else if (_colorName.equals("BLACK")) {
+            _colorMark = "§0";
+
+        } else if (_colorName.equals("WHITE")) {
+            _colorMark = "§f";
+            _validColor = false;
+
+        } else if (_colorName.equals("MAGENTA")) {
+            _colorMark = "§d";
+
+        } else if (_colorName.equals("GREY")) {
+            _colorMark = "§8";
+            _validColor = false;
+
+        } else if (_colorName.equals("ORANGE")) {
+            _colorMark = "§6";
+            _validColor = false;
+
+        } else if (_colorName.equals("PURPLE")) {
+            _colorMark = "§5";
+
+        } else if (_colorName.equals("LIGHTGREY")) {
+            _colorMark = "§7";
+
+        } else if (_colorName.equals("LIGHTGREEN")) {
+            _colorMark = "§a";
+            _validColor = false;
+
+        } else if (_colorName.equals("CYAN")) {
+            _colorMark = "§3";
+
+        } else if (_colorName.equals("LIGHTBLUE")) {
+            _colorMark = "§b";
+
+        } else {
+            _colorMark = "§f";
+            _validColor = false;
+
+        }
 	}
 
 }
