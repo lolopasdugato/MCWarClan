@@ -8,3 +8,13 @@ baseSettings:
     initialRadius: 50
     # Define the influence bonus for the first base (HeadQuarter) of a team.
     radiusHQBonus: 25
+    # Define the average distance between the first spawn of the map and a random barbarian spawn location.
+    # Minimum value: 100
+    barbariansSpawnDistance: 200
+    # Define the minimum distance between a team HQ and another team's base
+    # The forumla in use is: (initialRadius + radiusHQBonus)*BaseMinHQDistanceToOthers
+    # Minimum value: 2
+    BaseMinHQDistanceToOthers: 4
+    # Define the minimum distance between a team base and the basic map spawn
+    # The formula in use is: initialRadius*BaseMinDistance
+    BaseMinDistanceToSpawn: 10
