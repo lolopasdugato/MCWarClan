@@ -53,7 +53,8 @@ public class MCWarClan extends JavaPlugin implements Listener {
 		getCommand("assign").setExecutor(new MCWarClanCommandExecutor(_tc, getServer(), getConfig()));
 		getCommand("unassign").setExecutor(new MCWarClanCommandExecutor(_tc, getServer(), getConfig()));
 		getCommand("createteam").setExecutor(new MCWarClanCommandExecutor(_tc, getServer(), getConfig()));
-	}
+        getCommand("createflag").setExecutor(new MCWarClanCommandExecutor(_tc, getServer(), getConfig()));
+    }
 
 	public void onEnable(){
 		Logger log = Logger.getLogger("minecraft");

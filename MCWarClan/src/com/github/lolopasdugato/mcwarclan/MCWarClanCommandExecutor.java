@@ -224,7 +224,7 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
 		
 		else if(label.toLowerCase().equals("createteam")){
 			return createteamCommand(sender, args);
-		} else if (label.toLowerCase().equals("createflag")) {
+        } else if (label.toLowerCase().equals("createflag")) {
             sender.sendMessage("coucou");
             return createflagCommand(sender, args);
         }
