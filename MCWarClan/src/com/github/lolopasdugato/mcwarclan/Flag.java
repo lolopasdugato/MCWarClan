@@ -9,7 +9,7 @@ import java.io.Serializable;
 
 public class Flag implements Serializable {
 	
-	static private final long serialVersionUID = 006;
+	static private final long serialVersionUID = 6;
 	
 	private Base _base;
 	// private enum _type;

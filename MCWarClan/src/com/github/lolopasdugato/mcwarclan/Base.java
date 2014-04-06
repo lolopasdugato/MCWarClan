@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public class Base implements Serializable {
 	
-	static private final long serialVersionUID = 005;
+	static private final long serialVersionUID = 5;
 	
 	private boolean _HQ;			// Determine if this is an HQ or not
 	private int _radius; 			// Determine the radius protection effect of this base

@@ -1,6 +1,7 @@
 package com.github.lolopasdugato.mcwarclan;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
@@ -8,6 +9,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 public class MCWarClanCommandExecutor implements CommandExecutor {
 	
@@ -23,11 +25,8 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
 	
 	// Check if a player has been or is on the server.
 	public boolean exist(String playerName){
-		if(_server.getOfflinePlayer(playerName).hasPlayedBefore() || _server.getOfflinePlayer(playerName).isOnline()){
-			return true;
-		}
-		return false;
-	}
+        return _server.getOfflinePlayer(playerName).hasPlayedBefore() || _server.getOfflinePlayer(playerName).isOnline();
+    }
 	
 	// Returns a player using a name.
 	public OfflinePlayer findPlayerByName(String name){
@@ -120,7 +119,7 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
 			}
 			_tc.searchPlayerTeam(sender.getName()).deleteTeamMate(sender.getName());
 			_tc.searchTeam("Barbarians").addTeamMate(sender.getName());
-			sender.sendMessage("§a[MCWarClan]§6 " + "§6You have successfully left " + t.get_color().get_colorMark() + t.get_name() + ".§6 You are now a §8Barbarian !");
+			sender.sendMessage("§a[MCWarClan]§6 " + "§6You have successfully left " + t.get_color().get_colorMark() + t.get_name() + ".§6 You are now a §7Barbarian !");
 			return true;
 		}
 		else
@@ -137,9 +136,31 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
 				toJoin = _tc.searchTeam(new Color(args[0]));
 			}
 			if(toJoin != null){
-				actual.deleteTeamMate(sender.getName());
-				toJoin.addTeamMate(sender.getName());
-				sender.sendMessage("§a[MCWarClan]§6 " + "§6Well done, you left " + actual.get_color().get_colorMark() + actual.get_name() + " §6and joined " + toJoin.get_color().get_colorMark() + toJoin.get_name() + ".");
+                if(toJoin.get_name().equals(actual.get_name())){
+                    sender.sendMessage("§a[MCWarClan]§6 You cannot join this team ! You're already in !");
+                    return true;
+                }
+                else if(toJoin.get_name().equals("Barbarians")){
+                    return leaveCommand(sender);
+                }
+                else{
+                    if(canPay(toJoin.get_cost(), ((Player) sender).getPlayer())){
+                        if(!toJoin.addTeamMate(sender.getName())){
+                            sender.sendMessage("§a[MCWarClan]§6 too many member in " + toJoin.get_color().get_colorMark() + toJoin.get_name() + ".");
+                            return true;
+                        }
+                        else if(!actual.deleteTeamMate(sender.getName())){
+                            toJoin.deleteTeamMate(sender.getName());
+                            sender.sendMessage("§a[MCWarClan]§6 High level ERROR, cannot switch you to this team (deleteERROR). Cannot find your name into this team");
+                            return true;
+                        }
+                        sender.sendMessage("§a[MCWarClan]§6 " + "§6Well done, you left " + actual.get_color().get_colorMark() + actual.get_name() + " §6and joined " + toJoin.get_color().get_colorMark() + toJoin.get_name() + ".");
+                    }
+                    else{
+                        sender.sendMessage("§a[MCWarClan]§6 You do not have enough resources, here is the exhaustive list of materials needed:");
+                        sender.sendMessage(toJoin.get_cost().getResourceTypes());
+                    }
+                }
 				return true;
 			}
 			else{
@@ -207,6 +228,34 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
         }
 		return false;
 	}
+
+    // Verify if a player can pay the asked tribute
+    public boolean canPay(Cost cost, Player player){
+        for(int i = 0; i < cost.get_costEquivalence().size(); i++){
+            // If the specified material is not recognize, just ignore it
+            if(Material.getMaterial(cost.get_costEquivalence().get(i).get_materialName()) != null) {
+                if (!has(player, Material.getMaterial(cost.get_costEquivalence().get(i).get_materialName()), cost.get_costEquivalence().get(i).get_materialValue())) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    // Verify if the player has enough of the specified material
+    public boolean has(Player p, Material material, int valueToHave){
+        ItemStack[] inventory = p.getInventory().getContents();
+        if(inventory.length == 0){
+            return false;
+        }
+        int amount = 0;
+        for(int i = 0; i < inventory.length; i++){
+            if(inventory[i] != null && inventory[i].getType() == material){
+                amount = inventory[i].getAmount();
+            }
+        }
+        return amount >= valueToHave;
+    }
 
     private boolean createflagCommand(CommandSender sender, String[] args) {
         sender.sendMessage("Creating flag");

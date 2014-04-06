@@ -7,7 +7,7 @@ import org.bukkit.Location;
 
 public class MCWarClanLocation implements Serializable {
 	
-	static private final long serialVersionUID = 004;
+	static private final long serialVersionUID = 4;
 	
 	private double _x;
 	private double _y;

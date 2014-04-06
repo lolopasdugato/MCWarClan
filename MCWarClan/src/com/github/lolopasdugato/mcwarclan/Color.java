@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public class Color implements Serializable {
 	
-	static private final long serialVersionUID = 003;
+	static private final long serialVersionUID = 3;
 	
 	private String _colorName;							// Name of the color which is used
 	private String _colorMark;							// Chat mark of this color for minecraft

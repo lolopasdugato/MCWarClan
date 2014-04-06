@@ -25,20 +25,21 @@ public class MCWarClan extends JavaPlugin implements Listener {
 
 	public TeamContainer TeamContainerInit(){
         saveDefaultConfig();
-        System.out.println("Number of teams: " + getConfig().getInt("teamSettings.maxNumberOfTeam"));
-        TeamContainer tc = new TeamContainer(getConfig().getInt("teamSettings.maxNumberOfTeam"));
+        TeamContainer tc = new TeamContainer(getConfig().getInt("teamSettings.maxNumberOfTeam"), getConfig());
 		if(new File("plugins/MCWarClan/TeamContainer.ser").exists()){
 			tc = tc.deSerialize();
+            // Initialise cfg, cannot be serialized.
+            tc.set_cfg(getConfig());
 		}
 		else
 			tc = null;
 		
 		if(tc == null){
 			System.out.println("File cannot be read !");
-			tc = new TeamContainer(getConfig().getInt("teamSettings.maxNumberOfTeam"));
-			tc.addTeam(new Team(new Color("RED"), "HellRangers", getConfig().getInt("teamSettings.teamSize"), tc));
-			tc.addTeam(new Team(new Color("BLUE"), "ElvenSoldiers", getConfig().getInt("teamSettings.teamSize"), tc));
-			tc.addTeam(new Team(new Color("LIGHTGREY"), "Barbarians", getConfig().getInt("teamSettings.teamSize"), tc));
+			tc = new TeamContainer(getConfig().getInt("teamSettings.maxNumberOfTeam"), getConfig());
+			tc.addTeam(new Team(new Color("RED"), "HellRangers", getConfig().getInt("teamSettings.initialTeamSize"), tc));
+			tc.addTeam(new Team(new Color("BLUE"), "ElvenSoldiers", getConfig().getInt("teamSettings.initialTeamSize"), tc));
+			tc.addTeam(new Team(new Color("LIGHTGREY"), "Barbarians", getConfig().getInt("teamSettings.initialTeamSize"), tc));
 		}
 		
 		return tc;
@@ -52,14 +53,8 @@ public class MCWarClan extends JavaPlugin implements Listener {
 		getCommand("assign").setExecutor(new MCWarClanCommandExecutor(_tc, getServer(), getConfig()));
 		getCommand("unassign").setExecutor(new MCWarClanCommandExecutor(_tc, getServer(), getConfig()));
 		getCommand("createteam").setExecutor(new MCWarClanCommandExecutor(_tc, getServer(), getConfig()));
-		return;
 	}
-	
-	public MCWarClan() {
-		// TODO Auto-generated constructor stub
-	}
-	
-	
+
 	public void onEnable(){
 		Logger log = Logger.getLogger("minecraft");
 		log.info("Initialising teams...");
@@ -73,14 +68,12 @@ public class MCWarClan extends JavaPlugin implements Listener {
 		InitCommandExecutor();
 		log.info("OK !");
 		log.info("MCWarClan has been successfully launched !");
-		return;
 	}
 	
 	public void onDisable() {
 		Logger log = Logger.getLogger("minecraft");
 		log.info("Saving datas...");
 		_tc.serialize();
-		return;
 	}
 
 }

@@ -9,14 +9,15 @@ import org.bukkit.Location;
 
 public class Team implements Serializable{
 	
-	static private final long serialVersionUID = 002;
+	static private final long serialVersionUID = 2;
 	
 	private Color _color; 							// Represent the team color.
 	private String _name;							// Represent the team name.
 	private ArrayList<String> _team; 				// Represent the players in the team
 	private int _teamSize;							// Represent the maximum size of a team
-	private transient TeamContainer _teamContainer;	// 
+	private TeamContainer _teamContainer;	        // The team container to which this team is linked to
 	private ArrayList<Base> _bases;					// Represent bases of a team
+    private Cost _cost;                             // The cost to join a team
 	
 	public static final int DEFAULTTEAMSIZE = 5;
 
@@ -59,15 +60,29 @@ public class Team implements Serializable{
 	public void set_teamContainer(TeamContainer _teamContainer) {
 		this._teamContainer = _teamContainer;
 	}
-	
-	// Constructor
+
+    public Cost get_cost() {  return _cost; }
+
+    public void set_cost(Cost _cost) { this._cost = _cost; }
+
+    // Constructor
 	public Team(Color color, String name, int teamSize, TeamContainer teamContainer){
 		_color = color;
 		_team = new ArrayList<String>();
 		_teamSize = teamSize;
 		_teamContainer = teamContainer;
 		_name = name;
+        initCost();
 	}
+
+    public void initCost(){
+        if(_color.get_colorName().equals("RED"))
+            _cost = new Cost(_teamContainer.get_cfg(), "teamSettings.RED");
+        else if(_color.get_colorName().equals("BLUE"))
+            _cost = new Cost(_teamContainer.get_cfg(), "teamSettings.BLUE");
+        else
+            _cost = new Cost(_teamContainer.get_cfg(), "teamSettings.DEFAULT");
+    }
 	
 	// Add a player to this team. 
 	public boolean addTeamMate(String p){

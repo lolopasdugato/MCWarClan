@@ -1,14 +1,17 @@
 package com.github.lolopasdugato.mcwarclan;
 
+import org.bukkit.configuration.Configuration;
+
 import java.io.*;
 import java.util.ArrayList;
 
 public class TeamContainer implements Serializable {
 	
-	static private final long serialVersionUID = 001;
+	static private final long serialVersionUID = 1;
 	
 	private ArrayList<Team> _teamArray;			// Different teams
 	private int _maxTeams;						// Number of maximum teams
+    private transient Configuration _cfg;       // Plugin configuration
 	
 	public static final int MAXTEAMSIZE = 10;	// There is only 15 color in the game, and some others for the server messages...
 
@@ -27,9 +30,21 @@ public class TeamContainer implements Serializable {
 	public void set_maxTeams(int _maxTeams) {
 		this._maxTeams = _maxTeams;
 	}
-	
-	public TeamContainer(int maxTeams) {
+
+    public Configuration get_cfg() { return _cfg; }
+
+    public void set_cfg(Configuration _cfg) {
+        this._cfg = _cfg;
+        // When initializing a new cfg,
+        for(int i = 0; i < _teamArray.size(); i++){
+            _teamArray.get(i).get_cost().set_cfg(_cfg);     // Initialize Costs cfg
+            _teamArray.get(i).initCost();                   // Update Costs values
+        }
+    }
+
+    public TeamContainer(int maxTeams, Configuration cfg) {
 		_teamArray = new ArrayList<Team>();
+        _cfg = cfg;
 		if(maxTeams > MAXTEAMSIZE || maxTeams < 3){
 			_maxTeams = MAXTEAMSIZE;
 			System.out.println("Cannot have more than " + MAXTEAMSIZE + " teams, or less than 2 !");
@@ -130,7 +145,6 @@ public class TeamContainer implements Serializable {
 		catch(IOException ioe){
 			ioe.printStackTrace();
 		}
-		return;
 	}
 	
 	// Read a file to get a teamContainer
