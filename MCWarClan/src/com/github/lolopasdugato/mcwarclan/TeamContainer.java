@@ -4,45 +4,42 @@ import java.io.*;
 import java.util.ArrayList;
 
 public class TeamContainer implements Serializable {
-	
-	static private final long serialVersionUID = 001;
-	
+
+    public static final int MAXTEAMSIZE = 10;    // There is only 15 color in the game, and some others for the server messages...
+    static private final long serialVersionUID = 001;
 	private ArrayList<Team> _teamArray;			// Different teams
 	private int _maxTeams;						// Number of maximum teams
-	
-	public static final int MAXTEAMSIZE = 10;	// There is only 15 color in the game, and some others for the server messages...
 
-	public ArrayList<Team> get_teamArray() {
-		return _teamArray;
-	}
+    public TeamContainer(int maxTeams) {
+        _teamArray = new ArrayList<Team>();
+        if (maxTeams > MAXTEAMSIZE || maxTeams < 3) {
+            _maxTeams = MAXTEAMSIZE;
+            System.out.println("Cannot have more than " + MAXTEAMSIZE + " teams, or less than 2 !");
+        } else
+            _maxTeams = maxTeams;
+    }
 
-	public void set_teamArray(ArrayList<Team> _teamArray) {
-		this._teamArray = _teamArray;
-	}
+    public TeamContainer(TeamContainer t) {
+        _teamArray = t.get_teamArray();
+        // _file = t.get_file();
+        _maxTeams = t.get_maxTeams();
+    }
 
-	public int get_maxTeams() {
-		return _maxTeams;
-	}
+    public ArrayList<Team> get_teamArray() {
+        return _teamArray;
+    }
 
-	public void set_maxTeams(int _maxTeams) {
-		this._maxTeams = _maxTeams;
-	}
-	
-	public TeamContainer(int maxTeams) {
-		_teamArray = new ArrayList<Team>();
-		if(maxTeams > MAXTEAMSIZE || maxTeams < 3){
-			_maxTeams = MAXTEAMSIZE;
-			System.out.println("Cannot have more than " + MAXTEAMSIZE + " teams, or less than 2 !");
-		}
-		else 
-			_maxTeams = maxTeams;
-	}
-	
-	public TeamContainer(TeamContainer t){
-		_teamArray = t.get_teamArray();
-		// _file = t.get_file();
-		_maxTeams = t.get_maxTeams();
-	}
+    public void set_teamArray(ArrayList<Team> _teamArray) {
+        this._teamArray = _teamArray;
+    }
+
+    public int get_maxTeams() {
+        return _maxTeams;
+    }
+
+    public void set_maxTeams(int _maxTeams) {
+        this._maxTeams = _maxTeams;
+    }
 	
 	// Verify if a team could be added to the container
 	public boolean isTeamValid(Team t){
@@ -170,7 +167,5 @@ public class TeamContainer implements Serializable {
 //        else
             ///FAIL
         return _teamArray.get(i);
-
-
     }
 }
