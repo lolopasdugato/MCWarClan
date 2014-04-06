@@ -10,7 +10,9 @@ import java.io.Serializable;
 
 public class Flag implements Serializable {
 	
-	static private final long serialVersionUID = 006;
+	static private final long serialVersionUID = 6;
+	
+	private Base _base;
 	// private enum _type;
     final private int stickHeight = 5;
     final private int flagHeight = 2;

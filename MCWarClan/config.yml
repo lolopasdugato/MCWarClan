@@ -3,6 +3,32 @@ teamSettings:
     maxNumberOfTeam: 4
     # Define how many players can join a single team when this team has no upgrade.
     initialTeamSize: 10
+    # List bellow the different materials that could be asked for tribute.
+    requiredMaterials:
+    - WOOL
+    - LOG
+    - COBBLESTONE
+    - IRON_INGOT
+    - EMERALD
+    # List bellow the price for all those materials for each team
+    BLUE:
+      WOOL: 1
+      LOG: 64
+      COBBLESTONE: 64
+      IRON_INGOT: 10
+    RED:
+      WOOL: 1
+      LOG: 128
+      COBBLESTONE: 64
+    DEFAULT:
+      WOOL: 32
+      LOG: 64
+      DIAMOND: 10
+      IRON_INGOT: 32
+      EMERALD: 1
+
+
+
 baseSettings:
     # Define the first influence radius of a normal base.
     initialRadius: 50
@@ -12,7 +38,7 @@ baseSettings:
     # Minimum value: 100
     barbariansSpawnDistance: 200
     # Define the minimum distance between a team HQ and another team's base
-    # The forumla in use is: (initialRadius + radiusHQBonus)*BaseMinHQDistanceToOthers
+    # The formula in use is: (initialRadius + radiusHQBonus)*BaseMinHQDistanceToOthers
     # Minimum value: 2
     BaseMinHQDistanceToOthers: 4
     # Define the minimum distance between a team base and the basic map spawn
