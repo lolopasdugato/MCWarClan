@@ -24,9 +24,9 @@ public class Cost implements Serializable{
 
     public void set_costEquivalence(ArrayList<Equivalence> _costEquivalence) { this._costEquivalence = _costEquivalence; }
 
-    public Cost(Configuration cfg, String path){
+    public Cost(Configuration cfg, String pathMaterials, String path){
         _cfg = cfg;
-        List<String> matName = _cfg.getStringList("teamSettings.requiredMaterials");
+        List<String> matName = _cfg.getStringList(pathMaterials);
         _costEquivalence = new ArrayList<Equivalence>();
         for(int i = 0; i < matName.size(); i++){
             _costEquivalence.add(new Equivalence(matName.get(i), _cfg.getInt(path + "." + matName.get(i))));

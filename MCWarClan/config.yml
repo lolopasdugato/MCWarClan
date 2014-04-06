@@ -1,31 +1,43 @@
+
+
 teamSettings:
     # Define the maximum number of team that can be created during the game. this number should be superior to 3 and inferior to 11
     maxNumberOfTeam: 4
     # Define how many players can join a single team when this team has no upgrade.
     initialTeamSize: 10
-    # List bellow the different materials that could be asked for tribute.
-    requiredMaterials:
-    - WOOL
-    - LOG
-    - COBBLESTONE
-    - IRON_INGOT
-    - EMERALD
-    # List bellow the price for all those materials for each team
-    BLUE:
-      WOOL: 1
-      LOG: 64
-      COBBLESTONE: 64
-      IRON_INGOT: 10
-    RED:
-      WOOL: 1
-      LOG: 128
-      COBBLESTONE: 64
-    DEFAULT:
-      WOOL: 32
-      LOG: 64
-      DIAMOND: 10
-      IRON_INGOT: 32
-      EMERALD: 1
+    # List bellow the different materials that could be asked for tribute to join a team.
+    teamJoiningTribute:
+      requiredMaterials:
+      - WOOL
+      - LOG
+      - COBBLESTONE
+      - IRON_INGOT
+      - EMERALD
+      # List bellow the price for all those materials for each team
+      BLUE:
+        WOOL: 1
+        LOG: 64
+        COBBLESTONE: 64
+        IRON_INGOT: 10
+      RED:
+        WOOL: 1
+        LOG: 128
+        COBBLESTONE: 64
+      DEFAULT:
+        WOOL: 32
+        LOG: 64
+        DIAMOND: 10
+        IRON_INGOT: 32
+        EMERALD: 1
+    teamCreatingTribute:
+      requiredMaterials:
+        - EMERALD
+        - DIAMOND
+        - LOG
+      VALUES:
+        EMERALD: 128
+        DIAMOND: 128
+        LOG: 256
 
 
 

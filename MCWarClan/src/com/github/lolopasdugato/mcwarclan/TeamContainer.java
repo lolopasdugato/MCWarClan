@@ -12,6 +12,7 @@ public class TeamContainer implements Serializable {
 	private ArrayList<Team> _teamArray;			// Different teams
 	private int _maxTeams;						// Number of maximum teams
     private transient Configuration _cfg;       // Plugin configuration
+    private Cost _creatingCost;                 // The cost to create a team
 	
 	public static final int MAXTEAMSIZE = 10;	// There is only 15 color in the game, and some others for the server messages...
 
@@ -42,6 +43,10 @@ public class TeamContainer implements Serializable {
         }
     }
 
+    public Cost get_creatingCost() { return _creatingCost; }
+
+    public void set_creatingCost(Cost _creatingCost) { this._creatingCost = _creatingCost; }
+
     public TeamContainer(int maxTeams, Configuration cfg) {
 		_teamArray = new ArrayList<Team>();
         _cfg = cfg;
@@ -51,11 +56,11 @@ public class TeamContainer implements Serializable {
 		}
 		else 
 			_maxTeams = maxTeams;
+        _creatingCost = new Cost(_cfg, "teamSettings.teamCreatingTribute.requiredMaterials", "teamSettings.teamCreatingTribute.VALUES");
 	}
 	
 	public TeamContainer(TeamContainer t){
 		_teamArray = t.get_teamArray();
-		// _file = t.get_file();
 		_maxTeams = t.get_maxTeams();
 	}
 	

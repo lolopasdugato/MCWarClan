@@ -178,20 +178,62 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
 	
 	// allows someone to create a team.
 	public boolean createteamCommand(CommandSender sender, String[] args){
-		if(args.length == 2){
-			if(_tc.addTeam(new Team(new Color(args[1]), args[0], Team.DEFAULTTEAMSIZE, _tc))){
-				if(sender instanceof Player){
-					joinCommand(sender, args);
-				}
-				sender.sendMessage("§a[MCWarClan]§6 " + new Color(args[1]).get_colorMark() + args[0] + " §6has been successfully created !");
-				return true;
-			}
-			else{
-				sender.sendMessage("§a[MCWarClan]§6 " + "§6Sorry, but name or color is already taken by another team. Here is the colorname list: ");
-				sender.sendMessage("§a[MCWarClan]§6 " + "§2GREEN, §eYELLOW, §0BLACK, §dMAGENTA, §5PURPRLE, §3CYAN, §bLIGHTBLUE");
-			}
-			
+        if(_tc.get_teamArray().size() >= _tc.get_maxTeams()){
+            sender.sendMessage("§a[MCWarClan]§6 The maximum number of team is already reach !(" + _tc.get_maxTeams() + ")");
+            return true;
+        }
+        if(sender instanceof Player){
+            if(args.length == 2) {
+                Team toJoin = new Team(new Color(args[1]), args[0], Team.DEFAULTTEAMSIZE, _tc);
+                Team actual = _tc.searchPlayerTeam(sender.getName());
+                /*if(_tc.addTeam(new Team(new Color(args[1]), args[0], Team.DEFAULTTEAMSIZE, _tc))){
+                    if(sender instanceof Player){
+                        joinCommand(sender, args);
+                    }
+                    sender.sendMessage("§a[MCWarClan]§6 " + new Color(args[1]).get_colorMark() + args[0] + " §6has been successfully created !");
+                    return true;
+                }
+                else{
+                    sender.sendMessage("§a[MCWarClan]§6 " + "§6Sorry, but name or color is already taken by another team. Here is the colorname list: ");
+                    sender.sendMessage("§a[MCWarClan]§6 " + "§2GREEN, §eYELLOW, §0BLACK, §dMAGENTA, §5PURPRLE, §3CYAN, §bLIGHTBLUE");
+                }*/
+                if (canPay(_tc.get_creatingCost(), ((Player) sender).getPlayer())){
+                    if(_tc.addTeam(new Team(new Color(args[1]), args[0], Team.DEFAULTTEAMSIZE, _tc))){
+                        if(payTribute(_tc.get_creatingCost(), ((Player) sender).getPlayer())){
+                            if(!toJoin.addTeamMate(sender.getName())){
+                                sender.sendMessage("§a[MCWarClan]§6 too many member in " + toJoin.get_color().get_colorMark() + toJoin.get_name() + ".");
+                                return true;
+                            }
+                            else if(!actual.deleteTeamMate(sender.getName())){
+                                toJoin.deleteTeamMate(sender.getName());
+                                sender.sendMessage("§a[MCWarClan]§6 High level ERROR, cannot switch you to this team (deleteERROR). Cannot find your name into this team");
+                                return true;
+                            }
+                            sender.sendMessage("§a[MCWarClan]§6 " + new Color(args[1]).get_colorMark() + args[0] + " §6has been successfully created !");
+                            return true;
+                        }
+                        else{
+                            sender.sendMessage("§a[MCWarClan]§6 High level ERROR while paying the tribute.");
+                            return true;
+                        }
+                    }
+                    else{
+                        sender.sendMessage("§a[MCWarClan]§6 " + "§6Sorry, but name or color is already taken by another team. Here is the colorname list: ");
+                        sender.sendMessage("§a[MCWarClan]§6 " + "§2GREEN, §eYELLOW, §0BLACK, §dMAGENTA, §5PURPRLE, §3CYAN, §bLIGHTBLUE");
+                        return true;
+                    }
+                }
+                else{
+                    sender.sendMessage("§a[MCWarClan]§6 You do not have enough resources, here is the exhaustive list of materials needed:");
+                    sender.sendMessage(_tc.get_creatingCost().getResourceTypes());
+                    return true;
+                }
+            }
 		}
+        else{
+            sender.sendMessage("§a[MCWarClan]§6 You have to be a player to perform this command !");
+            return false;
+        }
 		return false;
 	}
 	

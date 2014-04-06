@@ -77,11 +77,11 @@ public class Team implements Serializable{
 
     public void initCost(){
         if(_color.get_colorName().equals("RED"))
-            _cost = new Cost(_teamContainer.get_cfg(), "teamSettings.RED");
+            _cost = new Cost(_teamContainer.get_cfg(), "teamSettings.teamJoiningTribute.requiredMaterials", "teamSettings.teamJoiningTribute.RED");
         else if(_color.get_colorName().equals("BLUE"))
-            _cost = new Cost(_teamContainer.get_cfg(), "teamSettings.BLUE");
+            _cost = new Cost(_teamContainer.get_cfg(), "teamSettings.teamJoiningTribute.requiredMaterials", "teamSettings.teamJoiningTribute.BLUE");
         else
-            _cost = new Cost(_teamContainer.get_cfg(), "teamSettings.DEFAULT");
+            _cost = new Cost(_teamContainer.get_cfg(), "teamSettings.teamJoiningTribute.requiredMaterials", "teamSettings.teamJoiningTribute.DEFAULT");
     }
 	
 	// Add a player to this team. 
