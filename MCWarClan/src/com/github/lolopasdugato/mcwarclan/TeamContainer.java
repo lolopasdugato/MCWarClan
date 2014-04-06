@@ -89,6 +89,11 @@ public class TeamContainer implements Serializable {
 		}
 		return false;
 	}
+
+    // Remove a team from the team container.
+    public boolean deleteTeam(Team t){
+        return _teamArray.remove(t);
+    }
 	
 	// Search the team of player P.
 	public Team searchPlayerTeam(String p){

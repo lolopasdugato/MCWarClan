@@ -29,6 +29,7 @@ teamSettings:
         DIAMOND: 10
         IRON_INGOT: 32
         EMERALD: 1
+    # List bellow the different materials that could be asked for tribute to create a team.
     teamCreatingTribute:
       requiredMaterials:
         - EMERALD
@@ -56,3 +57,14 @@ baseSettings:
     # Define the minimum distance between a team base and the basic map spawn
     # The formula in use is: initialRadius*BaseMinDistance
     BaseMinDistanceToSpawn: 10
+    baseInitialCost:
+      requiredMaterials:
+      - WOOL
+      - LOG
+      - EMERALD
+      - DIAMOND
+      VALUES:
+        WOOL: 6
+        LOG: 6
+        EMERALD: 10
+        DIAMOND: 10

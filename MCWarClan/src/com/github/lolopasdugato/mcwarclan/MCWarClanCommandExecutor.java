@@ -186,20 +186,9 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
             if(args.length == 2) {
                 Team toJoin = new Team(new Color(args[1]), args[0], Team.DEFAULTTEAMSIZE, _tc);
                 Team actual = _tc.searchPlayerTeam(sender.getName());
-                /*if(_tc.addTeam(new Team(new Color(args[1]), args[0], Team.DEFAULTTEAMSIZE, _tc))){
-                    if(sender instanceof Player){
-                        joinCommand(sender, args);
-                    }
-                    sender.sendMessage("§a[MCWarClan]§6 " + new Color(args[1]).get_colorMark() + args[0] + " §6has been successfully created !");
-                    return true;
-                }
-                else{
-                    sender.sendMessage("§a[MCWarClan]§6 " + "§6Sorry, but name or color is already taken by another team. Here is the colorname list: ");
-                    sender.sendMessage("§a[MCWarClan]§6 " + "§2GREEN, §eYELLOW, §0BLACK, §dMAGENTA, §5PURPRLE, §3CYAN, §bLIGHTBLUE");
-                }*/
-                if (canPay(_tc.get_creatingCost(), ((Player) sender).getPlayer())){
-                    if(_tc.addTeam(new Team(new Color(args[1]), args[0], Team.DEFAULTTEAMSIZE, _tc))){
-                        if(payTribute(_tc.get_creatingCost(), ((Player) sender).getPlayer())){
+                if (canPay(_tc.get_creatingCost(), ((Player) sender).getPlayer())){     // If you can pay...
+                    if(_tc.addTeam(toJoin)){      // If the team can be added
+                        if(payTribute(_tc.get_creatingCost(), ((Player) sender).getPlayer())){      // If the tribute paying works well
                             if(!toJoin.addTeamMate(sender.getName())){
                                 sender.sendMessage("§a[MCWarClan]§6 too many member in " + toJoin.get_color().get_colorMark() + toJoin.get_name() + ".");
                                 return true;
