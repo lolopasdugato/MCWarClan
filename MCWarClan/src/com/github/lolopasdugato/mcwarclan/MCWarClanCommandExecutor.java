@@ -154,6 +154,10 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
                             sender.sendMessage("§a[MCWarClan]§6 High level ERROR, cannot switch you to this team (deleteERROR). Cannot find your name into this team");
                             return true;
                         }
+                        else if(!payTribute(toJoin.get_cost(), ((Player) sender).getPlayer())){
+                            sender.sendMessage("§a[MCWarClan]§6 High level ERROR while paying the tribute.");
+                            return true;
+                        }
                         sender.sendMessage("§a[MCWarClan]§6 " + "§6Well done, you left " + actual.get_color().get_colorMark() + actual.get_name() + " §6and joined " + toJoin.get_color().get_colorMark() + toJoin.get_name() + ".");
                     }
                     else{
@@ -242,6 +246,35 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
         return true;
     }
 
+    // Pay a tribute using a specified cost for a specified player
+    public boolean payTribute(Cost cost, Player player){
+        for(int i = 0; i < cost.get_costEquivalence().size(); i++){
+            // If the specified material is not recognize, just ignore it
+            if(Material.getMaterial(cost.get_costEquivalence().get(i).get_materialName()) != null) {
+                if(!pay(player, Material.getMaterial(cost.get_costEquivalence().get(i).get_materialName()), cost.get_costEquivalence().get(i).get_materialValue()))
+                    return false;
+            }
+        }
+        return true;
+    }
+
+    // Pay for a player a given number of a given material type
+    public boolean pay(Player p, Material material, int valueToPay){
+        ItemStack[] inventory = p.getInventory().getContents();
+        while (valueToPay > 0){
+            int j = p.getInventory().first(material);
+            if(inventory[j].getAmount() > valueToPay){
+                inventory[j].setAmount(inventory[j].getAmount() - valueToPay);
+                return true;
+            }
+            else{
+                valueToPay -= inventory[j].getAmount();
+                p.getInventory().clear(j);
+            }
+        }
+        return valueToPay == 0;
+    }
+
     // Verify if the player has enough of the specified material
     public boolean has(Player p, Material material, int valueToHave){
         ItemStack[] inventory = p.getInventory().getContents();
@@ -251,7 +284,7 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
         int amount = 0;
         for(int i = 0; i < inventory.length; i++){
             if(inventory[i] != null && inventory[i].getType() == material){
-                amount = inventory[i].getAmount();
+                amount += inventory[i].getAmount();
             }
         }
         return amount >= valueToHave;
