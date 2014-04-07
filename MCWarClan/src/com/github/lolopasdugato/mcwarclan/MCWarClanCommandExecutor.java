@@ -228,6 +228,7 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
 	
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+
 		
 		if((label.toLowerCase().equals("showteams") || label.toLowerCase().equals("lt") || label.toLowerCase().equals("st")) && args.length == 0){
 			return showteamsCommand(sender);

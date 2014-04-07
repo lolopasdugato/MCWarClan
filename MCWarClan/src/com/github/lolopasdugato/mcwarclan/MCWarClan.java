@@ -62,7 +62,7 @@ public class MCWarClan extends JavaPlugin implements Listener {
 		_tc = TeamContainerInit();
 		log.info("OK !");
 		log.info("Registering events...");
-		_em = new EventManager(_tc);
+		_em = new EventManager(_tc, getConfig());
 		getServer().getPluginManager().registerEvents(_em, this);
 		log.info("OK !");
 		log.info("Setting command Executor...");
