@@ -5,6 +5,7 @@ import com.github.lolopasdugato.mcwarclan.TeamContainer;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
 public class Team implements Serializable{
@@ -65,15 +66,32 @@ public class Team implements Serializable{
 
     public void set_cost(Cost _cost) { this._cost = _cost; }
 
+    public ArrayList<Base> get_bases() { return _bases; }
+
+    public void set_bases(ArrayList<Base> _bases) {
+        this._bases = _bases;
+    }
+
     // Constructor
 	public Team(Color color, String name, int teamSize, TeamContainer teamContainer){
 		_color = color;
 		_team = new ArrayList<String>();
+        _bases = new ArrayList<Base>();
 		_teamSize = teamSize;
 		_teamContainer = teamContainer;
 		_name = name;
+        // testBase();
         initCost();
 	}
+
+    public void testBase(){
+        MCWarClanLocation newLoc = new MCWarClanLocation(Bukkit.getWorld("world").getSpawnLocation());
+        if(_color.get_colorName().equals("BLUE") && newLoc != null){
+            if(_bases.add(new Base(true, this, newLoc)))
+                System.out.println("New base created !");
+        }
+        System.out.println("newLoc is null! !!! !");
+    }
 
     public void initCost(){
         if(_color.get_colorName().equals("RED"))
@@ -122,6 +140,30 @@ public class Team implements Serializable{
 		}
 		return mates;
 	}
+
+
+    //      WARNING     \\
+    //      WARNING     \\
+    //      WARNING     \\
+    // Not tested !
+    public boolean isEnemyToTeam(Team friendlyTeam){
+        if(!_name.equals("Barbarians") || !_name.equals(friendlyTeam.get_name()))
+            return true;
+        return false;
+    }
+
+
+    //      WARNING     \\
+    //      WARNING     \\
+    //      WARNING     \\
+    // Not tested !
+    public Base getHQ(){
+        for (int i = 0; i < _bases.size(); i++){
+            if(_bases.get(i).is_HQ())
+                return _bases.get(i);
+        }
+        return null;
+    }
 	
 	public boolean createBase(boolean HQ, int radius, Team team, Flag flag, Location loc){
 		return false;

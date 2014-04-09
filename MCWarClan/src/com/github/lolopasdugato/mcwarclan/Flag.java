@@ -18,13 +18,12 @@ public class Flag implements Serializable {
     final private int flagLength = 2;
     private Base _base;
 
-	public Flag(Base base) {
-		_base = base;
-	}
-
-    public Flag(Location loc, Color color) {
-        generateFlag(loc, color);
+    public Flag(Base base) {
+        _base = base;
+        // generateFlag(_base.get_loc().getLocation(), _base.get_team().get_color());
     }
+
+    public Flag(Location loc, Color color){ generateFlag(loc, color); }   // Deprecated !
 
     //TODO Check if it's only an empty zone for the flag
 

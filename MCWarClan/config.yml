@@ -47,7 +47,7 @@ baseSettings:
     radiusHQBonus: 25
     # Define the average distance between the first spawn of the map and a random barbarian spawn location.
     # Minimum value: 100
-    barbariansSpawnDistance: 1
+    barbariansSpawnDistance: 250
     # Define the minimum distance between a team HQ and another team's base
     # The formula in use is: (initialRadius + radiusHQBonus)*BaseMinHQDistanceToOthers
     # Minimum value: 2
@@ -66,3 +66,6 @@ baseSettings:
         LOG: 6
         EMERALD: 10
         DIAMOND: 10
+
+otherSettings:
+  uncensoredItemsAmount: 5

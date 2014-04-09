@@ -13,8 +13,40 @@ public class MCWarClanLocation implements Serializable {
 	private double _y;
 	private double _z;
 	private String _worldName;
-	
-	public Location getLocation(){
+
+    public double get_x() {
+        return _x;
+    }
+
+    public void set_x(double _x) {
+        this._x = _x;
+    }
+
+    public double get_y() {
+        return _y;
+    }
+
+    public void set_y(double _y) {
+        this._y = _y;
+    }
+
+    public double get_z() {
+        return _z;
+    }
+
+    public void set_z(double _z) {
+        this._z = _z;
+    }
+
+    public String get_worldName() {
+        return _worldName;
+    }
+
+    public void set_worldName(String _worldName) {
+        this._worldName = _worldName;
+    }
+
+    public Location getLocation(){
 		return new Location(Bukkit.getServer().getWorld(_worldName), _x, _y, _z);
 	}
 	

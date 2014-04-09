@@ -1,6 +1,9 @@
 package com.github.lolopasdugato.mcwarclan;
 
+import org.bukkit.Location;
+
 import java.io.Serializable;
+import java.util.Locale;
 
 public class Base implements Serializable {
 	
@@ -59,14 +62,25 @@ public class Base implements Serializable {
 
     public void set_bonusRadius(int _bonusRadius) { this._bonusRadius = _bonusRadius; }
 
-    public Base(boolean HQ, Team team, Flag flag, MCWarClanLocation loc) {
+    public Base(boolean HQ, Team team, MCWarClanLocation loc) {
 		_HQ = HQ;
 		_team = team;
-		_flag = flag;
 		_loc = loc;
         _radius = _team.get_teamContainer().get_cfg().getInt("baseSettings.initialRadius");
         _bonusRadius = _team.get_teamContainer().get_cfg().getInt("baseSettings.radiusHQBonus");
         _cost = new Cost(_team.get_teamContainer().get_cfg(), "baseSettings.baseInitialCost.requiredMaterials", "baseSettings.baseInitialCost.VALUES");
+        _flag = new Flag(this);
 	}
+
+    // Says if the location is in this base
+    public boolean isInBase(Location loc){
+        boolean isInXAxe = false;
+        boolean isInZAxe = false;
+        if(loc.getX() < _loc.get_x() + _radius && loc.getX() > _loc.get_x() - _radius)
+            isInXAxe = true;
+        if(loc.getZ() < _loc.get_z() + _radius && loc.getZ() > _loc.get_z() - _radius)
+            isInZAxe = true;
+        return (isInXAxe && isInZAxe);
+    }
 
 }
