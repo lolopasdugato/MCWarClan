@@ -80,7 +80,7 @@ public class Team implements Serializable{
 		_teamSize = teamSize;
 		_teamContainer = teamContainer;
 		_name = name;
-        // testBase();
+        testBase();
         initCost();
 	}
 
@@ -141,11 +141,6 @@ public class Team implements Serializable{
 		return mates;
 	}
 
-
-    //      WARNING     \\
-    //      WARNING     \\
-    //      WARNING     \\
-    // Not tested !
     public boolean isEnemyToTeam(Team friendlyTeam){
         if(!_name.equals("Barbarians") || !_name.equals(friendlyTeam.get_name()))
             return true;
