@@ -15,7 +15,7 @@ public class Team implements Serializable{
 	private Color _color; 							// Represent the team color.
 	private String _name;							// Represent the team name.
 	private ArrayList<String> _team; 				// Represent the players in the team
-	private int _teamSize;							// Represent the maximum size of a team
+	private int _teamSize;							// Represent the maximum size of a team a it's creation. SHOULD NOT BE REFRESH
 	private TeamContainer _teamContainer;	        // The team container to which this team is linked to
 	private ArrayList<Base> _bases;					// Represent bases of a team
     private Cost _cost;                             // The cost to join a team
@@ -88,18 +88,18 @@ public class Team implements Serializable{
         MCWarClanLocation newLoc = new MCWarClanLocation(Bukkit.getWorld("world").getSpawnLocation());
         if(_color.get_colorName().equals("BLUE") && newLoc != null){
             if(_bases.add(new Base(true, this, newLoc)))
-                System.out.println("New base created !");
+                if(Settings.debugMode)
+                    System.out.println("New base created !");
         }
-        System.out.println("newLoc is null! !!! !");
     }
 
     public void initCost(){
         if(_color.get_colorName().equals("RED"))
-            _cost = new Cost(_teamContainer.get_cfg(), "teamSettings.teamJoiningTribute.requiredMaterials", "teamSettings.teamJoiningTribute.RED");
+            _cost = Settings.REDteamJoiningTribute;
         else if(_color.get_colorName().equals("BLUE"))
-            _cost = new Cost(_teamContainer.get_cfg(), "teamSettings.teamJoiningTribute.requiredMaterials", "teamSettings.teamJoiningTribute.BLUE");
+            _cost = Settings.BLUEteamJoiningTribute;
         else
-            _cost = new Cost(_teamContainer.get_cfg(), "teamSettings.teamJoiningTribute.requiredMaterials", "teamSettings.teamJoiningTribute.DEFAULT");
+            _cost = Settings.DEFAULTteamJoiningTribute;
     }
 	
 	// Add a player to this team. 
@@ -141,8 +141,13 @@ public class Team implements Serializable{
 		return mates;
 	}
 
-    public boolean isEnemyToTeam(Team friendlyTeam){
-        if(!_name.equals("Barbarians") || !_name.equals(friendlyTeam.get_name()))
+    /**
+     * @brief Check if the team is enemy to the player team.
+     * @param playerTeam, the team of the player.
+     * @return If true, this team is enemy to the player team.
+     */
+    public boolean isEnemyToTeam(Team playerTeam){
+        if(!_name.equals(playerTeam.get_name()))
             return true;
         return false;
     }
@@ -159,7 +164,31 @@ public class Team implements Serializable{
         }
         return null;
     }
-	
+
+    /**
+     * @brief refresh settings that should be reloaded if config.yml has been changed.
+     */
+    public void refresh(){
+        _color.refresh();
+        initCost();
+        for (Base _base : _bases) {
+            _base.refresh();
+        }
+    }
+
+    /**
+     * @brief Check if a location is in the team territory
+     * @param loc the location to check
+     * @return if true, the location is in the team territory.
+     */
+    public boolean isInTerritory(Location loc){
+        for(int i = 0; i < _bases.size(); i++){
+            if(_bases.get(i).isInBase(loc))
+                return true;
+        }
+        return false;
+    }
+
 	public boolean createBase(boolean HQ, int radius, Team team, Flag flag, Location loc){
 		return false;
 	}

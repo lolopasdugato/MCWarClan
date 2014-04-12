@@ -66,11 +66,18 @@ public class Base implements Serializable {
 		_HQ = HQ;
 		_team = team;
 		_loc = loc;
-        _radius = _team.get_teamContainer().get_cfg().getInt("baseSettings.initialRadius");
-        _bonusRadius = _team.get_teamContainer().get_cfg().getInt("baseSettings.radiusHQBonus");
-        _cost = new Cost(_team.get_teamContainer().get_cfg(), "baseSettings.baseInitialCost.requiredMaterials", "baseSettings.baseInitialCost.VALUES");
+        _radius = Settings.initialRadius;   // WARNING: should'nt be reloaded !
+        _bonusRadius = Settings.radiusHQBonus;
+        _cost = Settings.baseInitialCost;   // WARNING should'nt be reload !
         _flag = new Flag(this);
 	}
+
+    /**
+     * @brief refresh settings that should be reloaded if config.yml has been changed.
+     */
+    public void refresh(){
+        _bonusRadius = Settings.radiusHQBonus;
+    }
 
     // Says if the location is in this base
     public boolean isInBase(Location loc){

@@ -139,4 +139,11 @@ public class Color implements Serializable {
 
         return dye;
     }
+
+    /**
+     * @brief refresh settings that should be reloaded if config.yml has been changed.
+     */
+    public void refresh(){
+        // No Settings
+    }
 }

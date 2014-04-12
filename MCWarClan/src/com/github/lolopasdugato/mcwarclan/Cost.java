@@ -1,9 +1,11 @@
 package com.github.lolopasdugato.mcwarclan;
 
+import org.bukkit.Material;
 import org.bukkit.configuration.Configuration;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -14,23 +16,21 @@ public class Cost implements Serializable{
     static private final long serialVersionUID = 7;
 
     private ArrayList<Equivalence> _costEquivalence;            // The Equivalence between a cost and a material
-    private transient Configuration _cfg;                       // The main configuration
-
-    public Configuration get_cfg() { return _cfg; }
-
-    public void set_cfg(Configuration _cfg) { this._cfg = _cfg; }
 
     public ArrayList<Equivalence> get_costEquivalence() { return _costEquivalence; }
 
     public void set_costEquivalence(ArrayList<Equivalence> _costEquivalence) { this._costEquivalence = _costEquivalence; }
 
-    public Cost(Configuration cfg, String pathMaterials, String path){
-        _cfg = cfg;
-        List<String> matName = _cfg.getStringList(pathMaterials);
+    public Cost(){
         _costEquivalence = new ArrayList<Equivalence>();
-        for(int i = 0; i < matName.size(); i++){
-            _costEquivalence.add(new Equivalence(matName.get(i), _cfg.getInt(path + "." + matName.get(i))));
-        }
+    }
+
+    public Cost(Cost c){
+        _costEquivalence = c.get_costEquivalence();
+    }
+
+    public boolean addValue(String materialName, int numberOfMaterials){
+        return _costEquivalence.add(new Equivalence(materialName, numberOfMaterials));
     }
 
     public String[] getResourceTypes(){
@@ -44,5 +44,12 @@ public class Cost implements Serializable{
             toReturn[i] = resources.get(i);
         }
         return toReturn;
+    }
+
+    /**
+     * @brief refresh settings that should be reloaded if config.yml has been changed.
+     */
+    public void refresh(){
+        // No settings to refresh
     }
 }

@@ -64,4 +64,11 @@ public class MCWarClanLocation implements Serializable {
 		_z = loc.getZ();
 	}
 
+    /**
+     * @brief refresh settings that should be reloaded if config.yml has been changed.
+     */
+    public void refresh(){
+        // No Settings to refresh
+    }
+
 }

@@ -15,12 +15,10 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
 	
 	private TeamContainer _tc;
 	private Server _server;
-    private Configuration _cfg;
 	
-	public MCWarClanCommandExecutor(TeamContainer tc, Server server, Configuration cfg) {
+	public MCWarClanCommandExecutor(TeamContainer tc, Server server) {
 		_tc = tc;
 		_server = server;
-        _cfg = cfg;
 	}
 	
 	// Check if a player has been or is on the server.

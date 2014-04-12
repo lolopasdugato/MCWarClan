@@ -5,12 +5,6 @@ teamSettings:
     initialTeamSize: 10
     # List bellow the different materials that could be asked for tribute to join a team.
     teamJoiningTribute:
-      requiredMaterials:
-      - WOOL
-      - LOG
-      - COBBLESTONE
-      - IRON_INGOT
-      - EMERALD
       # List bellow the price for all those materials for each team
       BLUE:
         WOOL: 1
@@ -29,14 +23,9 @@ teamSettings:
         EMERALD: 1
     # List bellow the different materials that could be asked for tribute to create a team.
     teamCreatingTribute:
-      requiredMaterials:
-        - EMERALD
-        - DIAMOND
-        - LOG
-      VALUES:
-        EMERALD: 128
-        DIAMOND: 128
-        LOG: 256
+      EMERALD: 128
+      DIAMOND: 128
+      LOG: 256
 
 
 
@@ -51,21 +40,17 @@ baseSettings:
     # Define the minimum distance between a team HQ and another team's base
     # The formula in use is: (initialRadius + radiusHQBonus)*BaseMinHQDistanceToOthers
     # Minimum value: 2
-    BaseMinHQDistanceToOthers: 4
+    baseMinHQDistanceToOthers: 4
     # Define the minimum distance between a team base and the basic map spawn
     # The formula in use is: initialRadius*BaseMinDistance
-    BaseMinDistanceToSpawn: 10
+    baseMinDistanceToSpawn: 10
     baseInitialCost:
-      requiredMaterials:
-      - WOOL
-      - LOG
-      - EMERALD
-      - DIAMOND
-      VALUES:
-        WOOL: 6
-        LOG: 6
-        EMERALD: 10
-        DIAMOND: 10
+      WOOL: 6
+      LOG: 6
+      EMERALD: 10
+      DIAMOND: 10
 
 otherSettings:
   uncensoredItemsAmount: 5
+  classicWorldName: world
+  debugMode: false

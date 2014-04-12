@@ -32,4 +32,11 @@ public class Equivalence implements Serializable {
         _materialName = materialName;
         _materialValue = materialValue;
     }
+
+    /**
+     * @brief refresh settings that should be reloaded if config.yml has been changed.
+     */
+    public void refresh(){
+        // No Settings to refresh
+    }
 }

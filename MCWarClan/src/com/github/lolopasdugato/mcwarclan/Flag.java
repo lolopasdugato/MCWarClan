@@ -116,4 +116,12 @@ public class Flag implements Serializable {
             return false;
         }
     }
+
+    /**
+     * @brief refresh settings that should be reloaded if config.yml has been changed.
+     */
+    public void refresh(){
+        _base.refresh();
+        // No Settings
+    }
 }
