@@ -19,6 +19,7 @@ public class Team implements Serializable{
 	private TeamContainer _teamContainer;	        // The team container to which this team is linked to
 	private ArrayList<Base> _bases;					// Represent bases of a team
     private Cost _cost;                             // The cost to join a team
+    private transient org.bukkit.scoreboard.Team _bukkitTeam;  // An instance of a bukkitTeam
 	
 	public static final int DEFAULTTEAMSIZE = 5;
 
@@ -46,9 +47,7 @@ public class Team implements Serializable{
 		this._team = _team;
 	}
 
-	public int get_teamSize() {
-		return _teamSize;
-	}
+	public int get_teamSize() { return _teamSize; }
 
 	public void set_teamSize(int _teamSize) {
 		this._teamSize = _teamSize;
@@ -72,6 +71,10 @@ public class Team implements Serializable{
         this._bases = _bases;
     }
 
+    public org.bukkit.scoreboard.Team get_bukkitTeam() { return _bukkitTeam; }
+
+    public void set_bukkitTeam(org.bukkit.scoreboard.Team _bukkitTeam) { this._bukkitTeam = _bukkitTeam; }
+
     // Constructor
 	public Team(Color color, String name, int teamSize, TeamContainer teamContainer){
 		_color = color;
@@ -89,7 +92,7 @@ public class Team implements Serializable{
         if(_color.get_colorName().equals("BLUE") && newLoc != null){
             if(_bases.add(new Base(true, this, newLoc)))
                 if(Settings.debugMode)
-                    System.out.println("New base created !");
+                    System.out.println("[DEBUG] New base created !");
         }
     }
 
@@ -105,30 +108,36 @@ public class Team implements Serializable{
 	// Add a player to this team. 
 	public boolean addTeamMate(String p){
 		// If the current team is one of those two, there is no limit
-		if(_name.equals("Barbarians")){
+        if(_name.equals("Barbarians")){
 			_team.add(p);
+            if(!_bukkitTeam.hasPlayer(Bukkit.getOfflinePlayer(p)))
+                _bukkitTeam.addPlayer(Bukkit.getOfflinePlayer(p));
 			return true;
 		}
 		else if(_team.size() >= _teamSize){
 			return false;
 		}
-		else
-			_team.add(p);
+		else {
+            _team.add(p);
+            if(!_bukkitTeam.hasPlayer(Bukkit.getOfflinePlayer(p)))
+                _bukkitTeam.addPlayer(Bukkit.getOfflinePlayer(p));
+        }
 		return true;
 	}
-	
-	// Delete a player
+
+    /**
+     * @brief Delete a player from this team and the bukkit team
+     * @param p the player's name to delete
+     * @return true if
+     */
 	public boolean deleteTeamMate(String p){
-		for(int i = 0; i < _team.size(); i++){
-			if(_team.get(i).equals(p)) {
-				_team.remove(i);
-				return true;
-			}
-		}
-		return false;
+		return _team.remove(p) && _bukkitTeam.removePlayer(Bukkit.getOfflinePlayer(p));
 	}
-	
-	// Return the list of player in this team.
+
+    /**
+     * @brief list all player's name in this team
+     * @return Return a list of player in the team.
+     */
 	public String[] playerList(){
 		String[] mates = new String[_team.size() + 1];
 		mates[0] = _color.get_colorMark() + _name + ":";
@@ -166,7 +175,7 @@ public class Team implements Serializable{
     }
 
     /**
-     * @brief refresh settings that should be reloaded if config.yml has been changed.
+     * @brief refresh settings that should be reloaded if config.yml has been changed, or reload transient members that are not stored.
      */
     public void refresh(){
         _color.refresh();
@@ -186,6 +195,10 @@ public class Team implements Serializable{
             if(_bases.get(i).isInBase(loc))
                 return true;
         }
+        if(Settings.friendlyFire)
+            _bukkitTeam.allowFriendlyFire();
+        if(Settings.transparentMates)
+            _bukkitTeam.canSeeFriendlyInvisibles();
         return false;
     }
 

@@ -4,6 +4,7 @@
 
 package com.github.lolopasdugato.mcwarclan;
 
+import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -34,18 +35,17 @@ public class MCWarClan extends JavaPlugin implements Listener {
 			tc = tc.deSerialize();
             tc.refresh();
 		}
-		else
-			tc = null;
-		
-		if(tc == null){
+		else{
 			System.out.println("File cannot be read !");
-			tc = new TeamContainer(Settings.maxNumberOfTeam);
 			tc.addTeam(new Team(new Color("RED"), "HellRangers", getConfig().getInt("teamSettings.initialTeamSize"), tc));
 			tc.addTeam(new Team(new Color("BLUE"), "ElvenSoldiers", getConfig().getInt("teamSettings.initialTeamSize"), tc));
 			tc.addTeam(new Team(new Color("LIGHTGREY"), "Barbarians", getConfig().getInt("teamSettings.initialTeamSize"), tc));
 		}
-		
-		return tc;
+
+        if(Settings.debugMode)
+            System.out.println("[DEBUG] teamContainer size: " + tc.get_teamArray().size());
+
+        return tc;
 	}
 
     /**
@@ -74,7 +74,10 @@ public class MCWarClan extends JavaPlugin implements Listener {
             log.info("|-_MCWARCLAN_-| OK !");
 
 		log.info("|-_MCWARCLAN_-| Initialising teams...");
-		_tc = TeamContainerInit();
+        _tc = TeamContainerInit();
+		if(_tc == null){
+            log.info("|-_MCWARCLAN_-| ERROR while initializing teamcontainer !");
+        }
 		log.info("|-_MCWARCLAN_-| OK !");
 
 		log.info("|-_MCWARCLAN_-| Registering events...");

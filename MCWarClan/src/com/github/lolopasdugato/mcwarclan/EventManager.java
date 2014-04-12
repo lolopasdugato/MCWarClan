@@ -32,11 +32,12 @@ public class EventManager implements Listener {
 		if(_tc == null){
 			return;
 		}
-        // TODO: Check if the position is spawnable !
 		if(_tc.searchPlayerTeam(evt.getPlayer().getName()) == null){
 			_tc.searchTeam("Barbarians").addTeamMate(evt.getPlayer().getName());
             Location barbarianSpawn = getBarbarianSpawn(Settings.barbariansSpawnDistance);
             barbarianSpawn.getChunk().load();
+            if(!spawnOK(barbarianSpawn))
+                barbarianSpawn = getSpawnOk(barbarianSpawn);
             if(Settings.debugMode){
                 System.out.println("[DEBUG] " + evt.getPlayer().getName() + " has spawn in x:" + barbarianSpawn.getX() + ", y:" + barbarianSpawn.getY() + ", z:" + barbarianSpawn.getZ());
             }
@@ -136,5 +137,26 @@ public class EventManager implements Listener {
             }
         }
         return false;
+    }
+
+    /**
+     * @brief looks if you can spawn in this location.
+     * @param loc the position to check.
+     * @return true if you can spawn there.
+     */
+    public boolean spawnOK(Location loc){
+        return loc.getBlock().getType() == Material.AIR;
+    }
+
+    /**
+     * @brief Get the first highest position where there is an air block, so that you can spawn there
+     * @param loc the location to change.
+     * @return the location where you can spawn.
+     */
+    public Location getSpawnOk(Location loc){
+        loc.setY(loc.getY() + 1);
+        if(loc.getBlock().getType() != Material.AIR)
+            return getSpawnOk(loc);
+        return loc;
     }
 }

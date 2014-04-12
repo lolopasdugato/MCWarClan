@@ -1,6 +1,8 @@
 package com.github.lolopasdugato.mcwarclan;
 
-import org.bukkit.configuration.Configuration;
+import org.bukkit.Bukkit;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.ScoreboardManager;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -12,6 +14,8 @@ public class TeamContainer implements Serializable {
 	private ArrayList<Team> _teamArray;			// Different teams
 	private int _maxTeams;						// Number of maximum teams
     private Cost _creatingCost;                 // The cost to create a team
+    transient ScoreboardManager _manager;       // Scoreboard manager
+    transient Scoreboard _scoreboard;           // The scoreboard
 	
 	public static final int MAXTEAMSIZE = 10;	// There is only 15 color in the game, and some others for the server messages...
 
@@ -27,13 +31,19 @@ public class TeamContainer implements Serializable {
 		return _maxTeams;
 	}
 
-	public void set_maxTeams(int _maxTeams) {
-		this._maxTeams = _maxTeams;
-	}
+	public void set_maxTeams(int _maxTeams) { this._maxTeams = _maxTeams; }
 
     public Cost get_creatingCost() { return _creatingCost; }
 
     public void set_creatingCost(Cost _creatingCost) { this._creatingCost = _creatingCost; }
+
+    public ScoreboardManager get_manager() { return _manager; }
+
+    public void set_manager(ScoreboardManager _manager) { this._manager = _manager; }
+
+    public Scoreboard get_scoreboard() { return _scoreboard; }
+
+    public void set_scoreboard(Scoreboard _scoreboard) { this._scoreboard = _scoreboard; }
 
     public TeamContainer(int maxTeams) {
 		_teamArray = new ArrayList<Team>();
@@ -44,6 +54,8 @@ public class TeamContainer implements Serializable {
 		else 
 			_maxTeams = maxTeams;
         _creatingCost = Settings.teamCreatingTribute;
+        _manager = Bukkit.getScoreboardManager();
+        _scoreboard = _manager.getMainScoreboard();
 	}
 
     /**
@@ -75,23 +87,53 @@ public class TeamContainer implements Serializable {
 	}
 
     /**
-     * @brief Add a team to the TeamContainer
+     * @brief Add a team to the TeamContainer and the bukkitTeamContainer
      * @param t the team to add.
      * @return true if the team has been successfully added.
      */
 	public boolean addTeam(Team t){
 		if(_teamArray.size() < _maxTeams && isTeamValid(t)){
-			_teamArray.add(t);
-            if(Settings.debugMode)
-			    System.out.println("Team successfully added.");
+            // Can only be done if no other teams has the same name.
+            _teamArray.add(t);
+            if(_scoreboard.getTeam(t.get_name()) == null)
+                t.set_bukkitTeam(_scoreboard.registerNewTeam(t.get_name()));
+            else if(Settings.debugMode)
+                System.out.println("[DEBUG] " + t.get_name() + " already exist !");
+            if(_scoreboard.getTeam(t.get_name()) == null) {
+                if (Settings.debugMode)
+                    System.out.println("[DEBUG] " + t.get_name() + " cannot be added to the scoreboard !");
+                return false;
+            }
+            if(Settings.debugMode) {
+                System.out.println("[DEBUG] " + t.get_bukkitTeam().getName() + " successfully added !");
+            }
+            if(Settings.friendlyFire || t.get_name().equals("Barbarians"))
+                t.get_bukkitTeam().allowFriendlyFire();
+            if(Settings.transparentMates && !t.get_name().equals("Barbarians"))
+                t.get_bukkitTeam().canSeeFriendlyInvisibles();
+            t.get_bukkitTeam().setPrefix(t.get_color().get_colorMark() + "[" + t.get_name().substring(0, 3) + "]§r");
+            t.get_bukkitTeam().setDisplayName(t.get_color().get_colorMark() + t.get_name() + "§r");
 			return true;
 		}
-		return false;
+        if(Settings.debugMode) {
+            System.out.println("[DEBUG] Error while adding " + t.get_name() + " !");
+        }
+        return false;
 	}
 
-    // Remove a team from the team container.
+    /**
+     * @brief Delete a team from both teamContainer
+     * @param t the team to delete
+     * @return if the removing action has worked, it returns true.
+     */
+    // WARNING: NOT TESTED
     public boolean deleteTeam(Team t){
-        return _teamArray.remove(t);
+        t.get_bukkitTeam().unregister();
+        if(!_teamArray.remove(t)) {
+            _scoreboard.registerNewTeam(t.get_name());
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -208,10 +250,15 @@ public class TeamContainer implements Serializable {
      * @brief refresh settings that should be reloaded if config.yml has been changed.
      */
     public void refresh(){
+        if(Settings.debugMode)
+            System.out.println("[DEBUG] refreshing the teamContainer");
         _maxTeams = Settings.maxNumberOfTeam;
         _creatingCost = Settings.teamCreatingTribute;
         _creatingCost.refresh();
+        _manager = Bukkit.getScoreboardManager();
+        _scoreboard = _manager.getMainScoreboard();
         for(int i = 0; i < _teamArray.size(); i++){
+            _teamArray.get(i).set_bukkitTeam(_scoreboard.getTeam(_teamArray.get(i).get_name()));
             _teamArray.get(i).refresh();
         }
     }

@@ -3,6 +3,8 @@ teamSettings:
     maxNumberOfTeam: 4
     # Define how many players can join a single team when this team has no upgrade.
     initialTeamSize: 10
+    friendlyFire: false
+    transparentMates: true
     # List bellow the different materials that could be asked for tribute to join a team.
     teamJoiningTribute:
       # List bellow the price for all those materials for each team

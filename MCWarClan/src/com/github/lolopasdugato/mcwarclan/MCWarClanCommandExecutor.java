@@ -99,7 +99,7 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
 				sender.sendMessage("§a[MCWarClan]§6 " + args[0] + " §6has successfully been kicked from " + t.get_color().get_colorMark() + t.get_name());
 				_tc.searchTeam("Barbarians").addTeamMate(args[0]);
 				if(p.isOnline()){	// Send a message to the player concerned.
-					p.getPlayer().sendMessage("§a[MCWarClan]§6 " + "§6You have been kicked from team " + t.get_color().get_colorMark() + t.get_name() + " §6by " + sender.getName() + ". §6You are now a §8Barbarian !");
+					p.getPlayer().sendMessage("§a[MCWarClan]§6 " + "§6You have been kicked from team " + t.get_color().get_colorMark() + t.get_name() + " §6by " + sender.getName() + ". §6You are now a §7Barbarian !");
 				}
 				return true;					
 			}
@@ -143,13 +143,14 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
                 }
                 else{
                     if(canPay(toJoin.get_cost(), ((Player) sender).getPlayer())){
-                        if(!toJoin.addTeamMate(sender.getName())){
-                            sender.sendMessage("§a[MCWarClan]§6 too many member in " + toJoin.get_color().get_colorMark() + toJoin.get_name() + ".");
+                        if(!actual.deleteTeamMate(sender.getName())){
+                            sender.sendMessage("§a[MCWarClan]§6 High level ERROR, cannot switch you to " + toJoin.get_color().get_colorMark() + toJoin.get_name() + "§6 (deleteERROR). Cannot find your name into this team");
                             return true;
                         }
-                        else if(!actual.deleteTeamMate(sender.getName())){
-                            toJoin.deleteTeamMate(sender.getName());
-                            sender.sendMessage("§a[MCWarClan]§6 High level ERROR, cannot switch you to this team (deleteERROR). Cannot find your name into this team");
+                        else if(!toJoin.addTeamMate(sender.getName())){
+                            if(!actual.addTeamMate(sender.getName()))
+                                sender.sendMessage("§a[MCWarClan]§6 High level ERROR, cannot switch you to this team (add2ERROR).");
+                            sender.sendMessage("§a[MCWarClan]§6 too many member in " + toJoin.get_color().get_colorMark() + toJoin.get_name() + ".");
                             return true;
                         }
                         else if(!payTribute(toJoin.get_cost(), ((Player) sender).getPlayer())){
@@ -182,25 +183,26 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
         }
         if(sender instanceof Player){
             if(args.length == 2) {
-                Team toJoin = new Team(new Color(args[1]), args[0], Team.DEFAULTTEAMSIZE, _tc);
+                Team toJoin = new Team(new Color(args[1]), args[0], Settings.initialTeamSize, _tc);
                 Team actual = _tc.searchPlayerTeam(sender.getName());
                 if (canPay(_tc.get_creatingCost(), ((Player) sender).getPlayer())){     // If you can pay...
                     if(_tc.addTeam(toJoin)){      // If the team can be added
-                        if(payTribute(_tc.get_creatingCost(), ((Player) sender).getPlayer())){      // If the tribute paying works well
-                            if(!toJoin.addTeamMate(sender.getName())){
-                                sender.sendMessage("§a[MCWarClan]§6 too many member in " + toJoin.get_color().get_colorMark() + toJoin.get_name() + ".");
-                                return true;
-                            }
-                            else if(!actual.deleteTeamMate(sender.getName())){
-                                toJoin.deleteTeamMate(sender.getName());
-                                sender.sendMessage("§a[MCWarClan]§6 High level ERROR, cannot switch you to this team (deleteERROR). Cannot find your name into this team");
-                                return true;
-                            }
-                            sender.sendMessage("§a[MCWarClan]§6 " + new Color(args[1]).get_colorMark() + args[0] + " §6has been successfully created !");
+                        if(!actual.deleteTeamMate(sender.getName())){
+                            sender.sendMessage("§a[MCWarClan]§6 High level ERROR, cannot switch you to this team (deleteERROR).");
+                            return true;
+                        }
+                        else if(!toJoin.addTeamMate(sender.getName())){
+                            if(!actual.addTeamMate(sender.getName()))
+                                sender.sendMessage("§a[MCWarClan]§6 High level ERROR, cannot switch you to " + actual.get_color().get_colorMark() + actual.get_name() + " (add2ERROR).");
+                            sender.sendMessage("§a[MCWarClan]§6 too many member in " + toJoin.get_color().get_colorMark() + toJoin.get_name() + ".");
+                            return true;
+                        }
+                        else if(!payTribute(_tc.get_creatingCost(), ((Player) sender).getPlayer())){      // If the tribute paying works well
+                            sender.sendMessage("§a[MCWarClan]§6 High level ERROR while paying the tribute.");
                             return true;
                         }
                         else{
-                            sender.sendMessage("§a[MCWarClan]§6 High level ERROR while paying the tribute.");
+                            sender.sendMessage("§a[MCWarClan]§6 " + new Color(args[1]).get_colorMark() + args[0] + " §6has been successfully created !");
                             return true;
                         }
                     }
@@ -219,7 +221,7 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
 		}
         else{
             sender.sendMessage("§a[MCWarClan]§6 You have to be a player to perform this command !");
-            return false;
+            return true;
         }
 		return false;
 	}
