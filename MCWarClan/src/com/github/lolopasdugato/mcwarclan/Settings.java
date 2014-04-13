@@ -18,7 +18,7 @@ public class Settings {
     public static int maxNumberOfTeam;
     public static int initialTeamSize;
     public static boolean friendlyFire;
-    public static boolean transparentMates;
+    public static boolean seeInvisibleTeamMates;
 
     public static int initialRadius;
     public static int radiusHQBonus;
@@ -48,7 +48,7 @@ public class Settings {
         maxNumberOfTeam = _cfg.getInt("teamSettings.maxNumberOfTeam");
         initialTeamSize = _cfg.getInt("teamSettings.initialTeamSize");
         friendlyFire = _cfg.getBoolean("teamSettings.friendlyFire");
-        transparentMates = _cfg.getBoolean("teamSettings.transparentMates");
+        seeInvisibleTeamMates = _cfg.getBoolean("teamSettings.transparentMates");
 
         initialRadius = _cfg.getInt("baseSettings.initialRadius");
         radiusHQBonus = _cfg.getInt("baseSettings.radiusHQBonus");
@@ -59,6 +59,7 @@ public class Settings {
         uncensoredItemsAmount = _cfg.getInt("otherSettings.uncensoredItemsAmount");
         classicWorldName = _cfg.getString("otherSettings.classicWorldName");
         debugMode = _cfg.getBoolean("otherSettings.debugMode");
+
 
 
         // Initializing blue entry cost

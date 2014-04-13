@@ -43,6 +43,13 @@ public class EventManager implements Listener {
             }
             evt.getPlayer().teleport(barbarianSpawn);
         }
+        if(Settings.debugMode){
+            if(_tc.get_scoreboard().getTeam("ElvenSoldiers").allowFriendlyFire())
+                System.out.println("[DEBUG] Friendly fire active for blue team !");
+            else{
+                System.out.println("[DEBUG] Friendly fire not activated for blue team !");
+            }
+        }
     }
 
     @EventHandler(priority = EventPriority.NORMAL)

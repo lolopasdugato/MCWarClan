@@ -1,8 +1,7 @@
 package com.github.lolopasdugato.mcwarclan;
 
 import org.bukkit.Bukkit;
-import org.bukkit.scoreboard.Scoreboard;
-import org.bukkit.scoreboard.ScoreboardManager;
+import org.bukkit.scoreboard.*;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -16,8 +15,10 @@ public class TeamContainer implements Serializable {
     private Cost _creatingCost;                 // The cost to create a team
     transient ScoreboardManager _manager;       // Scoreboard manager
     transient Scoreboard _scoreboard;           // The scoreboard
-	
-	public static final int MAXTEAMSIZE = 10;	// There is only 15 color in the game, and some others for the server messages...
+    transient Objective _killObjective;         // Shows kills on scoreboard
+    transient Objective _deathObjective;
+
+    public static final int MAXTEAMSIZE = 10;	// There is only 15 color in the game, and some others for the server messages...
 
 	public ArrayList<Team> get_teamArray() {
 		return _teamArray;
@@ -56,6 +57,18 @@ public class TeamContainer implements Serializable {
         _creatingCost = Settings.teamCreatingTribute;
         _manager = Bukkit.getScoreboardManager();
         _scoreboard = _manager.getMainScoreboard();
+
+        // A bit useless atm
+        /*if(_scoreboard.getObjective("kills") == null) {
+            _killObjective = _scoreboard.registerNewObjective("kills", "playerKillCount");
+            _killObjective.setDisplayName("Kills:");
+            _killObjective.setDisplaySlot(DisplaySlot.PLAYER_LIST);
+        }
+        if(_scoreboard.getObjective("deaths") == null){
+            _deathObjective = _scoreboard.registerNewObjective("deaths", "deathCount");
+            _deathObjective.setDisplayName("Deaths:");
+            _deathObjective.setDisplaySlot(DisplaySlot.PLAYER_LIST);
+        }*/
 	}
 
     /**
@@ -107,10 +120,17 @@ public class TeamContainer implements Serializable {
             if(Settings.debugMode) {
                 System.out.println("[DEBUG] " + t.get_bukkitTeam().getName() + " successfully added !");
             }
-            if(Settings.friendlyFire || t.get_name().equals("Barbarians"))
-                t.get_bukkitTeam().allowFriendlyFire();
-            if(Settings.transparentMates && !t.get_name().equals("Barbarians"))
-                t.get_bukkitTeam().canSeeFriendlyInvisibles();
+            if(!t.get_name().equals("Barbarians")) {
+                if(Settings.debugMode){
+                    System.out.println("[DEBUG] friendlyFire: " + Settings.friendlyFire + ", transparentMates: " + Settings.seeInvisibleTeamMates);
+                }
+                t.get_bukkitTeam().setAllowFriendlyFire(Settings.friendlyFire);
+                t.get_bukkitTeam().setCanSeeFriendlyInvisibles(Settings.seeInvisibleTeamMates);
+            }
+            else{
+                t.get_bukkitTeam().setAllowFriendlyFire(true);
+                t.get_bukkitTeam().setCanSeeFriendlyInvisibles(false);
+            }
             t.get_bukkitTeam().setPrefix(t.get_color().get_colorMark() + "[" + t.get_name().substring(0, 3) + "]§r");
             t.get_bukkitTeam().setDisplayName(t.get_color().get_colorMark() + t.get_name() + "§r");
 			return true;

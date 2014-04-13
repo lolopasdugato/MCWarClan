@@ -183,6 +183,17 @@ public class Team implements Serializable{
         for (Base _base : _bases) {
             _base.refresh();
         }
+        if(!_name.equals("Barbarians")) {
+            if(Settings.debugMode){
+                System.out.println("[DEBUG] friendlyFire: " + Settings.friendlyFire + ", transparentMates: " + Settings.seeInvisibleTeamMates);
+            }
+            _bukkitTeam.setAllowFriendlyFire(Settings.friendlyFire);
+            _bukkitTeam.setCanSeeFriendlyInvisibles(Settings.seeInvisibleTeamMates);
+        }
+        else{
+            _bukkitTeam.setAllowFriendlyFire(true);
+            _bukkitTeam.setCanSeeFriendlyInvisibles(false);
+        }
     }
 
     /**
@@ -195,10 +206,6 @@ public class Team implements Serializable{
             if(_bases.get(i).isInBase(loc))
                 return true;
         }
-        if(Settings.friendlyFire)
-            _bukkitTeam.allowFriendlyFire();
-        if(Settings.transparentMates)
-            _bukkitTeam.canSeeFriendlyInvisibles();
         return false;
     }
 
