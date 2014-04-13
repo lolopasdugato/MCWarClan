@@ -10,35 +10,33 @@ import java.io.Serializable;
 
 public class Flag implements Serializable {
 	
-	static private final long serialVersionUID = 6;
-
     // private enum _type;
-    final private int stickHeight = 5;
-    final private int flagHeight = 2;
-    final private int flagLength = 2;
+    static final public int stickHeight = 5;
+    static final public int flagHeight = 2;
+    static final public int flagLength = 2;
+    static private final long serialVersionUID = 6;
     private Base _base;
 
-    public Flag(Base base) {
+    public Flag(Base base) throws Exception.NotEnoughSpaceException, Exception.NotValidFlagLocationException {
         _base = base;
-        // generateFlag(_base.get_loc().getLocation(), _base.get_team().get_color());
+        generateFlag(_base.get_loc().getLocation(), _base.get_team().get_color());
     }
 
-    public Flag(Location loc, Color color){ generateFlag(loc, color); }   // Deprecated !
+    //public Flag(Location loc, Color color){ generateFlag(loc, color); }   // Deprecated !
 
     //TODO Check if it's only an empty zone for the flag
 
-    boolean generateFlag(Location loc, Color color)
-    {
-        System.out.println("FLAG!");
-        org.bukkit.block.Block init = loc.getWorld().getHighestBlockAt(loc);
+    boolean generateFlag(Location loc, Color color) throws Exception.NotValidFlagLocationException, Exception.NotEnoughSpaceException {
+
+        //org.bukkit.block.Block init = loc.getWorld().getHighestBlockAt(loc);
+        Block init = loc.getBlock().getRelative(BlockFace.UP);
         Block blk = init;
         boolean empty = true;
 
 
         //Have to check if the block below if solid
-        if (blk.getRelative(BlockFace.DOWN).getType().isSolid() == false) {
-            System.out.println("Not a solid block under the flag.");
-            return false;
+        if (!blk.getRelative(BlockFace.DOWN).getType().isSolid()) {
+            throw new Exception.NotValidFlagLocationException();
         }
 
         //first, have to check if the area is empty
@@ -46,32 +44,24 @@ public class Flag implements Serializable {
         while (j < stickHeight && empty) {
             blk.getType();
             if (blk.getType().isSolid()) {
-                System.out.println("ERROR");
-//                blk.setType(Material.IRON_BLOCK);
+
                 empty = false;
             }
             blk = blk.getRelative(BlockFace.UP);
             j++;
-//            blk.setType(Material.ANVIL);
         }
 
         //Check if we have to continue the check or not
         if (empty) {
-            System.out.println("On check le flag");
-
             //Set position for drawing the flag
             blk = blk.getRelative(BlockFace.DOWN).getRelative(BlockFace.NORTH);
 
             //Create the flag
-            //Block tmp = blk.getRelative(BlockFace.NORTH);
             int h = 0, l = 0;
-//            for (int h = 0; h < flagHeight; h++)
+
             while (h < flagHeight && empty) {
-//                for (int l = 0; l < flagLength; l++)
                 while (l < flagLength && empty) {
                     if (blk.getRelative(0, -h, -l).getType().isSolid()) {
-                        System.out.println("Loop 2");
-//                        blk.setType(Material.IRON_BLOCK);
                         empty = false;
                     }
                     l++;
@@ -80,11 +70,9 @@ public class Flag implements Serializable {
                 h++;
             }
         }
-        System.out.println("Check finished");
 
         //Check if it's always empty
         if (empty) {
-            System.out.println("No problem");
 
             //Reset block position to init
             blk = init;
@@ -93,14 +81,12 @@ public class Flag implements Serializable {
             for (int i = 0; i < stickHeight; i++) {
                 blk.setType(Material.WOOD);
                 blk = blk.getRelative(BlockFace.UP);
-//            blk.setType(Material.ANVIL);
             }
 
             //Set position for drawing the flag
             blk = blk.getRelative(BlockFace.DOWN).getRelative(BlockFace.NORTH);
 
             //Create the flag
-            //Block tmp = blk.getRelative(BlockFace.NORTH);
             DyeColor dye = color.toDyeColor();
             Block tmp = blk;
             for (int h = 0; h < flagHeight; h++) {
@@ -112,8 +98,9 @@ public class Flag implements Serializable {
             }
             return true;
         } else {
-            System.out.println("Not enough space");
-            return false;
+            throw new Exception.NotEnoughSpaceException();
         }
     }
+
+
 }

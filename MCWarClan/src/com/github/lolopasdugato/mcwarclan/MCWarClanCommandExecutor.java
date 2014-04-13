@@ -12,18 +12,22 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 public class MCWarClanCommandExecutor implements CommandExecutor {
-	
-	private TeamContainer _tc;
-	private Server _server;
+
+    private TeamContainer _tc;
+    private Server _server;
     private Configuration _cfg;
-	
-	public MCWarClanCommandExecutor(TeamContainer tc, Server server, Configuration cfg) {
-		_tc = tc;
-		_server = server;
+
+    public MCWarClanCommandExecutor(TeamContainer tc, Server server, Configuration cfg) {
+        _tc = tc;
+        _server = server;
         _cfg = cfg;
-	}
-	
-	// Check if a player has been or is on the server.
+    }
+
+    public TeamContainer get_tc() {
+        return _tc;
+    }
+
+    // Check if a player has been or is on the server.
 	public boolean exist(String playerName){
         return _server.getOfflinePlayer(playerName).hasPlayedBefore() || _server.getOfflinePlayer(playerName).isOnline();
     }
@@ -256,9 +260,8 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
 		
 		else if(label.toLowerCase().equals("createteam")){
 			return createteamCommand(sender, args);
-        } else if (label.toLowerCase().equals("createflag")) {
-            sender.sendMessage("coucou");
-            return createflagCommand(sender, args);
+        } else if (label.toLowerCase().equals("createbase")) {
+            return createbaseCommand(sender, args);
         }
 		return false;
 	}
@@ -320,34 +323,77 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
         return amount >= valueToHave;
     }
 
-    private boolean createflagCommand(CommandSender sender, String[] args) {
-        sender.sendMessage("Creating flag");
+
+    private boolean createbaseCommand(CommandSender sender, String[] args) {
 
         if (sender instanceof Player)
         {
             if (args.length > 0)
             {
-                sender.sendMessage("ERROR");
                 return false;
             }
             else
             {
+                Player p = ((Player) sender).getPlayer();
+                Team team = get_tc().searchPlayerTeam(p.getName());
+
+
                 //Find player's location
-                Player a = findPlayerByName(sender.getName()).getPlayer();
+//                Player p = findPlayerByName(sender.getName()).getPlayer();
 
-                if (a.isOnline()) {
-                    Location loc = a.getTargetBlock(null, 10).getLocation();
+                if (p.isOnline()) {
 
-                    //create new flag
-                    new Flag(loc, _tc.searchPlayerTeam(sender.getName()).get_color());
+                    //Check if the player's team is not 'Barbarians'
+                    if (team.get_name() == "Barbarians") {
+                        sender.sendMessage("You cannot create a base as a Barbarians.");
+                        return true;
+                    }
+                    //Check if the player's team have enough ressources to create the base
+                    Cost cost = team.get_cost();
+                    if (!canPay(cost, p)) {
+                        sender.sendMessage("You cannot create a base. You need :");
+                        sender.sendMessage(team.get_cost().getResourceTypes());
+                        return true;
+                    }
+
+                    //Here the player have enough to pay
+                    //TODO Now we check if the location is far enough from other bases
+
+                    Location loc = p.getTargetBlock(null, 10).getLocation();
+
+
+                    //create the base
+
+                    //We try to create the flag
+                    Base b = null;
+                    try {
+                        b = new Base(false, team, new MCWarClanLocation(loc));
+                    } catch (Exception.NotEnoughSpaceException e) {
+                        sender.sendMessage("Error : Not enough space to create the base.");
+                        return false;
+                    } catch (Exception.NotValidFlagLocationException e) {
+                        sender.sendMessage("Error : Not a solid block under the flag.");
+                        return false;
+                    }
+
+                    //If the flag can be created, add the base to the base array
+                    team.get_bases().add(b);
+
+                    //Substract the cost of the base to player's inventory
+                    payTribute(cost, p);
+
+                    sender.sendMessage("Base creation succeed");
                     return true;
                 } else {
-                    sender.sendMessage("ERROR");
+                    sender.sendMessage("Error : The player seems not to be online.");
                     return false;
                 }
             }
         } else {
+            sender.sendMessage("Error : You don't seems to execute the command as a player.");
             return false;
         }
     }
 }
+
+

@@ -36,10 +36,10 @@ commands:
   description: Allows you to create a new team.
   permission: mcwarclan.createteam
   usage: Type /<command> (teamname) && (teamcolor) to create the new team.
- createflag:
-  description: create a flag.
-  permission: mcwarclan.createflag
-  usage: Type /<command> to create the new flag.
+ createbase:
+  description: create a base.
+  permission: mcwarclan.createbase
+  usage: Type /<command> to create the new base.
 
   
 permissions:
@@ -53,7 +53,7 @@ permissions:
    mcwarclan.join: true
    mcwarclan.leave: true
    mcwarclan.createteam: true
-   mcwarclan.createflag: true
+   mcwarclan.createbase: true
  mcwarclan.showteams:
   description: List all teams in the game.
   default: true
@@ -75,6 +75,6 @@ permissions:
  mcwarclan.createteam:
   description: Allows you to create a new team.
   default: true
- mcwarclan.createflag:
-  description: create a flag
+ mcwarclan.createbase:
+  description: create a base
   default: true

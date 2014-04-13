@@ -6,64 +6,67 @@ import java.io.*;
 import java.util.ArrayList;
 
 public class TeamContainer implements Serializable {
-	
-	static private final long serialVersionUID = 1;
-	
+
+    public static final int MAXTEAMSIZE = 10;    // There is only 15 color in the game, and some others for the server messages...
+    static private final long serialVersionUID = 1;
 	private ArrayList<Team> _teamArray;			// Different teams
 	private int _maxTeams;						// Number of maximum teams
     private transient Configuration _cfg;       // Plugin configuration
     private Cost _creatingCost;                 // The cost to create a team
-	
-	public static final int MAXTEAMSIZE = 10;	// There is only 15 color in the game, and some others for the server messages...
 
-	public ArrayList<Team> get_teamArray() {
-		return _teamArray;
-	}
+    public TeamContainer(int maxTeams, Configuration cfg) {
+        _teamArray = new ArrayList<Team>();
+        _cfg = cfg;
+        if (maxTeams > MAXTEAMSIZE || maxTeams < 3) {
+            _maxTeams = MAXTEAMSIZE;
+            System.out.println("Cannot have more than " + MAXTEAMSIZE + " teams, or less than 2 !");
+        } else
+            _maxTeams = maxTeams;
+        _creatingCost = new Cost(_cfg, "teamSettings.teamCreatingTribute.requiredMaterials", "teamSettings.teamCreatingTribute.VALUES");
+    }
 
-	public void set_teamArray(ArrayList<Team> _teamArray) {
-		this._teamArray = _teamArray;
-	}
+    public TeamContainer(TeamContainer t) {
+        _teamArray = t.get_teamArray();
+        _maxTeams = t.get_maxTeams();
+    }
 
-	public int get_maxTeams() {
-		return _maxTeams;
-	}
+    public ArrayList<Team> get_teamArray() {
+        return _teamArray;
+    }
 
-	public void set_maxTeams(int _maxTeams) {
-		this._maxTeams = _maxTeams;
-	}
+    public void set_teamArray(ArrayList<Team> _teamArray) {
+        this._teamArray = _teamArray;
+    }
 
-    public Configuration get_cfg() { return _cfg; }
+    public int get_maxTeams() {
+        return _maxTeams;
+    }
+
+    public void set_maxTeams(int _maxTeams) {
+        this._maxTeams = _maxTeams;
+    }
+
+    public Configuration get_cfg() {
+        return _cfg;
+    }
 
     public void set_cfg(Configuration _cfg) {
         this._cfg = _cfg;
         // When initializing a new cfg,
-        for(int i = 0; i < _teamArray.size(); i++){
+        for (int i = 0; i < _teamArray.size(); i++) {
             _teamArray.get(i).get_cost().set_cfg(_cfg);     // Initialize Costs cfg
             _teamArray.get(i).initCost();                   // Update Costs values
         }
     }
 
-    public Cost get_creatingCost() { return _creatingCost; }
+    public Cost get_creatingCost() {
+        return _creatingCost;
+    }
 
-    public void set_creatingCost(Cost _creatingCost) { this._creatingCost = _creatingCost; }
+    public void set_creatingCost(Cost _creatingCost) {
+        this._creatingCost = _creatingCost;
+    }
 
-    public TeamContainer(int maxTeams, Configuration cfg) {
-		_teamArray = new ArrayList<Team>();
-        _cfg = cfg;
-		if(maxTeams > MAXTEAMSIZE || maxTeams < 3){
-			_maxTeams = MAXTEAMSIZE;
-			System.out.println("Cannot have more than " + MAXTEAMSIZE + " teams, or less than 2 !");
-		}
-		else 
-			_maxTeams = maxTeams;
-        _creatingCost = new Cost(_cfg, "teamSettings.teamCreatingTribute.requiredMaterials", "teamSettings.teamCreatingTribute.VALUES");
-	}
-	
-	public TeamContainer(TeamContainer t){
-		_teamArray = t.get_teamArray();
-		_maxTeams = t.get_maxTeams();
-	}
-	
 	// Verify if a team could be added to the container
 	public boolean isTeamValid(Team t){
 		System.out.println("Checking team validity...");
