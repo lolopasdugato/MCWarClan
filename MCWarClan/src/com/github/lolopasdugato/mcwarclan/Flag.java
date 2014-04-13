@@ -9,12 +9,12 @@ import org.bukkit.block.BlockFace;
 import java.io.Serializable;
 
 public class Flag implements Serializable {
-	
+
+    static private final long serialVersionUID = 6;
     // private enum _type;
     static final public int stickHeight = 5;
     static final public int flagHeight = 2;
     static final public int flagLength = 2;
-    static private final long serialVersionUID = 6;
     private Base _base;
 
     public Flag(Base base) throws Exception.NotEnoughSpaceException, Exception.NotValidFlagLocationException {
@@ -102,5 +102,11 @@ public class Flag implements Serializable {
         }
     }
 
-
+    /**
+     * @brief refresh settings that should be reloaded if config.yml has been changed.
+     */
+    public void refresh(){
+        _base.refresh();
+        // No Settings
+    }
 }
