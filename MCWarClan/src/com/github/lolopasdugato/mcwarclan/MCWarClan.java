@@ -16,6 +16,7 @@ public class MCWarClan extends JavaPlugin implements Listener {
 	protected TeamContainer _tc;
 	protected EventManager _em;
     protected Settings _cfg;
+    protected boolean _hardStop;
 	
 	public TeamContainer get_tc() {
 		return _tc;
@@ -64,6 +65,7 @@ public class MCWarClan extends JavaPlugin implements Listener {
 
 	public void onEnable(){
 		Logger log = Logger.getLogger("minecraft");
+        _hardStop = false;
 
         log.info("|-_MCWARCLAN_-| Loading config...");
         saveDefaultConfig();
@@ -72,30 +74,40 @@ public class MCWarClan extends JavaPlugin implements Listener {
             log.info("|-_MCWARCLAN_-| Config load has failed !");
         else
             log.info("|-_MCWARCLAN_-| OK !");
+        if(Settings.debugMode)
+            System.out.println("[DEBUG] Scoreboard file path: " + Settings.classicWorldName + "/data/scoreboard.dat");
+        if(!new File(Settings.classicWorldName + "/data/scoreboard.dat").exists()){
+            log.info("|-_MCWARCLAN_-| Initialising teams...");
+            _tc = TeamContainerInit();
+            if(_tc == null){
+                log.info("|-_MCWARCLAN_-| ERROR while initializing teamcontainer !");
+            }
+            log.info("|-_MCWARCLAN_-| OK !");
 
-		log.info("|-_MCWARCLAN_-| Initialising teams...");
-        _tc = TeamContainerInit();
-		if(_tc == null){
-            log.info("|-_MCWARCLAN_-| ERROR while initializing teamcontainer !");
+            log.info("|-_MCWARCLAN_-| Registering events...");
+            _em = new EventManager(_tc);
+            getServer().getPluginManager().registerEvents(_em, this);
+            log.info("|-_MCWARCLAN_-| OK !");
+
+            log.info("|-_MCWARCLAN_-| Setting command Executor...");
+            InitCommandExecutor();
+            log.info("|-_MCWARCLAN_-| OK !");
+
+            log.info("|-_MCWARCLAN_-| MCWarClan has been successfully launched !");
         }
-		log.info("|-_MCWARCLAN_-| OK !");
+        else{
+            log.severe("To prevent any error, MCWarClan will be disable. Please delete " + Settings.classicWorldName + "/data/scoreboard.dat and /plugins/MCWarClan/TeamContainer.ser");
+            _hardStop = true;
+        }
 
-		log.info("|-_MCWARCLAN_-| Registering events...");
-		_em = new EventManager(_tc);
-		getServer().getPluginManager().registerEvents(_em, this);
-		log.info("|-_MCWARCLAN_-| OK !");
 
-		log.info("|-_MCWARCLAN_-| Setting command Executor...");
-		InitCommandExecutor();
-		log.info("|-_MCWARCLAN_-| OK !");
-
-		log.info("|-_MCWARCLAN_-| MCWarClan has been successfully launched !");
 	}
 	
 	public void onDisable() {
 		Logger log = Logger.getLogger("minecraft");
 		log.info("Saving datas...");
-		_tc.serialize();
+        if(!_hardStop)
+		    _tc.serialize();
 	}
 
 }
