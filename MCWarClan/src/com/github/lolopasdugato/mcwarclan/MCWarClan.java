@@ -17,14 +17,34 @@ public class MCWarClan extends JavaPlugin implements Listener {
 	protected EventManager _em;
     protected Settings _cfg;
     protected boolean _hardStop;
-	
-	public TeamContainer get_tc() {
-		return _tc;
-	}
+    public static String VERSION = "v0.1";
 
-	public void set_tc(TeamContainer _tc) {
-		this._tc = _tc;
-	}
+    //////////////////////////////////////////////////////////////////////////////
+    //------------------------------- Constructors -------------------------------
+    //////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * @brief Classic MCWarClan constructor.
+     */
+    public MCWarClan(){
+
+    }
+
+    //////////////////////////////////////////////////////////////////////////////
+    //--------------------------------- Getters ----------------------------------
+    //////////////////////////////////////////////////////////////////////////////
+	
+	public TeamContainer get_tc() { return _tc; }
+
+    //////////////////////////////////////////////////////////////////////////////
+    //--------------------------------- Setters ----------------------------------
+    //////////////////////////////////////////////////////////////////////////////
+
+	public void set_tc(TeamContainer _tc) { this._tc = _tc; }
+
+    //////////////////////////////////////////////////////////////////////////////
+    //--------------------------------- Functions --------------------------------
+    //////////////////////////////////////////////////////////////////////////////
 
     /**
      * @brief Init a team container.
@@ -36,16 +56,12 @@ public class MCWarClan extends JavaPlugin implements Listener {
 			tc = tc.deSerialize();
             tc.refresh();
 		}
-		else{
-			System.out.println("File cannot be read !");
-			tc.addTeam(new Team(new Color("RED"), "HellRangers", getConfig().getInt("teamSettings.initialTeamSize"), tc));
-			tc.addTeam(new Team(new Color("BLUE"), "ElvenSoldiers", getConfig().getInt("teamSettings.initialTeamSize"), tc));
-			tc.addTeam(new Team(new Color("LIGHTGREY"), "Barbarians", getConfig().getInt("teamSettings.initialTeamSize"), tc));
-		}
-
-        if(Settings.debugMode)
-            System.out.println("[DEBUG] teamContainer size: " + tc.get_teamArray().size());
-
+		else {
+            Messages.sendMessage("File cannot be read !", Messages.messageType.DEBUG, null);
+            tc.addTeam(new Team(new Color("RED"), "HellRangers", getConfig().getInt("teamSettings.initialTeamSize"), tc));
+            tc.addTeam(new Team(new Color("BLUE"), "ElvenSoldiers", getConfig().getInt("teamSettings.initialTeamSize"), tc));
+            tc.addTeam(new Team(new Color("LIGHTGREY"), "Barbarians", getConfig().getInt("teamSettings.initialTeamSize"), tc));
+        }
         return tc;
 	}
 
@@ -63,6 +79,9 @@ public class MCWarClan extends JavaPlugin implements Listener {
         getCommand("createbase").setExecutor(new MCWarClanCommandExecutor(_tc, getServer()));
     }
 
+    /**
+     * @brief Is called on server launch
+     */
 	public void onEnable(){
 		Logger log = Logger.getLogger("minecraft");
         _hardStop = false;
@@ -74,8 +93,6 @@ public class MCWarClan extends JavaPlugin implements Listener {
             log.info("|-_MCWARCLAN_-| Config load has failed !");
         else
             log.info("|-_MCWARCLAN_-| OK !");
-        if(Settings.debugMode)
-            System.out.println("[DEBUG] Scoreboard file path: " + Settings.classicWorldName + "/data/scoreboard.dat");
         if((!new File(Settings.classicWorldName + "/data/scoreboard.dat").exists() && new File("plugins/MCWarClan/TeamContainer.ser").exists()) || (new File(Settings.classicWorldName + "/data/scoreboard.dat").exists() && !new File("plugins/MCWarClan/TeamContainer.ser").exists())){
             log.severe("To prevent any error, MCWarClan will be disable. Please delete " + Settings.classicWorldName + "/data/scoreboard.dat and /plugins/MCWarClan/TeamContainer.ser");
             _hardStop = true;
@@ -102,7 +119,10 @@ public class MCWarClan extends JavaPlugin implements Listener {
 
 
 	}
-	
+
+    /**
+     * @brief Is called on server close.
+     */
 	public void onDisable() {
 		Logger log = Logger.getLogger("minecraft");
 		log.info("Saving datas...");

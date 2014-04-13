@@ -18,6 +18,16 @@ public class Flag implements Serializable {
     static private final long serialVersionUID = 6;
     private Base _base;
 
+    //////////////////////////////////////////////////////////////////////////////
+    //------------------------------- Constructors -------------------------------
+    //////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * @brief Classic Flag constructor
+     * @param base
+     * @throws Exception.NotEnoughSpaceException
+     * @throws Exception.NotValidFlagLocationException
+     */
     public Flag(Base base) throws Exception.NotEnoughSpaceException, Exception.NotValidFlagLocationException {
         _base = base;
 
@@ -42,6 +52,9 @@ public class Flag implements Serializable {
         }
     }
 
+    //////////////////////////////////////////////////////////////////////////////
+    //--------------------------------- Functions --------------------------------
+    //////////////////////////////////////////////////////////////////////////////
 
     /**
      * @param blk The block which is the base of the flag.

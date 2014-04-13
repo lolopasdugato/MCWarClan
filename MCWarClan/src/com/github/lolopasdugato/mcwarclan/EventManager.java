@@ -17,17 +17,25 @@ public class EventManager implements Listener {
 	
 	private TeamContainer _tc;
 
+    //////////////////////////////////////////////////////////////////////////////
+    //------------------------------- Constructors -------------------------------
+    //////////////////////////////////////////////////////////////////////////////
 
-    //Constructors
+    /**
+     * @brief Classic Event constructor.
+     * @param tc
+     */
     public EventManager(TeamContainer tc){
 		_tc = tc;
 	}
 
-    //Events
+    //////////////////////////////////////////////////////////////////////////////
+    //---------------------------------- Events ----------------------------------
+    //////////////////////////////////////////////////////////////////////////////
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerJoin(PlayerJoinEvent evt) {
-		evt.getPlayer().sendMessage("§a[MCWarClan]§6 Welcome, this server is using MCWarClan v0.1, have fun !");
+        Messages.sendMessage("Welcome, this server is using MCWarClan " + MCWarClan.VERSION + ", have fun !", Messages.messageType.INGAME, evt.getPlayer());
 		if(_tc == null){
 			return;
 		}
@@ -37,17 +45,8 @@ public class EventManager implements Listener {
             barbarianSpawn.getChunk().load();
             if(!spawnOK(barbarianSpawn))
                 barbarianSpawn = getSpawnOk(barbarianSpawn);
-            if(Settings.debugMode){
-                System.out.println("[DEBUG] " + evt.getPlayer().getName() + " has spawn in x:" + barbarianSpawn.getX() + ", y:" + barbarianSpawn.getY() + ", z:" + barbarianSpawn.getZ());
-            }
+            Messages.sendMessage(evt.getPlayer().getName() + " has spawn in x:" + barbarianSpawn.getX() + ", y:" + barbarianSpawn.getY() + ", z:" + barbarianSpawn.getZ(), Messages.messageType.DEBUG, null);
             evt.getPlayer().teleport(barbarianSpawn);
-        }
-        if(Settings.debugMode){
-            if(_tc.get_scoreboard().getTeam("ElvenSoldiers").allowFriendlyFire())
-                System.out.println("[DEBUG] Friendly fire active for blue team !");
-            else{
-                System.out.println("[DEBUG] Friendly fire not activated for blue team !");
-            }
         }
     }
 
@@ -56,36 +55,11 @@ public class EventManager implements Listener {
          if(_tc.searchPlayerTeam(evt.getPlayer().getName()).get_name().equals("Barbarians")){
              Location barbarianSpawn = getBarbarianSpawn(Settings.barbariansSpawnDistance);
              barbarianSpawn.getChunk().load();
-             if(Settings.debugMode){
-                 System.out.println("[DEBUG] " + evt.getPlayer().getName() + " has spawn in x:" + barbarianSpawn.getX() + ", y:" + barbarianSpawn.getY() + ", z:" + barbarianSpawn.getZ());
-             }
+             Messages.sendMessage(evt.getPlayer().getName() + " has spawn in x:" + barbarianSpawn.getX() + ", y:" + barbarianSpawn.getY() + ", z:" + barbarianSpawn.getZ(), Messages.messageType.DEBUG, null);
              evt.setRespawnLocation(barbarianSpawn);
          }
 
     }
-
-    /**
-     * @brief Use to search a random barbarian spawn using config.yml.
-     * @param barbarianSpawnRadius
-     * @return
-     */
-    private Location getBarbarianSpawn(int barbarianSpawnRadius) {
-        if (barbarianSpawnRadius < 100) {
-            System.out.println("Cannot have a barbarian spawn radius under 100 ! Setting spawn radius to 100...");
-            barbarianSpawnRadius = 100;
-        }
-        Location worldSpawn = Bukkit.getWorld(Settings.classicWorldName).getSpawnLocation();
-        int signX = 1;
-        int signZ = 1;
-        if (new Random().nextBoolean())
-            signX = -1;
-        if (new Random().nextBoolean())
-            signZ = -1;
-        double randomX = (new Random().nextInt(barbarianSpawnRadius)) * signX;
-        double randomZ = (new Random().nextInt(barbarianSpawnRadius)) * signZ;
-        return new Location(Bukkit.getWorld(Settings.classicWorldName), (worldSpawn.getX() + randomX), worldSpawn.getY(), (worldSpawn.getZ() + randomZ));
-    }
-
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onBlockPlace(BlockPlaceEvent evt) {
@@ -101,19 +75,19 @@ public class EventManager implements Listener {
                         // evt.getBlockPlaced().breakNaturally();
                         evt.setCancelled(true);
                         evt.getPlayer().updateInventory();
-                        evt.getPlayer().sendMessage("§a[MCWarClan]§6 You need at least " + Settings.uncensoredItemsAmount + " " + evt.getBlockPlaced().getType().toString() + " to place it into an enemy base ! (right click to get your item back)");
+                        Messages.sendMessage("You need at least " + Settings.uncensoredItemsAmount + " " + evt.getBlockPlaced().getType().toString() + " to place it into an enemy base !", Messages.messageType.INGAME, evt.getPlayer());
                     }
                 }
                 else {
                     evt.setCancelled(true);
                     evt.getPlayer().updateInventory();
                     // evt.getBlockPlaced().breakNaturally();
-                    evt.getPlayer().sendMessage("§a[MCWarClan]§6 You cannot place block (except TNT, Ladders, and Levers...) in an enemy base !");
+                    Messages.sendMessage("You cannot place block (except TNT, Ladders, and Levers...) in an enemy base !", Messages.messageType.INGAME, evt.getPlayer());
                 }
             }
         }
         else
-            evt.getPlayer().sendMessage("§a[MCWarClan]§6 Error, please ask an admin to be add to a team !");
+            Messages.sendMessage("Error, please ask an admin to be add to a team !", Messages.messageType.INGAME, evt.getPlayer());
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
@@ -122,12 +96,38 @@ public class EventManager implements Listener {
 
         if (userTeam != null) {
             if(isInEnemyTerritory(userTeam, evt.getBlock().getLocation())){
-                evt.getPlayer().sendMessage("§a[MCWarClan]§6 You cannot break block in the enemy base !");
+                Messages.sendMessage("You cannot break block in the enemy base !", Messages.messageType.INGAME, evt.getPlayer());
                 evt.setCancelled(true);
             }
         }
         else
-            evt.getPlayer().sendMessage("§a[MCWarClan]§6 Error, please ask an admin to be add to a team !");
+            Messages.sendMessage("Error, please ask an admin to be add to a team !", Messages.messageType.INGAME, evt.getPlayer());
+    }
+
+    //////////////////////////////////////////////////////////////////////////////
+    //--------------------------------- Functions --------------------------------
+    //////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * @brief Use to search a random barbarian spawn using config.yml.
+     * @param barbarianSpawnRadius
+     * @return
+     */
+    private Location getBarbarianSpawn(int barbarianSpawnRadius) {
+        if (barbarianSpawnRadius < 100) {
+            Messages.sendMessage("Cannot have a barbarian spawn radius under 100 ! Setting spawn radius to 100...", Messages.messageType.ALERT, null);
+            barbarianSpawnRadius = 100;
+        }
+        Location worldSpawn = Bukkit.getWorld(Settings.classicWorldName).getSpawnLocation();
+        int signX = 1;
+        int signZ = 1;
+        if (new Random().nextBoolean())
+            signX = -1;
+        if (new Random().nextBoolean())
+            signZ = -1;
+        double randomX = (new Random().nextInt(barbarianSpawnRadius)) * signX;
+        double randomZ = (new Random().nextInt(barbarianSpawnRadius)) * signZ;
+        return new Location(Bukkit.getWorld(Settings.classicWorldName), (worldSpawn.getX() + randomX), worldSpawn.getY(), (worldSpawn.getZ() + randomZ));
     }
 
     /**

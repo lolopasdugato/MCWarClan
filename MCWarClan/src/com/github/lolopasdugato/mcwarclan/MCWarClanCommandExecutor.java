@@ -13,34 +13,43 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
 	
 	private TeamContainer _tc;
 	private Server _server;
-	
+
+    //////////////////////////////////////////////////////////////////////////////
+    //------------------------------- Constructors -------------------------------
+    //////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * @brief Classic CommandExecutor constructor.
+     * @param tc
+     * @param server
+     */
 	public MCWarClanCommandExecutor(TeamContainer tc, Server server) {
 		_tc = tc;
 		_server = server;
 	}
-	
-	// Check if a player has been or is on the server.
-	public boolean exist(String playerName){
-        return _server.getOfflinePlayer(playerName).hasPlayedBefore() || _server.getOfflinePlayer(playerName).isOnline();
-    }
-	
-	// Returns a player using a name.
-	public OfflinePlayer findPlayerByName(String name){
-		if(exist(name)){
-			return _server.getOfflinePlayer(name);
-		}
-		return null;
-	}
-	
-	// show to the sender the list of all teams in the game.
+
+    //////////////////////////////////////////////////////////////////////////////
+    //---------------------------- onCommand Functions ---------------------------
+    //////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * @brief Show to the sender the list of all teams in the game.
+     * @param sender
+     * @return
+     */
 	public boolean showteamsCommand(CommandSender sender){
 		sender.sendMessage("§8##########################################################################################################");
 		sender.sendMessage(_tc.teamsList());
 		sender.sendMessage("§8##########################################################################################################");
 		return true;
 	}
-	
-	// Sort of admin command. Allows someone to assign someone else to a specific team.
+
+    /**
+     * @brief Sort of admin command. Allows someone to assign someone else to a specific team.
+     * @param sender
+     * @param args
+     * @return
+     */
 	public boolean assignCommand(CommandSender sender, String[] args){
 		OfflinePlayer p = findPlayerByName(args[0]);
 		if(args.length > 1 && p != null){
@@ -65,8 +74,13 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
 		}
 		return false;
 	}
-	
-	// Shows the team members of the sender's team or of the specified team.
+
+    /**
+     * @brief Shows the team members of the sender's team or of the specified team.
+     * @param sender
+     * @param args
+     * @return
+     */
 	public boolean teamCommand(CommandSender sender, String[] args){
 		if(args.length == 0){
 			if(sender instanceof Player){
@@ -86,8 +100,13 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
 		}
 		return false;
 	}
-	
-	// Sort of admin command. Allows someone to kick someone else from a specific team.
+
+    /**
+     * @brief Sort of admin command. Allows someone to kick someone else from a specific team.
+     * @param sender
+     * @param args
+     * @return
+     */
 	public boolean unassignCommand(CommandSender sender, String[] args){
 		OfflinePlayer p = findPlayerByName(args[0]);
 		if(p != null){
@@ -104,8 +123,12 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
 		}
 		return false;
 	}
-	
-	// Allows the sender to leave it's current team an join the barbarian team.
+
+    /**
+     * @brief Allows the sender to leave it's current team an join the barbarian team.
+     * @param sender
+     * @return
+     */
 	public boolean leaveCommand(CommandSender sender){
 		if(sender instanceof Player){
 			Team t = _tc.searchPlayerTeam(sender.getName());
@@ -122,8 +145,13 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
 			sender.sendMessage("§a[MCWarClan]§6 " + "You have to be a player to perform this command !");
 		return false;
 	}
-	
-	// Allows the sender to join the specified team.
+
+    /**
+     * @brief Allows the sender to join the specified team.
+     * @param sender
+     * @param args
+     * @return
+     */
 	public boolean joinCommand(CommandSender sender, String[] args){
 		if(sender instanceof Player){
 			Team actual = _tc.searchPlayerTeam(sender.getName());
@@ -172,8 +200,13 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
 		sender.sendMessage("§a[MCWarClan]§6 " + "§6You have to be a player to perform this command !");
 		return false;
 	}
-	
-	// allows someone to create a team.
+
+    /**
+     * @brief Allows someone to create a team.
+     * @param sender
+     * @param args
+     * @return
+     */
 	public boolean createteamCommand(CommandSender sender, String[] args){
         if(_tc.get_teamArray().size() >= _tc.get_maxTeams()){
             sender.sendMessage("§a[MCWarClan]§6 The maximum number of team is already reach !(" + _tc.get_maxTeams() + ")");
@@ -223,101 +256,13 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
         }
 		return false;
 	}
-	
-	@Override
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 
-		
-		if((label.toLowerCase().equals("showteams") || label.toLowerCase().equals("lt") || label.toLowerCase().equals("st")) && args.length == 0){
-			return showteamsCommand(sender);
-		}
-		
-		else if(label.toLowerCase().equals("assign")) {
-			return assignCommand(sender, args);
-		}
-		
-		else if(label.toLowerCase().equals("team")){
-			return teamCommand(sender, args);
-		}
-		
-		else if(label.toLowerCase().equals("unassign") && args.length == 1) {
-			return unassignCommand(sender, args);
-		}
-		
-		else if(label.toLowerCase().equals("leave") && args.length == 0){
-			return leaveCommand(sender);
-		}
-		
-		else if(label.toLowerCase().equals("join") && args.length == 1){
-			return joinCommand(sender, args);
-		}
-		
-		else if(label.toLowerCase().equals("createteam")){
-			return createteamCommand(sender, args);
-        } else if (label.toLowerCase().equals("createbase")) {
-            return createbaseCommand(sender, args);
-        }
-		return false;
-	}
-
-    // Verify if a player can pay the asked tribute
-    public boolean canPay(Cost cost, Player player){
-        for(int i = 0; i < cost.get_costEquivalence().size(); i++){
-            // If the specified material is not recognize, just ignore it
-            if(Material.getMaterial(cost.get_costEquivalence().get(i).get_materialName()) != null) {
-                if (!has(player, Material.getMaterial(cost.get_costEquivalence().get(i).get_materialName()), cost.get_costEquivalence().get(i).get_materialValue())) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-    // Pay a tribute using a specified cost for a specified player
-    public boolean payTribute(Cost cost, Player player){
-        for(int i = 0; i < cost.get_costEquivalence().size(); i++){
-            // If the specified material is not recognize, just ignore it
-            if(Material.getMaterial(cost.get_costEquivalence().get(i).get_materialName()) != null) {
-                if(!pay(player, Material.getMaterial(cost.get_costEquivalence().get(i).get_materialName()), cost.get_costEquivalence().get(i).get_materialValue()))
-                    return false;
-            }
-        }
-        return true;
-    }
-
-    // Pay for a player a given number of a given material type
-    public boolean pay(Player p, Material material, int valueToPay){
-        ItemStack[] inventory = p.getInventory().getContents();
-        while (valueToPay > 0){
-            int j = p.getInventory().first(material);
-            if(inventory[j].getAmount() > valueToPay){
-                inventory[j].setAmount(inventory[j].getAmount() - valueToPay);
-                return true;
-            }
-            else{
-                valueToPay -= inventory[j].getAmount();
-                p.getInventory().clear(j);
-            }
-        }
-        return valueToPay == 0;
-    }
-
-    // Verify if the player has enough of the specified material
-    public boolean has(Player p, Material material, int valueToHave){
-        ItemStack[] inventory = p.getInventory().getContents();
-        if(inventory.length == 0){
-            return false;
-        }
-        int amount = 0;
-        for(int i = 0; i < inventory.length; i++){
-            if(inventory[i] != null && inventory[i].getType() == material){
-                amount += inventory[i].getAmount();
-            }
-        }
-        return amount >= valueToHave;
-    }
-
-
+    /**
+     * @brief Allows someone to create a base.
+     * @param sender
+     * @param args
+     * @return
+     */
     private boolean createbaseCommand(CommandSender sender, String[] args) {
 
         if (sender instanceof Player)
@@ -421,6 +366,151 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
             return false;
         }
     }
+
+    //////////////////////////////////////////////////////////////////////////////
+    //---------------------------- onCommand Override ----------------------------
+    //////////////////////////////////////////////////////////////////////////////
+
+	@Override
+	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+
+		
+		if((label.toLowerCase().equals("showteams") || label.toLowerCase().equals("lt") || label.toLowerCase().equals("st")) && args.length == 0){
+			return showteamsCommand(sender);
+		}
+		
+		else if(label.toLowerCase().equals("assign")) {
+			return assignCommand(sender, args);
+		}
+		
+		else if(label.toLowerCase().equals("team")){
+			return teamCommand(sender, args);
+		}
+		
+		else if(label.toLowerCase().equals("unassign") && args.length == 1) {
+			return unassignCommand(sender, args);
+		}
+		
+		else if(label.toLowerCase().equals("leave") && args.length == 0){
+			return leaveCommand(sender);
+		}
+		
+		else if(label.toLowerCase().equals("join") && args.length == 1){
+			return joinCommand(sender, args);
+		}
+		
+		else if(label.toLowerCase().equals("createteam")){
+			return createteamCommand(sender, args);
+        } else if (label.toLowerCase().equals("createbase")) {
+            return createbaseCommand(sender, args);
+        }
+		return false;
+	}
+
+    //////////////////////////////////////////////////////////////////////////////
+    //--------------------------------- Functions --------------------------------
+    //////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * @brief Check if a player has been or is on the server.
+     * @param playerName
+     * @return
+     */
+    public boolean exist(String playerName){
+        return _server.getOfflinePlayer(playerName).hasPlayedBefore() || _server.getOfflinePlayer(playerName).isOnline();
+    }
+
+    /**
+     * @brief Returns a player using a name.
+     * @param name
+     * @return
+     */
+    public OfflinePlayer findPlayerByName(String name){
+        if(exist(name)){
+            return _server.getOfflinePlayer(name);
+        }
+        return null;
+    }
+
+    /**
+     * @brief Verify if a player can pay the asked tribute.
+     * @param cost
+     * @param player
+     * @return
+     */
+    public boolean canPay(Cost cost, Player player){
+        for(int i = 0; i < cost.get_costEquivalence().size(); i++){
+            // If the specified material is not recognize, just ignore it
+            if(Material.getMaterial(cost.get_costEquivalence().get(i).get_materialName()) != null) {
+                if (!has(player, Material.getMaterial(cost.get_costEquivalence().get(i).get_materialName()), cost.get_costEquivalence().get(i).get_materialValue())) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * @brief Pay a tribute using a specified cost for a specified player.
+     * @param cost
+     * @param player
+     * @return
+     */
+    public boolean payTribute(Cost cost, Player player){
+        for(int i = 0; i < cost.get_costEquivalence().size(); i++){
+            // If the specified material is not recognize, just ignore it
+            if(Material.getMaterial(cost.get_costEquivalence().get(i).get_materialName()) != null) {
+                if(!pay(player, Material.getMaterial(cost.get_costEquivalence().get(i).get_materialName()), cost.get_costEquivalence().get(i).get_materialValue()))
+                    return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * @brief Pay for a player a given number of a given material type.
+     * @param p
+     * @param material
+     * @param valueToPay
+     * @return
+     */
+    public boolean pay(Player p, Material material, int valueToPay){
+        ItemStack[] inventory = p.getInventory().getContents();
+        while (valueToPay > 0){
+            int j = p.getInventory().first(material);
+            if(inventory[j].getAmount() > valueToPay){
+                inventory[j].setAmount(inventory[j].getAmount() - valueToPay);
+                return true;
+            }
+            else{
+                valueToPay -= inventory[j].getAmount();
+                p.getInventory().clear(j);
+            }
+        }
+        return valueToPay == 0;
+    }
+
+    /**
+     * @brief Verify if the player has enough of the specified material.
+     * @param p
+     * @param material
+     * @param valueToHave
+     * @return
+     */
+    public boolean has(Player p, Material material, int valueToHave){
+        ItemStack[] inventory = p.getInventory().getContents();
+        if(inventory.length == 0){
+            return false;
+        }
+        int amount = 0;
+        for(int i = 0; i < inventory.length; i++){
+            if(inventory[i] != null && inventory[i].getType() == material){
+                amount += inventory[i].getAmount();
+            }
+        }
+        return amount >= valueToHave;
+    }
+
 }
 
 

@@ -12,34 +12,57 @@ public class Cost implements Serializable{
 
     private ArrayList<Equivalence> _costEquivalence;            // The Equivalence between a cost and a material
 
-    //Constructors
+    //////////////////////////////////////////////////////////////////////////////
+    //------------------------------- Constructors -------------------------------
+    //////////////////////////////////////////////////////////////////////////////
 
+    /**
+     * @brief Classic Cost constructor
+     */
     public Cost(){
         _costEquivalence = new ArrayList<Equivalence>();
     }
 
+    /**
+     * @brief Cost copy constructor
+     * @param c
+     */
     public Cost(Cost c){
         _costEquivalence = c.get_costEquivalence();
     }
 
-    //Getters
+    //////////////////////////////////////////////////////////////////////////////
+    //--------------------------------- Getters ----------------------------------
+    //////////////////////////////////////////////////////////////////////////////
 
     public ArrayList<Equivalence> get_costEquivalence() {
         return _costEquivalence;
     }
 
-    //Setters
+    //////////////////////////////////////////////////////////////////////////////
+    //--------------------------------- Setters ----------------------------------
+    //////////////////////////////////////////////////////////////////////////////
 
-    public void set_costEquivalence(ArrayList<Equivalence> _costEquivalence) {
-        this._costEquivalence = _costEquivalence;
-    }
+    public void set_costEquivalence(ArrayList<Equivalence> _costEquivalence) { this._costEquivalence = _costEquivalence; }
 
-    //Functions
+    //////////////////////////////////////////////////////////////////////////////
+    //--------------------------------- Functions --------------------------------
+    //////////////////////////////////////////////////////////////////////////////
 
+    /**
+     * @brief Add a value to a cost.
+     * @param materialName
+     * @param numberOfMaterials
+     * @return
+     */
     public boolean addValue(String materialName, int numberOfMaterials){
         return _costEquivalence.add(new Equivalence(materialName, numberOfMaterials));
     }
 
+    /**
+     * @brief Returns a string list containing all resources types in a cost, linked with their needed amount.
+     * @return
+     */
     public String[] getResourceTypes(){
         ArrayList<String> resources = new ArrayList<String>();
         for(int i = 0; i < _costEquivalence.size(); i++){

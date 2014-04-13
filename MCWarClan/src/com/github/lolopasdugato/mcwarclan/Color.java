@@ -14,6 +14,14 @@ public class Color implements Serializable {
 	private boolean _validColor = true;					// If this color is not used by the server, it will stay as true
     private DyeColor _dye;                              // Dye color of a wool
 
+    //////////////////////////////////////////////////////////////////////////////
+    //------------------------------- Constructors -------------------------------
+    //////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * @brief Classic color constructor. Automatically initialize values for a team color.
+     * @param colorName
+     */
     public Color(String colorName) {
         _colorName = colorName.toUpperCase();
         if (_colorName.equals("RED")) {
@@ -84,33 +92,39 @@ public class Color implements Serializable {
         }
     }
 
+    //////////////////////////////////////////////////////////////////////////////
+    //--------------------------------- Getters ----------------------------------
+    //////////////////////////////////////////////////////////////////////////////
+
     public boolean is_validColor() {
         return _validColor;
     }
+    public String get_colorName() {
+        return _colorName;
+    }
+    public String get_colorMark() {
+        return _colorMark;
+    }
+    public DyeColor get_dye() { return _dye; }
+
+    //////////////////////////////////////////////////////////////////////////////
+    //--------------------------------- Setters ----------------------------------
+    //////////////////////////////////////////////////////////////////////////////
 
     public void set_validColor(boolean _validColor) {
         this._validColor = _validColor;
     }
-
-    public String get_colorName() {
-        return _colorName;
-    }
-
     public void set_colorName(String _colorName) {
         this._colorName = _colorName;
     }
-
-    public String get_colorMark() {
-        return _colorMark;
-    }
-
     public void set_colorMark(String _colorMark) {
         this._colorMark = _colorMark;
     }
-
-    public DyeColor get_dye() { return _dye; }
-
     public void set_dye(DyeColor _dye) { this._dye = _dye; }
+
+    //////////////////////////////////////////////////////////////////////////////
+    //--------------------------------- Functions --------------------------------
+    //////////////////////////////////////////////////////////////////////////////
 
     /**
      * @deprecated perf wasting. Use the new attribute.

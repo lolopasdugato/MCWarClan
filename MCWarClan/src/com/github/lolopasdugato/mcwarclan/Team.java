@@ -19,7 +19,18 @@ public class Team extends Object implements Serializable {
     private Cost _cost;                             // The cost to join a team
     private transient org.bukkit.scoreboard.Team _bukkitTeam;  // An instance of a bukkitTeam
 
-    // Constructor
+
+    //////////////////////////////////////////////////////////////////////////////
+    //------------------------------- Constructors -------------------------------
+    //////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * @brief Classic Team constructor.
+     * @param color
+     * @param name
+     * @param teamSize
+     * @param teamContainer
+     */
     public Team(Color color, String name, int teamSize, TeamContainer teamContainer) {
         _color = color;
         _team = new ArrayList<String>();
@@ -31,79 +42,72 @@ public class Team extends Object implements Serializable {
         initCost();
     }
 
+    //////////////////////////////////////////////////////////////////////////////
+    //--------------------------------- Getters ----------------------------------
+    //////////////////////////////////////////////////////////////////////////////
+
     public Color get_color() {
         return _color;
     }
-
-    public void set_color(Color _color) {
-        this._color = _color;
-    }
-
     public String get_name() {
         return _name;
     }
-
-    public void set_name(String _name) {
-        this._name = _name;
-    }
-
     public ArrayList<String> get_team() {
         return _team;
     }
-
-    public void set_team(ArrayList<String> _team) {
-        this._team = _team;
-    }
-
     public int get_teamSize() {
         return _teamSize;
     }
-
-    public void set_teamSize(int _teamSize) {
-        this._teamSize = _teamSize;
-    }
-
     public TeamContainer get_teamContainer() {
         return _teamContainer;
     }
-
-    public void set_teamContainer(TeamContainer _teamContainer) {
-        this._teamContainer = _teamContainer;
-    }
-
     public Cost get_cost() {
         return _cost;
     }
-
-    public void set_cost(Cost _cost) {
-        this._cost = _cost;
-    }
-
     public ArrayList<Base> get_bases() {
         return _bases;
     }
-
-    public void set_bases(ArrayList<Base> _bases) {
-        this._bases = _bases;
-    }
-
     public org.bukkit.scoreboard.Team get_bukkitTeam() {
         return _bukkitTeam;
     }
 
+    //////////////////////////////////////////////////////////////////////////////
+    //--------------------------------- Setters ----------------------------------
+    //////////////////////////////////////////////////////////////////////////////
+
+    public void set_color(Color _color) {
+        this._color = _color;
+    }
+    public void set_name(String _name) {
+        this._name = _name;
+    }
+    public void set_team(ArrayList<String> _team) {
+        this._team = _team;
+    }
+    public void set_teamSize(int _teamSize) {
+        this._teamSize = _teamSize;
+    }
+    public void set_teamContainer(TeamContainer _teamContainer) {
+        this._teamContainer = _teamContainer;
+    }
+    public void set_cost(Cost _cost) {
+        this._cost = _cost;
+    }
+    public void set_bases(ArrayList<Base> _bases) {
+        this._bases = _bases;
+    }
     public void set_bukkitTeam(org.bukkit.scoreboard.Team _bukkitTeam) {
         this._bukkitTeam = _bukkitTeam;
     }
 
-//    public void testBase(){
-//        MCWarClanLocation newLoc = new MCWarClanLocation(Bukkit.getWorld("world").getSpawnLocation());
-//        if(_color.get_colorName().equals("BLUE") && newLoc != null){
-//            if(_bases.add(new Base(true, this, newLoc)))
-//                if(Settings.debugMode)
-//                    System.out.println("[DEBUG] New base created !");
-//        }
-//    }
 
+    //////////////////////////////////////////////////////////////////////////////
+    //--------------------------------- Functions --------------------------------
+    //////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * @brief Initialize the join cost, depending on the team.
+     */
     public void initCost(){
         if(_color.get_colorName().equals("RED"))
             _cost = Settings.REDteamJoiningTribute;
@@ -112,8 +116,12 @@ public class Team extends Object implements Serializable {
         else
             _cost = Settings.DEFAULTteamJoiningTribute;
     }
-	
-	// Add a player to this team. 
+
+    /**
+     * @brief Add a player to this team.
+     * @param p
+     * @return
+     */
 	public boolean addTeamMate(String p){
 		// If the current team is one of those two, there is no limit
         if(_name.equals("Barbarians")){
@@ -169,11 +177,14 @@ public class Team extends Object implements Serializable {
         return false;
     }
 
-
     //      WARNING     \\
     //      WARNING     \\
     //      WARNING     \\
     // Not tested !
+    /**
+     * @brief Returns the team's HQ.
+     * @return
+     */
     public Base getHQ(){
         for (int i = 0; i < _bases.size(); i++){
             if(_bases.get(i).is_HQ())

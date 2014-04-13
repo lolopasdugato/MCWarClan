@@ -14,6 +14,10 @@ public class MCWarClanLocation implements Serializable {
 	private double _z;
 	private String _worldName;
 
+    //////////////////////////////////////////////////////////////////////////////
+    //------------------------------- Constructors -------------------------------
+    //////////////////////////////////////////////////////////////////////////////
+
     public MCWarClanLocation(String worldName, double x, double y, double z) {
         _worldName = worldName;
         _x = x;

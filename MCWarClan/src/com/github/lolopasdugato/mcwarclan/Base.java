@@ -17,7 +17,18 @@ public class Base implements Serializable {
 	private MCWarClanLocation _loc;	// Represent the location of a base
     private Cost _cost;             // The cost to create a new base
 
+    //////////////////////////////////////////////////////////////////////////////
+    //------------------------------- Constructors -------------------------------
+    //////////////////////////////////////////////////////////////////////////////
 
+    /**
+     * @brief Classic Base constructor
+     * @param HQ
+     * @param team
+     * @param loc
+     * @throws Exception.NotValidFlagLocationException
+     * @throws Exception.NotEnoughSpaceException
+     */
     public Base(boolean HQ, Team team, MCWarClanLocation loc) throws Exception.NotValidFlagLocationException, Exception.NotEnoughSpaceException {
         _HQ = HQ;
         _team = team;
@@ -29,59 +40,53 @@ public class Base implements Serializable {
         _flag = new Flag(this);
     }
 
+    //////////////////////////////////////////////////////////////////////////////
+    //--------------------------------- Getters ----------------------------------
+    //////////////////////////////////////////////////////////////////////////////
+
     public boolean is_HQ() {
         return _HQ;
     }
-
-    public void set_HQ(boolean _HQ) {
-        this._HQ = _HQ;
-    }
-
     public Team get_team() {
         return _team;
     }
-
-    public void set_team(Team _team) {
-        this._team = _team;
-    }
-
     public MCWarClanLocation get_loc() {
         return _loc;
     }
-
-    public void set_loc(MCWarClanLocation _loc) {
-        this._loc = _loc;
-    }
-
-
-    //Setters
-
     public int get_radius() {
         return _radius;
     }
-
-    public void set_radius(int _radius) {
-        this._radius = _radius;
-    }
-
     public int get_bonusRadius() {
         return _bonusRadius;
     }
-
-    public void set_bonusRadius(int _bonusRadius) {
-        this._bonusRadius = _bonusRadius;
-    }
-
     public Flag get_flag() {
         return _flag;
     }
 
+    //////////////////////////////////////////////////////////////////////////////
+    //--------------------------------- Setters ----------------------------------
+    //////////////////////////////////////////////////////////////////////////////
+
+    public void set_loc(MCWarClanLocation _loc) {
+        this._loc = _loc;
+    }
+    public void set_team(Team _team) {
+        this._team = _team;
+    }
+    public void set_HQ(boolean _HQ) { this._HQ = _HQ; }
+    public void set_radius(int _radius) {
+        this._radius = _radius;
+    }
+    public void set_bonusRadius(int _bonusRadius) {
+        this._bonusRadius = _bonusRadius;
+    }
     public void set_flag(Flag _flag) {
         this._flag = _flag;
     }
 
-
-    //Functions
+    //////////////////////////////////////////////////////////////////////////////
+    //--------------------------------- Functions --------------------------------
+    //////////////////////////////////////////////////////////////////////////////
 
     /**
      * @brief refresh settings that should be reloaded if config.yml has been changed.
@@ -90,7 +95,11 @@ public class Base implements Serializable {
         _bonusRadius = Settings.radiusHQBonus;
     }
 
-    // Says if the location is in this base
+    /**
+     * @brief Says if the location is in this base.
+     * @param loc the location to check.
+     * @return True if the location is in this base.
+     */
     public boolean isInBase(Location loc){
         boolean isInXAxe = false;
         boolean isInZAxe = false;
