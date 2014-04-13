@@ -76,7 +76,11 @@ public class MCWarClan extends JavaPlugin implements Listener {
             log.info("|-_MCWARCLAN_-| OK !");
         if(Settings.debugMode)
             System.out.println("[DEBUG] Scoreboard file path: " + Settings.classicWorldName + "/data/scoreboard.dat");
-        if(!new File(Settings.classicWorldName + "/data/scoreboard.dat").exists()){
+        if((!new File(Settings.classicWorldName + "/data/scoreboard.dat").exists() && new File("plugins/MCWarClan/TeamContainer.ser").exists()) || (new File(Settings.classicWorldName + "/data/scoreboard.dat").exists() && !new File("plugins/MCWarClan/TeamContainer.ser").exists())){
+            log.severe("To prevent any error, MCWarClan will be disable. Please delete " + Settings.classicWorldName + "/data/scoreboard.dat and /plugins/MCWarClan/TeamContainer.ser");
+            _hardStop = true;
+        }
+        else{
             log.info("|-_MCWARCLAN_-| Initialising teams...");
             _tc = TeamContainerInit();
             if(_tc == null){
@@ -94,10 +98,6 @@ public class MCWarClan extends JavaPlugin implements Listener {
             log.info("|-_MCWARCLAN_-| OK !");
 
             log.info("|-_MCWARCLAN_-| MCWarClan has been successfully launched !");
-        }
-        else{
-            log.severe("To prevent any error, MCWarClan will be disable. Please delete " + Settings.classicWorldName + "/data/scoreboard.dat and /plugins/MCWarClan/TeamContainer.ser");
-            _hardStop = true;
         }
 
 
