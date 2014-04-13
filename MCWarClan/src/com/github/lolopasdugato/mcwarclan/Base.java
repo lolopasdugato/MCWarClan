@@ -1,10 +1,9 @@
 package com.github.lolopasdugato.mcwarclan;
 
-import com.sun.scenario.Settings;
+
 import org.bukkit.Location;
 
 import java.io.Serializable;
-import java.util.Locale;
 
 public class Base implements Serializable {
 	
@@ -17,62 +16,66 @@ public class Base implements Serializable {
 	private Flag _flag;				// The flag attached to this base
 	private MCWarClanLocation _loc;	// Represent the location of a base
     private Cost _cost;             // The cost to create a new base
-	
-	
-	public boolean is_HQ() {
-		return _HQ;
-	}
 
-	public void set_HQ(boolean _HQ) {
-		this._HQ = _HQ;
-	}
-
-	public int get_radius() {
-		return _radius;
-	}
-
-	public void set_radius(int _radius) {
-		this._radius = _radius;
-	}
-
-	public Team get_team() {
-		return _team;
-	}
-
-	public void set_team(Team _team) {
-		this._team = _team;
-	}
-
-	public Flag get_flag() {
-		return _flag;
-	}
-
-	public void set_flag(Flag _flag) {
-		this._flag = _flag;
-	}
-
-	public MCWarClanLocation get_loc() {
-		return _loc;
-	}
-
-	public void set_loc(MCWarClanLocation _loc) {
-		this._loc = _loc;
-	}
-
-    public int get_bonusRadius() { return _bonusRadius; }
-
-    public void set_bonusRadius(int _bonusRadius) { this._bonusRadius = _bonusRadius; }
 
     public Base(boolean HQ, Team team, MCWarClanLocation loc) throws Exception.NotValidFlagLocationException, Exception.NotEnoughSpaceException {
-		_HQ = HQ;
-		_team = team;
-		_loc = loc;
-        _radius = Settings.initialRadius;   // WARNING: should'nt be reloaded !
+        _HQ = HQ;
+        _team = team;
+        _loc = loc;
+        _radius = Settings.initialRadius;   // WARNING: shouldn't be reloaded !
         _bonusRadius = Settings.radiusHQBonus;
-        _cost = Settings.baseInitialCost;   // WARNING should'nt be reload !
+        _cost = Settings.baseInitialCost;   // WARNING shouldn't be reload !
         //Test if the flag can be created, and throw NotEnoughSpaceException is not.
         _flag = new Flag(this);
-	}
+    }
+
+    public boolean is_HQ() {
+        return _HQ;
+    }
+
+    public void set_HQ(boolean _HQ) {
+        this._HQ = _HQ;
+    }
+
+    public int get_radius() {
+        return _radius;
+    }
+
+    public void set_radius(int _radius) {
+        this._radius = _radius;
+    }
+
+    public Team get_team() {
+        return _team;
+    }
+
+    public void set_team(Team _team) {
+        this._team = _team;
+    }
+
+    public Flag get_flag() {
+        return _flag;
+    }
+
+    public void set_flag(Flag _flag) {
+        this._flag = _flag;
+    }
+
+    public MCWarClanLocation get_loc() {
+        return _loc;
+    }
+
+    public void set_loc(MCWarClanLocation _loc) {
+        this._loc = _loc;
+    }
+
+    public int get_bonusRadius() {
+        return _bonusRadius;
+    }
+
+    public void set_bonusRadius(int _bonusRadius) {
+        this._bonusRadius = _bonusRadius;
+    }
 
     /**
      * @brief refresh settings that should be reloaded if config.yml has been changed.
@@ -91,4 +94,5 @@ public class Base implements Serializable {
             isInZAxe = true;
         return (isInXAxe && isInZAxe);
     }
+
 }

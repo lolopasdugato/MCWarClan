@@ -7,9 +7,10 @@ import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.Configuration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.ArrayList;
 
 public class MCWarClanCommandExecutor implements CommandExecutor {
 	
@@ -256,9 +257,8 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
 		
 		else if(label.toLowerCase().equals("createteam")){
 			return createteamCommand(sender, args);
-        } else if (label.toLowerCase().equals("createflag")) {
-            sender.sendMessage("coucou");
-            return createflagCommand(sender, args);
+        } else if (label.toLowerCase().equals("createbase")) {
+            return createbaseCommand(sender, args);
         }
 		return false;
 	}
@@ -332,7 +332,7 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
             else
             {
                 Player p = ((Player) sender).getPlayer();
-                Team team = get_tc().searchPlayerTeam(p.getName());
+                Team team = _tc.searchPlayerTeam(p.getName());
 
 
                 //Find player's location
@@ -345,7 +345,7 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
                         sender.sendMessage("You cannot create a base as a Barbarians.");
                         return true;
                     }
-                    //Check if the player's team have enough ressources to create the base
+                    //Check if the player's team have enough resources to create the base
                     Cost cost = team.get_cost();
                     if (!canPay(cost, p)) {
                         sender.sendMessage("You cannot create a base. You need :");
@@ -353,24 +353,46 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
                         return true;
                     }
 
-                    //Here the player have enough to pay
+                    //Here the player have enough resources to pay
                     //TODO Now we check if the location is far enough from other bases
 
                     Location loc = p.getTargetBlock(null, 10).getLocation();
+                    final ArrayList<Team> teams = _tc.get_teamArray();
+                    ArrayList<Base> bases;
 
+                    boolean overlap = false;
+                    int i = 0, j = 0;
 
-                    //create the base
+                    while (i < teams.size() && !overlap) {
+                        if (teams.get(i) != team) {
+                            bases = teams.get(i).get_bases();
+                            while (j < bases.size() && !overlap) {
+                                if (bases.get(j).isInBase(loc))
+                                    overlap = true;
+                                j++;
+                            }
+                        }
+                        j = 0;
+                        i++;
+                    }
 
-                    //We try to create the flag
+                    if (overlap) {
+                        sender.sendMessage("You cannot create a base near another enemy base.");
+                        return true;
+                    }
+
+                    //We have check the location, with is correct regarding other bases
+
+                    //Now we try to create the flag
                     Base b = null;
                     try {
                         b = new Base(false, team, new MCWarClanLocation(loc));
                     } catch (Exception.NotEnoughSpaceException e) {
-                        sender.sendMessage("Error : Not enough space to create the base.");
-                        return false;
+                        sender.sendMessage("There is not enough space to create the base.");
+                        return true;
                     } catch (Exception.NotValidFlagLocationException e) {
-                        sender.sendMessage("Error : Not a solid block under the flag.");
-                        return false;
+                        sender.sendMessage("There is not a solid block under the flag.");
+                        return true;
                     }
 
                     //If the flag can be created, add the base to the base array

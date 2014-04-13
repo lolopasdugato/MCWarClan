@@ -1,17 +1,15 @@
 package com.github.lolopasdugato.mcwarclan;
 
-import com.github.lolopasdugato.mcwarclan.TeamContainer;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
+public class Team extends Object implements Serializable {
 
-public class Team implements Serializable{
-	
-	static private final long serialVersionUID = 2;
-	
+    public static final int DEFAULTTEAMSIZE = 5;
+    static private final long serialVersionUID = 2;
 	private Color _color; 							// Represent the team color.
 	private String _name;							// Represent the team name.
 	private ArrayList<String> _team; 				// Represent the players in the team
@@ -20,81 +18,91 @@ public class Team implements Serializable{
 	private ArrayList<Base> _bases;					// Represent bases of a team
     private Cost _cost;                             // The cost to join a team
     private transient org.bukkit.scoreboard.Team _bukkitTeam;  // An instance of a bukkitTeam
-	
-	public static final int DEFAULTTEAMSIZE = 5;
 
-	public Color get_color() {
-		return _color;
-	}
+    // Constructor
+    public Team(Color color, String name, int teamSize, TeamContainer teamContainer) {
+        _color = color;
+        _team = new ArrayList<String>();
+        _bases = new ArrayList<Base>();
+        _teamSize = teamSize;
+        _teamContainer = teamContainer;
+        _name = name;
+//        testBase();
+        initCost();
+    }
 
-	public void set_color(Color _color) {
-		this._color = _color;
-	}
+    public Color get_color() {
+        return _color;
+    }
 
-	public String get_name() {
-		return _name;
-	}
+    public void set_color(Color _color) {
+        this._color = _color;
+    }
 
-	public void set_name(String _name) {
-		this._name = _name;
-	}
+    public String get_name() {
+        return _name;
+    }
 
-	public ArrayList<String> get_team() {
-		return _team;
-	}
+    public void set_name(String _name) {
+        this._name = _name;
+    }
 
-	public void set_team(ArrayList<String> _team) {
-		this._team = _team;
-	}
+    public ArrayList<String> get_team() {
+        return _team;
+    }
 
-	public int get_teamSize() { return _teamSize; }
+    public void set_team(ArrayList<String> _team) {
+        this._team = _team;
+    }
 
-	public void set_teamSize(int _teamSize) {
-		this._teamSize = _teamSize;
-	}
+    public int get_teamSize() {
+        return _teamSize;
+    }
 
-	public TeamContainer get_teamContainer() {
-		return _teamContainer;
-	}
+    public void set_teamSize(int _teamSize) {
+        this._teamSize = _teamSize;
+    }
 
-	public void set_teamContainer(TeamContainer _teamContainer) {
-		this._teamContainer = _teamContainer;
-	}
+    public TeamContainer get_teamContainer() {
+        return _teamContainer;
+    }
 
-    public Cost get_cost() {  return _cost; }
+    public void set_teamContainer(TeamContainer _teamContainer) {
+        this._teamContainer = _teamContainer;
+    }
 
-    public void set_cost(Cost _cost) { this._cost = _cost; }
+    public Cost get_cost() {
+        return _cost;
+    }
 
-    public ArrayList<Base> get_bases() { return _bases; }
+    public void set_cost(Cost _cost) {
+        this._cost = _cost;
+    }
+
+    public ArrayList<Base> get_bases() {
+        return _bases;
+    }
 
     public void set_bases(ArrayList<Base> _bases) {
         this._bases = _bases;
     }
 
-    public org.bukkit.scoreboard.Team get_bukkitTeam() { return _bukkitTeam; }
-
-    public void set_bukkitTeam(org.bukkit.scoreboard.Team _bukkitTeam) { this._bukkitTeam = _bukkitTeam; }
-
-    // Constructor
-	public Team(Color color, String name, int teamSize, TeamContainer teamContainer){
-		_color = color;
-		_team = new ArrayList<String>();
-        _bases = new ArrayList<Base>();
-		_teamSize = teamSize;
-		_teamContainer = teamContainer;
-		_name = name;
-        testBase();
-        initCost();
-	}
-
-    public void testBase(){
-        MCWarClanLocation newLoc = new MCWarClanLocation(Bukkit.getWorld("world").getSpawnLocation());
-        if(_color.get_colorName().equals("BLUE") && newLoc != null){
-            if(_bases.add(new Base(true, this, newLoc)))
-                if(Settings.debugMode)
-                    System.out.println("[DEBUG] New base created !");
-        }
+    public org.bukkit.scoreboard.Team get_bukkitTeam() {
+        return _bukkitTeam;
     }
+
+    public void set_bukkitTeam(org.bukkit.scoreboard.Team _bukkitTeam) {
+        this._bukkitTeam = _bukkitTeam;
+    }
+
+//    public void testBase(){
+//        MCWarClanLocation newLoc = new MCWarClanLocation(Bukkit.getWorld("world").getSpawnLocation());
+//        if(_color.get_colorName().equals("BLUE") && newLoc != null){
+//            if(_bases.add(new Base(true, this, newLoc)))
+//                if(Settings.debugMode)
+//                    System.out.println("[DEBUG] New base created !");
+//        }
+//    }
 
     public void initCost(){
         if(_color.get_colorName().equals("RED"))
