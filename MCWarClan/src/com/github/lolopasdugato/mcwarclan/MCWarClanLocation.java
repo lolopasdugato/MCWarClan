@@ -1,9 +1,9 @@
 package com.github.lolopasdugato.mcwarclan;
 
-import java.io.Serializable;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+
+import java.io.Serializable;
 
 public class MCWarClanLocation implements Serializable {
 	
@@ -13,6 +13,31 @@ public class MCWarClanLocation implements Serializable {
 	private double _y;
 	private double _z;
 	private String _worldName;
+
+    public MCWarClanLocation(String worldName, double x, double y, double z) {
+        _worldName = worldName;
+        _x = x;
+        _y = y;
+        _z = z;
+    }
+
+    public MCWarClanLocation(Location loc) {
+        _worldName = loc.getWorld().getName();
+        _x = loc.getX();
+        _y = loc.getY();
+        _z = loc.getZ();
+    }
+
+    //Getters
+
+    public String get_worldName() {
+        return _worldName;
+    }
+
+    //Setters
+    public void set_worldName(String _worldName) {
+        this._worldName = _worldName;
+    }
 
     public double get_x() {
         return _x;
@@ -38,31 +63,12 @@ public class MCWarClanLocation implements Serializable {
         this._z = _z;
     }
 
-    public String get_worldName() {
-        return _worldName;
-    }
-
-    public void set_worldName(String _worldName) {
-        this._worldName = _worldName;
-    }
-
     public Location getLocation(){
-		return new Location(Bukkit.getServer().getWorld(_worldName), _x, _y, _z);
-	}
-	
-	public MCWarClanLocation(String worldName, double x, double y, double z) {
-		_worldName = worldName;
-		_x = x;
-		_y = y;
-		_z = z;
-	}
-	
-	public MCWarClanLocation(Location loc){
-		_worldName = loc.getWorld().getName();
-		_x = loc.getX();
-		_y = loc.getY();
-		_z = loc.getZ();
-	}
+        return new Location(Bukkit.getServer().getWorld(_worldName), _x, _y, _z);
+    }
+
+
+    //Functions
 
     /**
      * @brief refresh settings that should be reloaded if config.yml has been changed.

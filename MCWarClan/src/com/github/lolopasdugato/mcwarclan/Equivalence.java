@@ -12,6 +12,15 @@ public class Equivalence implements Serializable {
     private String _materialName;
     private int _materialValue;
 
+
+    //Constructors
+    public Equivalence(String materialName, int materialValue) {
+        _materialName = materialName;
+        _materialValue = materialValue;
+    }
+
+    //Getters
+
     public String get_materialName() {
         return _materialName;
     }
@@ -19,6 +28,8 @@ public class Equivalence implements Serializable {
     public void set_materialName(String _materialName) {
         this._materialName = _materialName;
     }
+
+    //Setters
 
     public int get_materialValue() {
         return _materialValue;
@@ -28,10 +39,8 @@ public class Equivalence implements Serializable {
         this._materialValue = _materialValue;
     }
 
-    public Equivalence(String materialName, int materialValue){
-        _materialName = materialName;
-        _materialValue = materialValue;
-    }
+
+    //Functions
 
     /**
      * @brief refresh settings that should be reloaded if config.yml has been changed.

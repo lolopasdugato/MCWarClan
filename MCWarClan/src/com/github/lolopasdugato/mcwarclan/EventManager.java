@@ -3,28 +3,27 @@ package com.github.lolopasdugato.mcwarclan;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.configuration.Configuration;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.Random;
 
 public class EventManager implements Listener {
 	
 	private TeamContainer _tc;
-	
-	public EventManager(TeamContainer tc){
+
+
+    //Constructors
+    public EventManager(TeamContainer tc){
 		_tc = tc;
 	}
+
+    //Events
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerJoin(PlayerJoinEvent evt) {
@@ -70,7 +69,7 @@ public class EventManager implements Listener {
      * @param barbarianSpawnRadius
      * @return
      */
-    public Location getBarbarianSpawn(int barbarianSpawnRadius) {
+    private Location getBarbarianSpawn(int barbarianSpawnRadius) {
         if (barbarianSpawnRadius < 100) {
             System.out.println("Cannot have a barbarian spawn radius under 100 ! Setting spawn radius to 100...");
             barbarianSpawnRadius = 100;
@@ -151,7 +150,7 @@ public class EventManager implements Listener {
      * @param loc the position to check.
      * @return true if you can spawn there.
      */
-    public boolean spawnOK(Location loc){
+    private boolean spawnOK(Location loc) {
         return loc.getBlock().getType() == Material.AIR;
     }
 
@@ -160,7 +159,7 @@ public class EventManager implements Listener {
      * @param loc the location to change.
      * @return the location where you can spawn.
      */
-    public Location getSpawnOk(Location loc){
+    private Location getSpawnOk(Location loc) {
         loc.setY(loc.getY() + 1);
         if(loc.getBlock().getType() != Material.AIR)
             return getSpawnOk(loc);

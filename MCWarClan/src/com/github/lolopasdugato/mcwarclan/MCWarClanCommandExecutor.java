@@ -1,9 +1,6 @@
 package com.github.lolopasdugato.mcwarclan;
 
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.Server;
+import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -346,7 +343,7 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
                         return true;
                     }
                     //Check if the player's team have enough resources to create the base
-                    Cost cost = team.get_cost();
+                    Cost cost = Settings.baseInitialCost;
                     if (!canPay(cost, p)) {
                         sender.sendMessage("You cannot create a base. You need :");
                         sender.sendMessage(team.get_cost().getResourceTypes());
@@ -363,8 +360,10 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
                     boolean overlap = false;
                     int i = 0, j = 0;
 
+
                     while (i < teams.size() && !overlap) {
                         if (teams.get(i) != team) {
+                            //
                             bases = teams.get(i).get_bases();
                             while (j < bases.size() && !overlap) {
                                 if (bases.get(j).isInBase(loc))
@@ -375,6 +374,15 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
                         j = 0;
                         i++;
                     }
+
+                    //Todo add verification of the barbarian spawn
+                    Location barbSpawn = Bukkit.getWorld(Settings.classicWorldName).getSpawnLocation();
+                    final double dist = barbSpawn.distance(p.getLocation());
+                    if (dist < Settings.barbariansSpawnDistance) {
+                        sender.sendMessage("You cannot create a base near the barbarian spawn.");
+                        return true;
+                    }
+
 
                     if (overlap) {
                         sender.sendMessage("You cannot create a base near another enemy base.");

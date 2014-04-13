@@ -37,28 +37,12 @@ public class Base implements Serializable {
         this._HQ = _HQ;
     }
 
-    public int get_radius() {
-        return _radius;
-    }
-
-    public void set_radius(int _radius) {
-        this._radius = _radius;
-    }
-
     public Team get_team() {
         return _team;
     }
 
     public void set_team(Team _team) {
         this._team = _team;
-    }
-
-    public Flag get_flag() {
-        return _flag;
-    }
-
-    public void set_flag(Flag _flag) {
-        this._flag = _flag;
     }
 
     public MCWarClanLocation get_loc() {
@@ -69,6 +53,17 @@ public class Base implements Serializable {
         this._loc = _loc;
     }
 
+
+    //Setters
+
+    public int get_radius() {
+        return _radius;
+    }
+
+    public void set_radius(int _radius) {
+        this._radius = _radius;
+    }
+
     public int get_bonusRadius() {
         return _bonusRadius;
     }
@@ -76,6 +71,17 @@ public class Base implements Serializable {
     public void set_bonusRadius(int _bonusRadius) {
         this._bonusRadius = _bonusRadius;
     }
+
+    public Flag get_flag() {
+        return _flag;
+    }
+
+    public void set_flag(Flag _flag) {
+        this._flag = _flag;
+    }
+
+
+    //Functions
 
     /**
      * @brief refresh settings that should be reloaded if config.yml has been changed.

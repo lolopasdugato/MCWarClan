@@ -1,12 +1,7 @@
 package com.github.lolopasdugato.mcwarclan;
 
-import org.bukkit.Material;
-import org.bukkit.configuration.Configuration;
-
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * Created by Loïc on 05/04/2014.
@@ -17,9 +12,7 @@ public class Cost implements Serializable{
 
     private ArrayList<Equivalence> _costEquivalence;            // The Equivalence between a cost and a material
 
-    public ArrayList<Equivalence> get_costEquivalence() { return _costEquivalence; }
-
-    public void set_costEquivalence(ArrayList<Equivalence> _costEquivalence) { this._costEquivalence = _costEquivalence; }
+    //Constructors
 
     public Cost(){
         _costEquivalence = new ArrayList<Equivalence>();
@@ -28,6 +21,20 @@ public class Cost implements Serializable{
     public Cost(Cost c){
         _costEquivalence = c.get_costEquivalence();
     }
+
+    //Getters
+
+    public ArrayList<Equivalence> get_costEquivalence() {
+        return _costEquivalence;
+    }
+
+    //Setters
+
+    public void set_costEquivalence(ArrayList<Equivalence> _costEquivalence) {
+        this._costEquivalence = _costEquivalence;
+    }
+
+    //Functions
 
     public boolean addValue(String materialName, int numberOfMaterials){
         return _costEquivalence.add(new Equivalence(materialName, numberOfMaterials));
