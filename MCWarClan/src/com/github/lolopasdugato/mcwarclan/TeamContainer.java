@@ -122,7 +122,8 @@ public class TeamContainer implements Serializable {
             _teamArray.add(t);
             if(_scoreboard.getTeam(t.get_name()) == null)
                 t.set_bukkitTeam(_scoreboard.registerNewTeam(t.get_name()));
-            Messages.sendMessage(t.get_name() + " already exist !", Messages.messageType.DEBUG, null);
+            else
+                Messages.sendMessage(t.get_name() + " already exist !", Messages.messageType.DEBUG, null);
             if(_scoreboard.getTeam(t.get_name()) == null) {
                 Messages.sendMessage(t.get_name() + " cannot be added to the scoreboard !", Messages.messageType.DEBUG, null);
                 return false;
@@ -161,19 +162,19 @@ public class TeamContainer implements Serializable {
 
     /**
      * @brief Search a player through the different teams in the teamContainer.
-     * @param p the name of the player.
+     * @param playerName the name of the player.
      * @return returns the team if it works, otherwise, it will return null.
      */
-	public Team searchPlayerTeam(String p){
-		for(int i = 0; i < _teamArray.size(); i++){
-			for(int j = 0; j < _teamArray.get(i).get_team().size(); j++){
-				if(_teamArray.get(i).get_team().get(j).equals(p)){
-					return _teamArray.get(i);
-				}
-			}
-		}
-		return null;
-	}
+    public MCWarClanPlayer getPlayer(String playerName){
+        for(int i = 0; i < _teamArray.size(); i++){
+            for(int j = 0; j < _teamArray.get(i).get_teamMembers().size(); j++){
+                if(_teamArray.get(i).get_teamMembers().get(j).get_name().equals(playerName)){
+                    return _teamArray.get(i).get_teamMembers().get(j);
+                }
+            }
+        }
+        return null;
+    }
 
     /**
      * @brief Search a team using the team name.
@@ -284,18 +285,16 @@ public class TeamContainer implements Serializable {
         }
     }
 
-    public Team getTeam(String name)
-    {
-        int i = 0;
-        while(_teamArray.get(i).get_name() == name && i < _maxTeams) {
-            i++;
+    /**
+     * @brief get a team using it's ID.
+     * @param id
+     * @return
+     */
+    public Team getTeam(int id) {
+        for (int i = 0; i < _teamArray.size(); i++){
+            if (_teamArray.get(i).get_id() == Team.BARBARIAN_TEAM_ID)
+                return _teamArray.get(i);
         }
-//        if(_teamArray.get(i).get_name() == name)
-//            return _teamArray.get(i);
-//        else
-            ///FAIL
-        return _teamArray.get(i);
-
-
+        return null;
     }
 }

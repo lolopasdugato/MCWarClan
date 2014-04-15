@@ -29,6 +29,7 @@ public class Settings {
     public static int uncensoredItemsAmount;
     public static String classicWorldName;
     public static boolean debugMode;
+    public static boolean randomBarbarianSpawn;
 
     public static Cost BLUEteamJoiningTribute;
     public static Cost REDteamJoiningTribute;
@@ -71,6 +72,7 @@ public class Settings {
         uncensoredItemsAmount = _cfg.getInt("otherSettings.uncensoredItemsAmount");
         classicWorldName = _cfg.getString("otherSettings.classicWorldName");
         debugMode = _cfg.getBoolean("otherSettings.debugMode");
+        randomBarbarianSpawn = _cfg.getBoolean("otherSettings.randomBarbarianSpawn");
 
 
 

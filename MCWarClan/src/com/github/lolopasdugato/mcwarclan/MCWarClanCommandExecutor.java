@@ -1,5 +1,6 @@
 package com.github.lolopasdugato.mcwarclan;
 
+import com.avaje.ebeaninternal.server.cluster.mcast.Message;
 import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -38,9 +39,9 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
      * @return
      */
 	public boolean showteamsCommand(CommandSender sender){
-		sender.sendMessage("§8##########################################################################################################");
-		sender.sendMessage(_tc.teamsList());
-		sender.sendMessage("§8##########################################################################################################");
+		// sender.sendMessage("§8##########################################################################################################");
+        Messages.sendMessage(_tc.teamsList(), Messages.messageType.INGAME, sender);
+		// sender.sendMessage("§8##########################################################################################################");
 		return true;
 	}
 
@@ -53,22 +54,31 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
 	public boolean assignCommand(CommandSender sender, String[] args){
 		OfflinePlayer p = findPlayerByName(args[0]);
 		if(args.length > 1 && p != null){
-			Team t = _tc.searchTeam(args[1]);
-			Team actual = _tc.searchPlayerTeam(args[0]);
-			if(t == null){
-				t = _tc.searchTeam(new Color(args[1]));
+			Team toJoin = _tc.searchTeam(args[1]);   // Search by name
+			MCWarClanPlayer player = _tc.getPlayer(args[0]);
+            Team toLeave = player.get_team();
+			if(toJoin == null){
+				toJoin = _tc.searchTeam(new Color(args[1])); // Search by colorName
 			}
-			if(t != null){
-				t.addTeamMate(args[0]);
-				sender.sendMessage("§a[MCWarClan]§6 " + args[0] + " §6has successfully been added to " + t.get_color().get_colorMark() + t.get_name());
-				actual.deleteTeamMate(args[0]);
-				if(p.isOnline()){
-					p.getPlayer().sendMessage("§a[MCWarClan]§6 " + "§6You have been added to team " + t.get_color().get_colorMark() + t.get_name() + " §6by " + sender.getName());
-				}
-				return true;
+			if(toJoin != null){
+                if (toLeave.deleteTeamMate(player)){
+                    if(toJoin.addTeamMate(player))
+                        Messages.sendMessage(player.get_name() + " §6has successfully been added to " + toJoin.get_color().get_colorMark() + toJoin.get_name(), Messages.messageType.INGAME, sender);
+                    else{
+                        toLeave.addTeamMate(player);
+                        Messages.sendMessage(player.get_name() + " §6cannot be add to " + toJoin.get_color().get_colorMark() + toJoin.get_name() + " §6(maybe the team is full ?)", Messages.messageType.INGAME, sender);
+                        return true;
+                    }
+                    if(p.isOnline()){
+                        Messages.sendMessage("You have been added to team " + toJoin.get_color().get_colorMark() + toJoin.get_name() + " §6by " + sender.getName(), Messages.messageType.INGAME, p.getPlayer());
+                    }
+                    return true;
+                }
+                else
+                    Messages.sendMessage("Cannot delete " + player.get_name() + " from " + player.get_team().get_color().get_colorMark() + player.get_team().get_name() + "§6.", Messages.messageType.INGAME, sender);
 			}
 			else{
-				sender.sendMessage("§a[MCWarClan]§6 " + "§6Invalid team or color name.");
+                Messages.sendMessage("Invalid team or color name.", Messages.messageType.INGAME, sender);
 				return true;
 			}
 		}
@@ -84,18 +94,18 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
 	public boolean teamCommand(CommandSender sender, String[] args){
 		if(args.length == 0){
 			if(sender instanceof Player){
-				sender.sendMessage("§8##########################################################################################################");
-				sender.sendMessage(_tc.searchPlayerTeam(sender.getName()).playerList());
-				sender.sendMessage("§8##########################################################################################################");
+				// sender.sendMessage("§8##########################################################################################################");
+                Messages.sendMessage(_tc.getPlayer(sender.getName()).get_team().playerList(), Messages.messageType.INGAME, sender);
+				// sender.sendMessage("§8##########################################################################################################");
 				return true;
 			}
-			sender.sendMessage("§6You have to be a player to perform this command !");
+            Messages.sendMessage("You have to be a player to perform this command !", Messages.messageType.INGAME, sender);
 			return true;
 		}
-		else if (args.length == 1 && exist(args[0]) && _tc.searchPlayerTeam(args[0]) != null) {
-			sender.sendMessage("§8##########################################################################################################");
-			sender.sendMessage(_tc.searchPlayerTeam(args[0]).playerList());
-			sender.sendMessage("§8##########################################################################################################");
+		else if (args.length == 1 && exist(args[0]) && _tc.getPlayer(args[0]).get_team() != null) {
+			// sender.sendMessage("§8##########################################################################################################");
+            Messages.sendMessage(_tc.getPlayer(args[0]).get_team().playerList(), Messages.messageType.INGAME, sender);
+			// sender.sendMessage("§8##########################################################################################################");
 			return true;
 		}
 		return false;
@@ -110,17 +120,33 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
 	public boolean unassignCommand(CommandSender sender, String[] args){
 		OfflinePlayer p = findPlayerByName(args[0]);
 		if(p != null){
-			Team t = _tc.searchPlayerTeam(args[0]);
-			if(t != null){
-				t.deleteTeamMate(args[0]);
-				sender.sendMessage("§a[MCWarClan]§6 " + args[0] + " §6has successfully been kicked from " + t.get_color().get_colorMark() + t.get_name());
-				_tc.searchTeam("Barbarians").addTeamMate(args[0]);
+            MCWarClanPlayer player = _tc.getPlayer(args[0]);
+            Team toLeave = player.get_team();
+			if(player != null){
+                if(toLeave.get_id() == Team.BARBARIAN_TEAM_ID){
+                    Messages.sendMessage("You cannot remove someone from the " + toLeave.get_color().get_colorMark() + toLeave.get_name() + " §6team !", Messages.messageType.INGAME, sender);
+                    return true;
+                }
+				else if(player.get_team().deleteTeamMate(player)){
+                    Messages.sendMessage(player.get_name() + " has successfully been kicked from " + toLeave.get_color().get_colorMark() + toLeave.get_name() + "§6.", Messages.messageType.INGAME, sender);
+                }
+                else{
+                    Messages.sendMessage(player.get_name() + " cannot be kicked from " + toLeave.get_color().get_colorMark() + toLeave.get_name() + "§6.", Messages.messageType.INGAME, sender);
+                    return false;
+                }
+				if(!_tc.getTeam(Team.BARBARIAN_TEAM_ID).addTeamMate(player)){
+                    toLeave.addTeamMate(player);
+                    Messages.sendMessage("Cannot add " + player.get_name() + "to barbarians !", Messages.messageType.ALERT, null);
+                    return true;
+                }
 				if(p.isOnline()){	// Send a message to the player concerned.
-					p.getPlayer().sendMessage("§a[MCWarClan]§6 " + "§6You have been kicked from team " + t.get_color().get_colorMark() + t.get_name() + " §6by " + sender.getName() + ". §6You are now a §7Barbarian !");
+                    Messages.sendMessage("You have been kicked from team " + toLeave.get_color().get_colorMark() + toLeave.get_name() + " §6by " + sender.getName() + ". You are now a §7Barbarian !", Messages.messageType.INGAME, p.getPlayer());
 				}
 				return true;					
 			}
+            Messages.sendMessage(args[0] + " does not exist in MCWarClan database !", Messages.messageType.INGAME, sender);
 		}
+        Messages.sendMessage(args[0] + " does not exist !", Messages.messageType.INGAME, sender);
 		return false;
 	}
 
@@ -131,18 +157,32 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
      */
 	public boolean leaveCommand(CommandSender sender){
 		if(sender instanceof Player){
-			Team t = _tc.searchPlayerTeam(sender.getName());
-			if(t.get_name().equals("Barbarians")){
-				sender.sendMessage("§a[MCWarClan]§6 " + "§6You cannot leave the §7Barbarian§6 team !");
+            MCWarClanPlayer player = _tc.getPlayer(sender.getName());
+			Team toLeave = player.get_team();
+            Team toJoin = _tc.getTeam(Team.BARBARIAN_TEAM_ID);
+			if(toLeave.get_id() == Team.BARBARIAN_TEAM_ID){
+                Messages.sendMessage("You cannot leave the §7Barbarian§6 team !", Messages.messageType.INGAME, sender);
 				return true;
 			}
-			_tc.searchPlayerTeam(sender.getName()).deleteTeamMate(sender.getName());
-			_tc.searchTeam("Barbarians").addTeamMate(sender.getName());
-			sender.sendMessage("§a[MCWarClan]§6 " + "§6You have successfully left " + t.get_color().get_colorMark() + t.get_name() + ".§6 You are now a §7Barbarian !");
-			return true;
+			else if(toLeave.deleteTeamMate(player)){
+                if(toJoin.addTeamMate(player)){
+                    Messages.sendMessage("You have successfully left " + toLeave.get_color().get_colorMark() + toLeave.get_name() + ".§6 You are now a §7Barbarian !", Messages.messageType.INGAME, sender);
+                    return true;
+                }
+                else{
+                    Messages.sendMessage("Due to an unknown error, you cannot join" + toJoin.get_color().get_colorMark() + toJoin.get_name() + "§6. Ask an admin to see what's happening.", Messages.messageType.INGAME, sender);
+                    Messages.sendMessage("Cannot add " + player.get_name() + " from " + toJoin.get_name() + ".", Messages.messageType.ALERT, null);
+                    return true;
+                }
+            }
+            else{
+                Messages.sendMessage("Due to an unknown error, you cannot leave" + toLeave.get_color().get_colorMark() + toLeave.get_name() + "§6. Ask an admin to see what's happening.", Messages.messageType.INGAME, sender);
+                Messages.sendMessage("Cannot kick " + player.get_name() + " from " + toLeave.get_name() + ".", Messages.messageType.ALERT, null);
+                return true;
+            }
 		}
 		else
-			sender.sendMessage("§a[MCWarClan]§6 " + "You have to be a player to perform this command !");
+            Messages.sendMessage("You have to be a player to perform this command !", Messages.messageType.INGAME, sender);
 		return false;
 	}
 
@@ -154,50 +194,55 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
      */
 	public boolean joinCommand(CommandSender sender, String[] args){
 		if(sender instanceof Player){
-			Team actual = _tc.searchPlayerTeam(sender.getName());
+            MCWarClanPlayer player = _tc.getPlayer(sender.getName());
+			Team toLeave = player.get_team();
 			Team toJoin = _tc.searchTeam(args[0]);
 			if(toJoin == null){
 				toJoin = _tc.searchTeam(new Color(args[0]));
 			}
 			if(toJoin != null){
-                if(toJoin.get_name().equals(actual.get_name())){
-                    sender.sendMessage("§a[MCWarClan]§6 You cannot join this team ! You're already in !");
+                if(toJoin.get_id() == toLeave.get_id()){
+                    Messages.sendMessage("You cannot join " + toJoin.get_color().get_colorMark() + toJoin.get_name() + " §6team ! You're already in !", Messages.messageType.INGAME, sender);
                     return true;
                 }
-                else if(toJoin.get_name().equals("Barbarians")){
+                else if(toJoin.get_id() == Team.BARBARIAN_TEAM_ID){
                     return leaveCommand(sender);
                 }
                 else{
-                    if(canPay(toJoin.get_cost(), ((Player) sender).getPlayer())){
-                        if(!actual.deleteTeamMate(sender.getName())){
-                            sender.sendMessage("§a[MCWarClan]§6 High level ERROR, cannot switch you to " + toJoin.get_color().get_colorMark() + toJoin.get_name() + "§6 (deleteERROR). Cannot find your name into this team");
+                    if(player.canPay(toJoin.get_cost())){
+                        if(!toLeave.deleteTeamMate(player)){
+                            Messages.sendMessage("Due to an unknown error, you cannot leave " + toLeave.get_color().get_colorMark() + toLeave.get_name() + "§6.", Messages.messageType.INGAME, sender);
+                            Messages.sendMessage("Cannot kick " + player.get_name() + " from " + toLeave.get_name() + ".", Messages.messageType.ALERT, null);
                             return true;
                         }
-                        else if(!toJoin.addTeamMate(sender.getName())){
-                            if(!actual.addTeamMate(sender.getName()))
-                                sender.sendMessage("§a[MCWarClan]§6 High level ERROR, cannot switch you to this team (add2ERROR).");
-                            sender.sendMessage("§a[MCWarClan]§6 too many member in " + toJoin.get_color().get_colorMark() + toJoin.get_name() + ".");
+                        else if(!toJoin.addTeamMate(player)){
+                            if(!toLeave.addTeamMate(player)){
+                                Messages.sendMessage("Cannot add " + player.get_name() + " from " + toLeave.get_color().get_colorMark() + toLeave.get_name() + ". This add results from the join error", Messages.messageType.ALERT, null);
+                            }
+                            Messages.sendMessage("Too many member in " + toJoin.get_color().get_colorMark() + toJoin.get_name() + "§6.(" + toJoin.get_teamMembers().size() + "/" + toJoin.get_teamSize() + ")", Messages.messageType.INGAME, sender);
                             return true;
                         }
-                        else if(!payTribute(toJoin.get_cost(), ((Player) sender).getPlayer())){
-                            sender.sendMessage("§a[MCWarClan]§6 High level ERROR while paying the tribute.");
+                        else if(!player.payTribute(toJoin.get_cost())){
+                            // TODO: REIMBURSE HIM !
+                            Messages.sendMessage("Due to an unknown error, you cannot pay the tribute. Please tell this to an admin before doing anything.", Messages.messageType.INGAME, sender);
+                            Messages.sendMessage(player.get_name() + " cannot pay the tribute to enter " + toLeave.get_name() + ".", Messages.messageType.ALERT, null);
                             return true;
                         }
-                        sender.sendMessage("§a[MCWarClan]§6 " + "§6Well done, you left " + actual.get_color().get_colorMark() + actual.get_name() + " §6and joined " + toJoin.get_color().get_colorMark() + toJoin.get_name() + ".");
+                        Messages.sendMessage("Well done, you left " + toLeave.get_color().get_colorMark() + toJoin.get_name() + " §6and joined " + toJoin.get_color().get_colorMark() + toJoin.get_name() + "§6.", Messages.messageType.INGAME, sender);
                     }
                     else{
-                        sender.sendMessage("§a[MCWarClan]§6 You do not have enough resources, here is the exhaustive list of materials needed:");
-                        sender.sendMessage(toJoin.get_cost().getResourceTypes());
+                        Messages.sendMessage("You do not have enough resources, here is the exhaustive list of materials needed: ", Messages.messageType.INGAME, sender);
+                        Messages.sendMessage(toJoin.get_cost().getResourceTypes(), Messages.messageType.INGAME, sender);
                     }
                 }
 				return true;
 			}
 			else{
-				sender.sendMessage("§a[MCWarClan]§6 " + "§6This team cannot be find.");
+                Messages.sendMessage("This team does not exist.", Messages.messageType.INGAME, sender);
 				return true;
 			}
 		}
-		sender.sendMessage("§a[MCWarClan]§6 " + "§6You have to be a player to perform this command !");
+        Messages.sendMessage("You have to be a player to perform this command !", Messages.messageType.INGAME, sender);
 		return false;
 	}
 
@@ -209,49 +254,52 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
      */
 	public boolean createteamCommand(CommandSender sender, String[] args){
         if(_tc.get_teamArray().size() >= _tc.get_maxTeams()){
-            sender.sendMessage("§a[MCWarClan]§6 The maximum number of team is already reach !(" + _tc.get_maxTeams() + ")");
+            Messages.sendMessage("The maximum number of team is already reach !(" + _tc.get_maxTeams() + ")", Messages.messageType.INGAME, sender);
             return true;
         }
         if(sender instanceof Player){
             if(args.length == 2) {
                 Team toJoin = new Team(new Color(args[1]), args[0], Settings.initialTeamSize, _tc);
-                Team actual = _tc.searchPlayerTeam(sender.getName());
-                if (canPay(_tc.get_creatingCost(), ((Player) sender).getPlayer())){     // If you can pay...
+                MCWarClanPlayer player = _tc.getPlayer(sender.getName());
+                Team actual = player.get_team();
+                if (player.canPay(_tc.get_creatingCost())){     // If you can pay...
                     if(_tc.addTeam(toJoin)){      // If the team can be added
-                        if(!actual.deleteTeamMate(sender.getName())){
-                            sender.sendMessage("§a[MCWarClan]§6 High level ERROR, cannot switch you to this team (deleteERROR).");
+                        if(!actual.deleteTeamMate(player)){
+                            Messages.sendMessage("Due to an unknown error, we cannot kick you from " + actual.get_color().get_colorMark() + actual.get_name() + " §6while switching you to the new team created. Contact an admin for support.", Messages.messageType.INGAME, sender);
+                            Messages.sendMessage("Cannot kick " + sender.getName() + "from " + actual.get_name() + " while switching to the newly created team.", Messages.messageType.ALERT, null);
                             return true;
                         }
-                        else if(!toJoin.addTeamMate(sender.getName())){
-                            if(!actual.addTeamMate(sender.getName()))
-                                sender.sendMessage("§a[MCWarClan]§6 High level ERROR, cannot switch you to " + actual.get_color().get_colorMark() + actual.get_name() + " (add2ERROR).");
-                            sender.sendMessage("§a[MCWarClan]§6 too many member in " + toJoin.get_color().get_colorMark() + toJoin.get_name() + ".");
+                        else if(!toJoin.addTeamMate(player)){
+                            if(!actual.addTeamMate(player))
+                                Messages.sendMessage("Due to an unknown error, we cannot add you again to " + actual.get_color().get_colorMark() + actual.get_name() + " §6because there is too many memebrs in the new team. Contact an admin for support.", Messages.messageType.INGAME, null);
+                            Messages.sendMessage("too many member in " + toJoin.get_color().get_colorMark() + toJoin.get_name() + "§6.", Messages.messageType.INGAME, sender);
                             return true;
                         }
-                        else if(!payTribute(_tc.get_creatingCost(), ((Player) sender).getPlayer())){      // If the tribute paying works well
-                            sender.sendMessage("§a[MCWarClan]§6 High level ERROR while paying the tribute.");
+                        else if(!player.payTribute(_tc.get_creatingCost())){      // If the tribute paying works well
+                            Messages.sendMessage("Due to an unknown error, you cannot pay your tribute. Please contact an admin.", Messages.messageType.INGAME, sender);
+                            Messages.sendMessage("Unknown error while paying tribute for " + player.get_name() + " !", Messages.messageType.ALERT, null);
                             return true;
                         }
                         else{
-                            sender.sendMessage("§a[MCWarClan]§6 " + new Color(args[1]).get_colorMark() + args[0] + " §6has been successfully created !");
+                            Messages.sendMessage(toJoin.get_color().get_colorMark() + toJoin.get_name() + "§6 has been successfully created !", Messages.messageType.INGAME, sender);
                             return true;
                         }
                     }
                     else{
-                        sender.sendMessage("§a[MCWarClan]§6 " + "§6Sorry, but name or color is already taken by another team. Here is the colorname list: ");
-                        sender.sendMessage("§a[MCWarClan]§6 " + "§2GREEN, §eYELLOW, §0BLACK, §dMAGENTA, §5PURPRLE, §3CYAN, §bLIGHTBLUE");
+                        Messages.sendMessage("Sorry, but name or color is already taken by another team. Here is the colorname list: ", Messages.messageType.INGAME, sender);
+                        Messages.sendMessage("§2GREEN, §eYELLOW, §0BLACK, §dMAGENTA, §5PURPRLE, §3CYAN, §bLIGHTBLUE", Messages.messageType.INGAME, sender);
                         return true;
                     }
                 }
                 else{
-                    sender.sendMessage("§a[MCWarClan]§6 You do not have enough resources, here is the exhaustive list of materials needed:");
-                    sender.sendMessage(_tc.get_creatingCost().getResourceTypes());
+                    Messages.sendMessage("You do not have enough resources, here is the exhaustive list of materials needed: ", Messages.messageType.INGAME, sender);
+                    Messages.sendMessage(_tc.get_creatingCost().getResourceTypes(), Messages.messageType.INGAME, sender);
                     return true;
                 }
             }
 		}
         else{
-            sender.sendMessage("§a[MCWarClan]§6 You have to be a player to perform this command !");
+            Messages.sendMessage("You have to be a player to perform this command !", Messages.messageType.INGAME, sender);
             return true;
         }
 		return false;
@@ -274,7 +322,7 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
             else
             {
                 Player p = ((Player) sender).getPlayer();
-                Team team = _tc.searchPlayerTeam(p.getName());
+                MCWarClanPlayer player = _tc.getPlayer(p.getName());
 
 
                 //Find player's location
@@ -283,15 +331,15 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
                 if (p.isOnline()) {
 
                     //Check if the player's team is not 'Barbarians'
-                    if (team.get_name() == "Barbarians") {
-                        sender.sendMessage("You cannot create a base as a Barbarians.");
+                    if (player.get_team().get_id() == Team.BARBARIAN_TEAM_ID) {
+                        Messages.sendMessage("You cannot create a base as a Barbarian.", Messages.messageType.INGAME, p);
                         return true;
                     }
                     //Check if the player's team have enough resources to create the base
                     Cost cost = Settings.baseInitialCost;
-                    if (!canPay(cost, p)) {
-                        sender.sendMessage("You cannot create a base. You need :");
-                        sender.sendMessage(team.get_cost().getResourceTypes());
+                    if (!player.canPay(cost)) {
+                        Messages.sendMessage("You cannot create a base (not enough materials). You need: ", Messages.messageType.INGAME, p);
+                        Messages.sendMessage(cost.getResourceTypes(), Messages.messageType.INGAME, p);
                         return true;
                     }
 
@@ -307,7 +355,7 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
 
 
                     while (i < teams.size() && !overlap) {
-                        if (teams.get(i) != team) {
+                        if (teams.get(i) != player.get_team()) {
                             //
                             bases = teams.get(i).get_bases();
                             while (j < bases.size() && !overlap) {
@@ -324,13 +372,13 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
                     Location barbSpawn = Bukkit.getWorld(Settings.classicWorldName).getSpawnLocation();
                     final double dist = barbSpawn.distance(p.getLocation());
                     if (dist < Settings.barbariansSpawnDistance) {
-                        sender.sendMessage("You cannot create a base near the barbarian spawn.");
+                        Messages.sendMessage("You cannot create a base near the Barbarian spawn.", Messages.messageType.INGAME, p);
                         return true;
                     }
 
 
                     if (overlap) {
-                        sender.sendMessage("You cannot create a base near another enemy base.");
+                        Messages.sendMessage("You cannot create a base near another enemy base.", Messages.messageType.INGAME, p);
                         return true;
                     }
 
@@ -339,30 +387,34 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
                     //Now we try to create the flag
                     Base b = null;
                     try {
-                        b = new Base(false, team, new MCWarClanLocation(loc));
+                        boolean isHQ = false;
+                        if (player.get_team().get_bases().size() == 0)
+                            isHQ = true;
+                        b = new Base(isHQ, player.get_team(), new MCWarClanLocation(loc));
                     } catch (Exception.NotEnoughSpaceException e) {
-                        sender.sendMessage("There is not enough space to create the base.");
+                        Messages.sendMessage("There is not enough space to create the base.", Messages.messageType.INGAME, p);
                         return true;
                     } catch (Exception.NotValidFlagLocationException e) {
-                        sender.sendMessage("There is not a solid block under the flag.");
+                        Messages.sendMessage("There is not a solid block under the flag.", Messages.messageType.INGAME, p);
                         return true;
                     }
 
                     //If the flag can be created, add the base to the base array
-                    team.get_bases().add(b);
+                    player.get_team().get_bases().add(b);
 
                     //Substract the cost of the base to player's inventory
-                    payTribute(cost, p);
+                    player.payTribute(cost);
 
-                    sender.sendMessage("Base creation succeed");
+                    Messages.sendMessage("The new base has been created !", Messages.messageType.INGAME, p);
                     return true;
                 } else {
-                    sender.sendMessage("Error : The player seems not to be online.");
+                    Messages.sendMessage(p.getName() + " is note online ! Cannot proceed to the base creation.", Messages.messageType.ALERT, null);
+                    Messages.sendMessage(p.getName() + " is note online ! Cannot proceed to the base creation.", Messages.messageType.INGAME, p);
                     return false;
                 }
             }
         } else {
-            sender.sendMessage("Error : You don't seems to execute the command as a player.");
+            Messages.sendMessage("You have to be a player to perform this command !", Messages.messageType.INGAME, sender);
             return false;
         }
     }
@@ -432,84 +484,11 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
         return null;
     }
 
-    /**
-     * @brief Verify if a player can pay the asked tribute.
-     * @param cost
-     * @param player
-     * @return
-     */
-    public boolean canPay(Cost cost, Player player){
-        for(int i = 0; i < cost.get_costEquivalence().size(); i++){
-            // If the specified material is not recognize, just ignore it
-            if(Material.getMaterial(cost.get_costEquivalence().get(i).get_materialName()) != null) {
-                if (!has(player, Material.getMaterial(cost.get_costEquivalence().get(i).get_materialName()), cost.get_costEquivalence().get(i).get_materialValue())) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
 
-    /**
-     * @brief Pay a tribute using a specified cost for a specified player.
-     * @param cost
-     * @param player
-     * @return
-     */
-    public boolean payTribute(Cost cost, Player player){
-        for(int i = 0; i < cost.get_costEquivalence().size(); i++){
-            // If the specified material is not recognize, just ignore it
-            if(Material.getMaterial(cost.get_costEquivalence().get(i).get_materialName()) != null) {
-                if(!pay(player, Material.getMaterial(cost.get_costEquivalence().get(i).get_materialName()), cost.get_costEquivalence().get(i).get_materialValue()))
-                    return false;
-            }
-        }
-        return true;
-    }
 
-    /**
-     * @brief Pay for a player a given number of a given material type.
-     * @param p
-     * @param material
-     * @param valueToPay
-     * @return
-     */
-    public boolean pay(Player p, Material material, int valueToPay){
-        ItemStack[] inventory = p.getInventory().getContents();
-        while (valueToPay > 0){
-            int j = p.getInventory().first(material);
-            if(inventory[j].getAmount() > valueToPay){
-                inventory[j].setAmount(inventory[j].getAmount() - valueToPay);
-                return true;
-            }
-            else{
-                valueToPay -= inventory[j].getAmount();
-                p.getInventory().clear(j);
-            }
-        }
-        return valueToPay == 0;
-    }
 
-    /**
-     * @brief Verify if the player has enough of the specified material.
-     * @param p
-     * @param material
-     * @param valueToHave
-     * @return
-     */
-    public boolean has(Player p, Material material, int valueToHave){
-        ItemStack[] inventory = p.getInventory().getContents();
-        if(inventory.length == 0){
-            return false;
-        }
-        int amount = 0;
-        for(int i = 0; i < inventory.length; i++){
-            if(inventory[i] != null && inventory[i].getType() == material){
-                amount += inventory[i].getAmount();
-            }
-        }
-        return amount >= valueToHave;
-    }
+
+
 
 }
 

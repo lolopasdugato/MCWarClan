@@ -56,3 +56,5 @@ otherSettings:
   uncensoredItemsAmount: 5
   classicWorldName: world
   debugMode: true
+  # Define if the barbarian spawn is reloaded each time the barbarian player dies.
+  randomBarbarianSpawn: true

@@ -16,6 +16,9 @@ public class Base implements Serializable {
 	private Flag _flag;				// The flag attached to this base
 	private MCWarClanLocation _loc;	// Represent the location of a base
     private Cost _cost;             // The cost to create a new base
+    private String _name;
+    private static int _idMaster = 0;
+    private int _id;
 
     //////////////////////////////////////////////////////////////////////////////
     //------------------------------- Constructors -------------------------------
@@ -30,12 +33,14 @@ public class Base implements Serializable {
      * @throws Exception.NotEnoughSpaceException
      */
     public Base(boolean HQ, Team team, MCWarClanLocation loc) throws Exception.NotValidFlagLocationException, Exception.NotEnoughSpaceException {
+        _idMaster++;
         _HQ = HQ;
         _team = team;
         _loc = loc;
         _radius = Settings.initialRadius;   // WARNING: shouldn't be reloaded !
         _bonusRadius = Settings.radiusHQBonus;
         _cost = Settings.baseInitialCost;   // WARNING shouldn't be reload !
+        _id = _idMaster;
         //Test if the flag can be created, and throw NotEnoughSpaceException is not.
         _flag = new Flag(this);
     }
@@ -93,6 +98,7 @@ public class Base implements Serializable {
      */
     public void refresh(){
         _bonusRadius = Settings.radiusHQBonus;
+        _idMaster = _team.get_bases().size();
     }
 
     /**

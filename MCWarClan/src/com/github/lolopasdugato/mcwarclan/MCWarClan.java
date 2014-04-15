@@ -93,7 +93,7 @@ public class MCWarClan extends JavaPlugin implements Listener {
             log.info("|-_MCWARCLAN_-| Config load has failed !");
         else
             log.info("|-_MCWARCLAN_-| OK !");
-        if((!new File(Settings.classicWorldName + "/data/scoreboard.dat").exists() && new File("plugins/MCWarClan/TeamContainer.ser").exists()) || (new File(Settings.classicWorldName + "/data/scoreboard.dat").exists() && !new File("plugins/MCWarClan/TeamContainer.ser").exists())){
+        if((new File(Settings.classicWorldName + "/data/scoreboard.dat").exists() && !new File("plugins/MCWarClan/TeamContainer.ser").exists())){
             log.severe("To prevent any error, MCWarClan will be disable. Please delete " + Settings.classicWorldName + "/data/scoreboard.dat and /plugins/MCWarClan/TeamContainer.ser");
             _hardStop = true;
         }
@@ -126,8 +126,9 @@ public class MCWarClan extends JavaPlugin implements Listener {
 	public void onDisable() {
 		Logger log = Logger.getLogger("minecraft");
 		log.info("Saving datas...");
-        if(!_hardStop)
-		    _tc.serialize();
+        if(!_hardStop){
+            _tc.serialize();
+        }
 	}
 
 }
