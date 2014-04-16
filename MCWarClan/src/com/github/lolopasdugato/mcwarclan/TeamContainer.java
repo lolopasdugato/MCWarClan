@@ -1,24 +1,25 @@
 package com.github.lolopasdugato.mcwarclan;
 
 import org.bukkit.Bukkit;
-import org.bukkit.scoreboard.*;
+import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.ScoreboardManager;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class TeamContainer implements Serializable {
-	
-	static private final long serialVersionUID = 1;
-	
-	private ArrayList<Team> _teamArray;			// Different teams
-	private int _maxTeams;						// Number of maximum teams
-    private Cost _creatingCost;                 // The cost to create a team
+
+    public static final int MAXTEAMSIZE = 10;    // There is only 15 color in the game, and some others for the server messages...
+    static private final long serialVersionUID = 1;
     transient ScoreboardManager _manager;       // Scoreboard manager
     transient Scoreboard _scoreboard;           // The scoreboard
     transient Objective _killObjective;         // Shows kills on scoreboard
     transient Objective _deathObjective;
-
-    public static final int MAXTEAMSIZE = 10;	// There is only 15 color in the game, and some others for the server messages...
+    private ArrayList<Team> _teamArray;            // Different teams
+    private int _maxTeams;						// Number of maximum teams
+    private Cost _creatingCost;                 // The cost to create a team
 
     //////////////////////////////////////////////////////////////////////////////
     //------------------------------- Constructors -------------------------------
@@ -70,23 +71,39 @@ public class TeamContainer implements Serializable {
     public ArrayList<Team> get_teamArray() {
         return _teamArray;
     }
+
+    public void set_teamArray(ArrayList<Team> _teamArray) {
+        this._teamArray = _teamArray;
+    }
+
     public int get_maxTeams() {
         return _maxTeams;
     }
+
+    public void set_maxTeams(int _maxTeams) {
+        this._maxTeams = _maxTeams;
+    }
+
     public Cost get_creatingCost() { return _creatingCost; }
-    public ScoreboardManager get_manager() { return _manager; }
-    public Scoreboard get_scoreboard() { return _scoreboard; }
 
     //////////////////////////////////////////////////////////////////////////////
     //--------------------------------- Setters ----------------------------------
     //////////////////////////////////////////////////////////////////////////////
 
-	public void set_teamArray(ArrayList<Team> _teamArray) {
-		this._teamArray = _teamArray;
-	}
-	public void set_maxTeams(int _maxTeams) { this._maxTeams = _maxTeams; }
-    public void set_creatingCost(Cost _creatingCost) { this._creatingCost = _creatingCost; }
+    public void set_creatingCost(Cost _creatingCost) {
+        this._creatingCost = _creatingCost;
+    }
+
+    public ScoreboardManager get_manager() {
+        return _manager;
+    }
+
     public void set_manager(ScoreboardManager _manager) { this._manager = _manager; }
+
+    public Scoreboard get_scoreboard() {
+        return _scoreboard;
+    }
+
     public void set_scoreboard(Scoreboard _scoreboard) { this._scoreboard = _scoreboard; }
 
     //////////////////////////////////////////////////////////////////////////////
@@ -163,7 +180,7 @@ public class TeamContainer implements Serializable {
     /**
      * @brief Search a player through the different teams in the teamContainer.
      * @param playerName the name of the player.
-     * @return returns the team if it works, otherwise, it will return null.
+     * @return returns the player if it works, otherwise, it will return null.
      */
     public MCWarClanPlayer getPlayer(String playerName){
         for(int i = 0; i < _teamArray.size(); i++){
@@ -175,6 +192,23 @@ public class TeamContainer implements Serializable {
         }
         return null;
     }
+
+    /**
+     * @param uuid the unique ID defined for the player.
+     * @return returns the player if it works, otherwise, it will return null.
+     * @brief Search a player through the different teams in the teamContainer.
+     */
+    public MCWarClanPlayer getPlayer(UUID uuid) {
+        for (int i = 0; i < _teamArray.size(); i++) {
+            for (int j = 0; j < _teamArray.get(i).get_teamMembers().size(); j++) {
+                if (_teamArray.get(i).get_teamMembers().get(j).get_uuid().equals(uuid)) {
+                    return _teamArray.get(i).get_teamMembers().get(j);
+                }
+            }
+        }
+        return null;
+    }
+
 
     /**
      * @brief Search a team using the team name.

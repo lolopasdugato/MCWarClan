@@ -1,12 +1,13 @@
 package com.github.lolopasdugato.mcwarclan;
 
-import com.avaje.ebeaninternal.server.cluster.mcast.Message;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 
@@ -342,10 +343,9 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
                         Messages.sendMessage(cost.getResourceTypes(), Messages.messageType.INGAME, p);
                         return true;
                     }
-
                     //Here the player have enough resources to pay
-                    //TODO Now we check if the location is far enough from other bases
 
+                    //Now we check if the location is far enough from other bases
                     Location loc = p.getTargetBlock(null, 10).getLocation();
                     final ArrayList<Team> teams = _tc.get_teamArray();
                     ArrayList<Base> bases;
@@ -354,9 +354,9 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
                     int i = 0, j = 0;
 
 
+                    //TODO Move to the 'isInEnemyTerritory' function
                     while (i < teams.size() && !overlap) {
                         if (teams.get(i) != player.get_team()) {
-                            //
                             bases = teams.get(i).get_bases();
                             while (j < bases.size() && !overlap) {
                                 if (bases.get(j).isInBase(loc))
@@ -368,7 +368,7 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
                         i++;
                     }
 
-                    //Todo add verification of the barbarian spawn
+                    //Verification of the barbarian spawn
                     Location barbSpawn = Bukkit.getWorld(Settings.classicWorldName).getSpawnLocation();
                     final double dist = barbSpawn.distance(p.getLocation());
                     if (dist < Settings.barbariansSpawnDistance) {

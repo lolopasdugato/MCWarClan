@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.UUID;
 
@@ -38,13 +39,18 @@ public class MCWarClanPlayer implements Serializable {
     public String get_name() { return _name; }
     public UUID get_uuid() { return _uuid; }
     public Team get_team() { return _team; }
-    public MCWarClanLocation get_spawn() { return _spawn; }
+
+    public void set_team(Team _team) {
+        this._team = _team;
+    }
 
     //////////////////////////////////////////////////////////////////////////////
     //--------------------------------- Setters ----------------------------------
     //////////////////////////////////////////////////////////////////////////////
 
-    public void set_team(Team _team) { this._team = _team; }
+    public MCWarClanLocation get_spawn() {
+        return _spawn;
+    }
 
 
     //////////////////////////////////////////////////////////////////////////////
@@ -231,6 +237,8 @@ public class MCWarClanPlayer implements Serializable {
     }
 
     /**
+     * @depreciated See the new isInTerritory() function which return a base.
+     *  NOTE : With the new function, we just check for the player, not for the all teammates (match class logic)
      * @brief Verify if someone of the team t is in an enemy territory.
      * @param loc the location where we want to check.
      * @return Returns true if the location of the guy is considered as an enemy territory.
@@ -238,10 +246,66 @@ public class MCWarClanPlayer implements Serializable {
     public boolean isInEnemyTerritory(Location loc){
         TeamContainer tc = _team.get_teamContainer();
         for(int i = 0; i < tc.get_teamArray().size(); i++){
-            if(tc.get_teamArray().get(i).isEnemyToTeam(_team) && tc.get_teamArray().get(i).isInTerritory(loc)){
+            if (tc.get_teamArray().get(i).isEnemyToTeam(_team) && tc.get_teamArray().get(i).isInTerritory(loc) != null) {
                 return true;
             }
         }
         return false;
     }
+
+
+    /**
+     * @return Returns the base area where the player is if so, return null if no results matches.
+     * @brief Verify if the player is in an enemy territory.
+     */
+    public Base isInEnemyTerritory() {
+        ArrayList<Team> teams = _team.get_teamContainer().get_teamArray();
+        Base b;
+        Player p = toOnlinePlayer();
+
+        //To be sure if it's an online player
+        if (p == null) {
+            Messages.sendMessage("Error : player not online. toonlinePlayer return null value.",
+                    Messages.messageType.DEBUG, null);
+            return null;
+        }
+
+        for (int i = 0; i < teams.size(); i++) {
+            b = teams.get(i).isInTerritory(p.getLocation());
+            if (teams.get(i).isEnemyToTeam(_team) && b != null) {
+                return b;
+            }
+        }
+        return null;
+    }
+
+
+    //Another version used in the "createbaseCommand" function
+//    private Base isInEnemyBase()
+//    {
+//        ArrayList<Team> teams = _team.get_teamContainer().get_teamArray();
+//        ArrayList<Base> bases;
+//        Player p  = toOnlinePlayer();
+//
+//        //If we cannot find the player, stop here
+//        if(p == null)
+//            return null;
+//
+//        Location loc = p.getLocation();
+//        int i = 0, j = 0;
+//
+//        while (i < teams.size()) {
+//            if (teams.get(i) != get_team()) {
+//                bases = teams.get(i).get_bases();
+//                while (j < bases.size()) {
+//                    if (bases.get(j).isInBase(loc))
+//                        return bases.get(j);
+//                    j++;
+//                }
+//            }
+//            j = 0;
+//            i++;
+//        }
+//        return null;
+//    }
 }

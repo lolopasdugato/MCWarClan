@@ -1,61 +1,65 @@
 package com.github.lolopasdugato.mcwarclan;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
 
-import java.util.Random;
 
 public class EventManager implements Listener {
-	
-	private TeamContainer _tc;
+
+    private TeamContainer _tc;
+    private JavaPlugin _plugin;
 
     //////////////////////////////////////////////////////////////////////////////
     //------------------------------- Constructors -------------------------------
     //////////////////////////////////////////////////////////////////////////////
 
     /**
-     * @brief Classic Event constructor.
      * @param tc
+     * @brief Classic Event constructor.
      */
-    public EventManager(TeamContainer tc){
-		_tc = tc;
-	}
+    public EventManager(TeamContainer tc, JavaPlugin plugin) {
+        _tc = tc;
+        _plugin = plugin;
+    }
 
     //////////////////////////////////////////////////////////////////////////////
     //---------------------------------- Events ----------------------------------
     //////////////////////////////////////////////////////////////////////////////
 
-	@EventHandler(priority = EventPriority.HIGHEST)
-	public void onPlayerJoin(PlayerJoinEvent evt) {
+    @EventHandler(priority = EventPriority.HIGHEST)
+    private void onPlayerJoin(PlayerJoinEvent evt) {
         MCWarClanPlayer player = _tc.getPlayer(evt.getPlayer().getName());
-		if(_tc == null){
+        if (_tc == null) {
             Messages.sendMessage("The main team manager cannot be found. Please contact the creator to solve this problem.", Messages.messageType.ALERT, null);
-			return;
-		}
-		if(player == null){
+            return;
+        }
+        if (player == null) {
             Messages.sendMessage("Welcome, this server is using MCWarClan " + MCWarClan.VERSION + ", have fun !", Messages.messageType.INGAME, evt.getPlayer());
             Team barbarians = _tc.getTeam(Team.BARBARIAN_TEAM_ID);
             player = new MCWarClanPlayer(evt.getPlayer(), barbarians);
             barbarians.addTeamMate(player);
             player.spawn();
             Messages.sendMessage(player.get_name() + " has spawn in x:" + player.get_spawn().get_x() + ", y:" + player.get_spawn().get_y() + ", z:" + player.get_spawn().get_z(), Messages.messageType.DEBUG, null);
-        }
-        else
+        } else
             Messages.sendMessage("Welcome back, this server is using MCWarClan " + MCWarClan.VERSION + ", have fun !", Messages.messageType.INGAME, evt.getPlayer());
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
-    public void onPlayerDeath(PlayerRespawnEvent evt){
+    private void onPlayerDeath(PlayerRespawnEvent evt) {
         MCWarClanPlayer player = _tc.getPlayer(evt.getPlayer().getName());
-        if(player.get_team().get_id() == Team.BARBARIAN_TEAM_ID && Settings.randomBarbarianSpawn){
+        if (player.get_team().get_id() == Team.BARBARIAN_TEAM_ID && Settings.randomBarbarianSpawn) {
             player.reloadSpawn();
         }
         Location playerSpawn = player.get_spawn().getLocation();
@@ -65,13 +69,15 @@ public class EventManager implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onBlockPlace(BlockPlaceEvent evt) {
+    private void onBlockPlace(BlockPlaceEvent evt) {
         MCWarClanPlayer player = _tc.getPlayer(evt.getPlayer().getName());
 
         if (player != null) {
-            if(player.isInEnemyTerritory(evt.getBlockPlaced().getLocation())){   // Check if in enemy territory
-                if(evt.getBlockPlaced().getType() == Material.TNT || evt.getBlockPlaced().getType() == Material.LADDER || evt.getBlockPlaced().getType() == Material.LEVER){    // Cehck if it's a special block
-                    if(evt.getPlayer().getItemInHand().getAmount() >= Settings.uncensoredItemsAmount){  // Check if the guy has the amount of item required to place the special block
+            if (player.isInEnemyTerritory(evt.getBlockPlaced().getLocation())) {   // Check if in enemy territory
+                if (evt.getBlockPlaced().getType() == Material.TNT || evt.getBlockPlaced().getType() == Material.LADDER
+                        || evt.getBlockPlaced().getType() == Material.LEVER) {    // Check if it's a special
+                    // block
+                    if (evt.getPlayer().getItemInHand().getAmount() >= Settings.uncensoredItemsAmount) {  // Check if the guy has the amount of item required to place the special block
                         evt.getPlayer().getItemInHand().setAmount(evt.getPlayer().getItemInHand().getAmount() - Settings.uncensoredItemsAmount - 1);
                         return;
                     } else {
@@ -80,31 +86,69 @@ public class EventManager implements Listener {
                         evt.getPlayer().updateInventory();
                         Messages.sendMessage("You need at least " + Settings.uncensoredItemsAmount + " " + evt.getBlockPlaced().getType().toString() + " to place it into an enemy base !", Messages.messageType.INGAME, evt.getPlayer());
                     }
-                }
-                else {
+                } else {
                     evt.setCancelled(true);
                     evt.getPlayer().updateInventory();
                     // evt.getBlockPlaced().breakNaturally();
                     Messages.sendMessage("You cannot place block (except TNT, Ladders, and Levers...) in an enemy base !", Messages.messageType.INGAME, evt.getPlayer());
                 }
             }
-        }
-        else
+        } else
             Messages.sendMessage("Error, please ask an admin to be add to a team !", Messages.messageType.INGAME, evt.getPlayer());
     }
 
+
     @EventHandler(priority = EventPriority.NORMAL)
-    public void onBlockBreak(BlockBreakEvent evt) {
+    private void onBlockBreak(BlockBreakEvent evt) {
         MCWarClanPlayer player = _tc.getPlayer(evt.getPlayer().getName());
 
         if (player != null) {
-            if(player.isInEnemyTerritory(evt.getBlock().getLocation())){
+            if (player.isInEnemyTerritory(evt.getBlock().getLocation())) {
                 Messages.sendMessage("You cannot break block in the enemy base !", Messages.messageType.INGAME, evt.getPlayer());
                 evt.setCancelled(true);
             }
-        }
-        else
+        } else
             Messages.sendMessage("Error, please ask an admin to be add to a team !", Messages.messageType.INGAME, evt.getPlayer());
+    }
+
+    @EventHandler
+    private void onEntityDamage(EntityDamageEvent evt) {
+        EntityDamageEvent.DamageCause dmg = evt.getCause();
+
+        if ((EntityDamageEvent.DamageCause.ENTITY_ATTACK == dmg || EntityDamageEvent.DamageCause.BLOCK_EXPLOSION == dmg)
+                || dmg == EntityDamageEvent.DamageCause.PROJECTILE) {
+            Entity ent = evt.getEntity();
+            if (ent.getType() == EntityType.PLAYER) {
+                //Get the player
+                MCWarClanPlayer player = _tc.getPlayer(ent.getUniqueId());
+
+                //If the player is in enemy territory
+                Base b = player.isInEnemyTerritory();
+                if (b != null) {
+                    //A war may be beginning, so the base is now contested.
+
+                    if (b.isContested()) {
+                        return;
+                        //We do nothing because another thread is already running.
+                    }
+
+                    //else we must create a thread
+                    b.isContested(true);
+
+                    //Create a new thread in order to check if the enemies are defeated
+                    BukkitTask tks = new MCWarClanRoutine.ContestedBaseRoutine(_plugin, b,
+                            player.get_team()).runTaskTimer(_plugin,
+                            0, 100);
+
+                    //Send a message to all players involved in the battle
+                    Messages.sendMessage(new String[]{"Battle start in opponent base."}, Messages.messageType.DEBUG,
+                            player.get_team().get_teamMembers());
+                    Messages.sendMessage(new String[]{"Battle start in your base."}, Messages.messageType.DEBUG,
+                            b.get_team().get_teamMembers());
+
+                }
+            }
+        }
     }
 
 }

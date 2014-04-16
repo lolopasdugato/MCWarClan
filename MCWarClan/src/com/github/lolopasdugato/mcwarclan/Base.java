@@ -8,17 +8,17 @@ import java.io.Serializable;
 public class Base implements Serializable {
 	
 	static private final long serialVersionUID = 5;
-	
-	private boolean _HQ;			// Determine if this is an HQ or not
-	private int _radius; 			// Determine the radius protection effect of this base
+    private static int _idMaster = 0;
+    private boolean _HQ;            // Determine if this is an HQ or not
+    private int _radius; 			// Determine the radius protection effect of this base
     private int _bonusRadius;       // Determine the radius bonus for the HQ.
 	private Team _team;				// Team which this object is attached to
 	private Flag _flag;				// The flag attached to this base
 	private MCWarClanLocation _loc;	// Represent the location of a base
     private Cost _cost;             // The cost to create a new base
     private String _name;
-    private static int _idMaster = 0;
     private int _id;
+    private boolean _contested;
 
     //////////////////////////////////////////////////////////////////////////////
     //------------------------------- Constructors -------------------------------
@@ -43,6 +43,8 @@ public class Base implements Serializable {
         _id = _idMaster;
         //Test if the flag can be created, and throw NotEnoughSpaceException is not.
         _flag = new Flag(this);
+
+        _contested = false;
     }
 
     //////////////////////////////////////////////////////////////////////////////
@@ -52,42 +54,63 @@ public class Base implements Serializable {
     public boolean is_HQ() {
         return _HQ;
     }
+
+    public void set_HQ(boolean _HQ) {
+        this._HQ = _HQ;
+    }
+
     public Team get_team() {
         return _team;
     }
+
+    public void set_team(Team _team) {
+        this._team = _team;
+    }
+
     public MCWarClanLocation get_loc() {
         return _loc;
     }
+
+    public void set_loc(MCWarClanLocation _loc) {
+        this._loc = _loc;
+    }
+
     public int get_radius() {
         return _radius;
-    }
-    public int get_bonusRadius() {
-        return _bonusRadius;
-    }
-    public Flag get_flag() {
-        return _flag;
     }
 
     //////////////////////////////////////////////////////////////////////////////
     //--------------------------------- Setters ----------------------------------
     //////////////////////////////////////////////////////////////////////////////
 
-    public void set_loc(MCWarClanLocation _loc) {
-        this._loc = _loc;
-    }
-    public void set_team(Team _team) {
-        this._team = _team;
-    }
-    public void set_HQ(boolean _HQ) { this._HQ = _HQ; }
     public void set_radius(int _radius) {
         this._radius = _radius;
     }
+
+    public int get_bonusRadius() {
+        return _bonusRadius;
+    }
+
     public void set_bonusRadius(int _bonusRadius) {
         this._bonusRadius = _bonusRadius;
     }
+
+    public Flag get_flag() {
+        return _flag;
+    }
+
     public void set_flag(Flag _flag) {
         this._flag = _flag;
     }
+
+    public boolean isContested() {
+        return _contested;
+    }
+
+    public void isContested(boolean contested) {
+        _contested = contested;
+    }
+
 
     //////////////////////////////////////////////////////////////////////////////
     //--------------------------------- Functions --------------------------------
@@ -115,5 +138,6 @@ public class Base implements Serializable {
             isInZAxe = true;
         return (isInXAxe && isInZAxe);
     }
+
 
 }

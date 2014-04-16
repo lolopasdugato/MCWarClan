@@ -91,6 +91,8 @@ public class Flag implements Serializable {
      * @return True is enough space, else false.
      * @brief Test if the is enough space to generate the flag, with the block in argument as a base.
      */
+
+    //
     private boolean enoughSpaceForFlag(Block blk) {
         boolean empty = true;
         //first, have to check if the area is empty

@@ -4,20 +4,21 @@
 
 package com.github.lolopasdugato.mcwarclan;
 
-import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.io.File;
 import java.util.logging.Logger;
 
 public class MCWarClan extends JavaPlugin implements Listener {
-	
-	protected TeamContainer _tc;
-	protected EventManager _em;
+
+    public static String VERSION = "v0.1";
+    public BukkitTask _tsk;
+    protected TeamContainer _tc;
+    protected EventManager _em;
     protected Settings _cfg;
     protected boolean _hardStop;
-    public static String VERSION = "v0.1";
 
     //////////////////////////////////////////////////////////////////////////////
     //------------------------------- Constructors -------------------------------
@@ -79,6 +80,12 @@ public class MCWarClan extends JavaPlugin implements Listener {
         getCommand("createbase").setExecutor(new MCWarClanCommandExecutor(_tc, getServer()));
     }
 
+    private void initRoutines() {
+        //Create task and set time before recall
+        //Info : 20 ticks ~= 1 second
+//        _tsk = new MCWarClanRoutine.ContestedBaseRoutine(this).runTaskTimer(this, 0, 100);
+    }
+
     /**
      * @brief Is called on server launch
      */
@@ -106,13 +113,17 @@ public class MCWarClan extends JavaPlugin implements Listener {
             log.info("|-_MCWARCLAN_-| OK !");
 
             log.info("|-_MCWARCLAN_-| Registering events...");
-            _em = new EventManager(_tc);
+            _em = new EventManager(_tc, this);
             getServer().getPluginManager().registerEvents(_em, this);
             log.info("|-_MCWARCLAN_-| OK !");
 
             log.info("|-_MCWARCLAN_-| Setting command Executor...");
             InitCommandExecutor();
             log.info("|-_MCWARCLAN_-| OK !");
+
+//            log.info("|-_MCWARCLAN_-| Setting routines...");
+//            initRoutines();
+//            log.info("|-_MCWARCLAN_-| OK !");
 
             log.info("|-_MCWARCLAN_-| MCWarClan has been successfully launched !");
         }
