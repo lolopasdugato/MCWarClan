@@ -25,7 +25,7 @@ public class Base implements Serializable {
     //////////////////////////////////////////////////////////////////////////////
 
     /**
-     * @brief Classic Base constructor
+     *  Classic Base constructor
      * @param HQ
      * @param team
      * @param loc
@@ -50,6 +50,7 @@ public class Base implements Serializable {
     //////////////////////////////////////////////////////////////////////////////
     //--------------------------------- Getters ----------------------------------
     //////////////////////////////////////////////////////////////////////////////
+
 
     public boolean is_HQ() {
         return _HQ;
@@ -117,7 +118,7 @@ public class Base implements Serializable {
     //////////////////////////////////////////////////////////////////////////////
 
     /**
-     * @brief refresh settings that should be reloaded if config.yml has been changed.
+     *  refresh settings that should be reloaded if config.yml has been changed.
      */
     public void refresh(){
         _bonusRadius = Settings.radiusHQBonus;
@@ -125,7 +126,7 @@ public class Base implements Serializable {
     }
 
     /**
-     * @brief Says if the location is in this base.
+     *  Says if the location is in this base.
      * @param loc the location to check.
      * @return True if the location is in this base.
      */

@@ -27,7 +27,7 @@ public class EventManager implements Listener {
 
     /**
      * @param tc
-     * @brief Classic Event constructor.
+     *  Classic Event constructor.
      */
     public EventManager(TeamContainer tc, JavaPlugin plugin) {
         _tc = tc;

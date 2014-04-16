@@ -21,7 +21,7 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
     //////////////////////////////////////////////////////////////////////////////
 
     /**
-     * @brief Classic CommandExecutor constructor.
+     *  Classic CommandExecutor constructor.
      * @param tc
      * @param server
      */
@@ -35,7 +35,7 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
     //////////////////////////////////////////////////////////////////////////////
 
     /**
-     * @brief Show to the sender the list of all teams in the game.
+     *  Show to the sender the list of all teams in the game.
      * @param sender
      * @return
      */
@@ -47,7 +47,7 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
 	}
 
     /**
-     * @brief Sort of admin command. Allows someone to assign someone else to a specific team.
+     *  Sort of admin command. Allows someone to assign someone else to a specific team.
      * @param sender
      * @param args
      * @return
@@ -87,7 +87,7 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
 	}
 
     /**
-     * @brief Shows the team members of the sender's team or of the specified team.
+     *  Shows the team members of the sender's team or of the specified team.
      * @param sender
      * @param args
      * @return
@@ -113,7 +113,7 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
 	}
 
     /**
-     * @brief Sort of admin command. Allows someone to kick someone else from a specific team.
+     *  Sort of admin command. Allows someone to kick someone else from a specific team.
      * @param sender
      * @param args
      * @return
@@ -152,7 +152,7 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
 	}
 
     /**
-     * @brief Allows the sender to leave it's current team an join the barbarian team.
+     *  Allows the sender to leave it's current team an join the barbarian team.
      * @param sender
      * @return
      */
@@ -188,7 +188,7 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
 	}
 
     /**
-     * @brief Allows the sender to join the specified team.
+     *  Allows the sender to join the specified team.
      * @param sender
      * @param args
      * @return
@@ -248,7 +248,7 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
 	}
 
     /**
-     * @brief Allows someone to create a team.
+     *  Allows someone to create a team.
      * @param sender
      * @param args
      * @return
@@ -307,7 +307,7 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
 	}
 
     /**
-     * @brief Allows someone to create a base.
+     *  Allows someone to create a base.
      * @param sender
      * @param args
      * @return
@@ -464,7 +464,7 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
     //////////////////////////////////////////////////////////////////////////////
 
     /**
-     * @brief Check if a player has been or is on the server.
+     *  Check if a player has been or is on the server.
      * @param playerName
      * @return
      */
@@ -473,7 +473,7 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
     }
 
     /**
-     * @brief Returns a player using a name.
+     *  Returns a player using a name.
      * @param name
      * @return
      */

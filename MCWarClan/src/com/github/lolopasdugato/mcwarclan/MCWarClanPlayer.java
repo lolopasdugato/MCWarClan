@@ -58,7 +58,7 @@ public class MCWarClanPlayer implements Serializable {
     //////////////////////////////////////////////////////////////////////////////
 
     /**
-     * @brief Convert this MCWarClanPlayer to an online player.
+     *  Convert this MCWarClanPlayer to an online player.
      * @return an online player or null.
      */
     public Player toOnlinePlayer(){
@@ -66,7 +66,7 @@ public class MCWarClanPlayer implements Serializable {
     }
 
     /**
-     * @brief Convert this MCWarClanPlayer to an OfflinePlayer.
+     *  Convert this MCWarClanPlayer to an OfflinePlayer.
      * @return an OfflinePlayer.
      */
     public OfflinePlayer toOfflinePlayer(){
@@ -79,7 +79,7 @@ public class MCWarClanPlayer implements Serializable {
     }
 
     /**
-     * @brief Use to search a random barbarian spawn using config.yml.
+     *  Use to search a random barbarian spawn using config.yml.
      * @param barbarianSpawnRadius
      * @return
      */
@@ -101,7 +101,7 @@ public class MCWarClanPlayer implements Serializable {
     }
 
     /**
-     * @brief looks if you can spawn in this location.
+     *  looks if you can spawn in this location.
      * @param loc the position to check.
      * @return true if you can spawn there.
      */
@@ -110,7 +110,7 @@ public class MCWarClanPlayer implements Serializable {
     }
 
     /**
-     * @brief Up the location (adds y to Y)
+     *  Up the location (adds y to Y)
      * @param loc the location to change.
      * @return the new location.
      */
@@ -120,7 +120,7 @@ public class MCWarClanPlayer implements Serializable {
     }
 
     /**
-     * @brief Makes the player respawn.
+     *  Makes the player respawn.
      */
     public void spawn(){
         _spawn.getLocation().getChunk().load();
@@ -128,7 +128,7 @@ public class MCWarClanPlayer implements Serializable {
     }
 
     /**
-     * @brief reload a new spawn for a barbarian.
+     *  reload a new spawn for a barbarian.
      */
     public void reloadSpawn(){
         if(_team.get_id() == Team.BARBARIAN_TEAM_ID) {
@@ -150,7 +150,7 @@ public class MCWarClanPlayer implements Serializable {
     }
 
     /**
-     * @brief Verify if a player can pay the asked tribute.
+     *  Verify if a player can pay the asked tribute.
      * @param cost
      * @return
      */
@@ -167,7 +167,7 @@ public class MCWarClanPlayer implements Serializable {
     }
 
     /**
-     * @brief Verify if the player has enough of the specified material.
+     *  Verify if the player has enough of the specified material.
      * @param material
      * @param valueToHave
      * @return
@@ -194,7 +194,7 @@ public class MCWarClanPlayer implements Serializable {
     }
 
     /**
-     * @brief Pay a tribute using a specified cost for a specified player.
+     *  Pay a tribute using a specified cost for a specified player.
      * @param cost
      * @return
      */
@@ -210,7 +210,7 @@ public class MCWarClanPlayer implements Serializable {
     }
 
     /**
-     * @brief Pay for a player a given number of a given material type.
+     *  Pay for a player a given number of a given material type.
      * @param material
      * @param valueToPay
      * @return
@@ -239,7 +239,7 @@ public class MCWarClanPlayer implements Serializable {
     /**
      * @depreciated See the new isInTerritory() function which return a base.
      *  NOTE : With the new function, we just check for the player, not for the all teammates (match class logic)
-     * @brief Verify if someone of the team t is in an enemy territory.
+     *  Verify if someone of the team t is in an enemy territory.
      * @param loc the location where we want to check.
      * @return Returns true if the location of the guy is considered as an enemy territory.
      */
@@ -256,7 +256,7 @@ public class MCWarClanPlayer implements Serializable {
 
     /**
      * @return Returns the base area where the player is if so, return null if no results matches.
-     * @brief Verify if the player is in an enemy territory.
+     *  Verify if the player is in an enemy territory.
      */
     public Base isInEnemyTerritory() {
         ArrayList<Team> teams = _team.get_teamContainer().get_teamArray();

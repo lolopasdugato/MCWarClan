@@ -1,7 +1,6 @@
 package com.github.lolopasdugato.mcwarclan;
 
 import org.bukkit.DyeColor;
-import org.bukkit.material.Dye;
 
 import java.io.Serializable;
 
@@ -19,7 +18,7 @@ public class Color implements Serializable {
     //////////////////////////////////////////////////////////////////////////////
 
     /**
-     * @brief Classic color constructor. Automatically initialize values for a team color.
+     *  Classic color constructor. Automatically initialize values for a team color.
      * @param colorName
      */
     public Color(String colorName) {
@@ -99,27 +98,35 @@ public class Color implements Serializable {
     public boolean is_validColor() {
         return _validColor;
     }
+
+    public void set_validColor(boolean _validColor) {
+        this._validColor = _validColor;
+    }
+
     public String get_colorName() {
         return _colorName;
     }
-    public String get_colorMark() {
-        return _colorMark;
+
+    public void set_colorName(String _colorName) {
+        this._colorName = _colorName;
     }
-    public DyeColor get_dye() { return _dye; }
 
     //////////////////////////////////////////////////////////////////////////////
     //--------------------------------- Setters ----------------------------------
     //////////////////////////////////////////////////////////////////////////////
 
-    public void set_validColor(boolean _validColor) {
-        this._validColor = _validColor;
+    public String get_colorMark() {
+        return _colorMark;
     }
-    public void set_colorName(String _colorName) {
-        this._colorName = _colorName;
-    }
+
     public void set_colorMark(String _colorMark) {
         this._colorMark = _colorMark;
     }
+
+    public DyeColor get_dye() {
+        return _dye;
+    }
+
     public void set_dye(DyeColor _dye) { this._dye = _dye; }
 
     //////////////////////////////////////////////////////////////////////////////
@@ -180,7 +187,7 @@ public class Color implements Serializable {
     }
 
     /**
-     * @brief refresh settings that should be reloaded if config.yml has been changed.
+     *  refresh settings that should be reloaded if config.yml has been changed.
      */
     public void refresh(){
         // No Settings

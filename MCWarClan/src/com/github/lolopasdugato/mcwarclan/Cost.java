@@ -17,14 +17,14 @@ public class Cost implements Serializable{
     //////////////////////////////////////////////////////////////////////////////
 
     /**
-     * @brief Classic Cost constructor
+     *  Classic Cost constructor
      */
     public Cost(){
         _costEquivalence = new ArrayList<Equivalence>();
     }
 
     /**
-     * @brief Cost copy constructor
+     *  Cost copy constructor
      * @param c
      */
     public Cost(Cost c){
@@ -50,7 +50,7 @@ public class Cost implements Serializable{
     //////////////////////////////////////////////////////////////////////////////
 
     /**
-     * @brief Add a value to a cost.
+     *  Add a value to a cost.
      * @param materialName
      * @param numberOfMaterials
      * @return
@@ -60,7 +60,7 @@ public class Cost implements Serializable{
     }
 
     /**
-     * @brief Returns a string list containing all resources types in a cost, linked with their needed amount.
+     *  Returns a string list containing all resources types in a cost, linked with their needed amount.
      * @return
      */
     public String[] getResourceTypes(){
@@ -77,7 +77,7 @@ public class Cost implements Serializable{
     }
 
     /**
-     * @brief refresh settings that should be reloaded if config.yml has been changed.
+     *  refresh settings that should be reloaded if config.yml has been changed.
      */
     public void refresh(){
         // No settings to refresh

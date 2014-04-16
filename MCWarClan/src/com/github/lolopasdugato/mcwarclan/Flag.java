@@ -23,7 +23,7 @@ public class Flag implements Serializable {
     //////////////////////////////////////////////////////////////////////////////
 
     /**
-     * @brief Classic Flag constructor
+     *  Classic Flag constructor
      * @param base
      * @throws Exception.NotEnoughSpaceException
      * @throws Exception.NotValidFlagLocationException
@@ -59,7 +59,7 @@ public class Flag implements Serializable {
     /**
      * @param blk The block which is the base of the flag.
      * @param dye The color of the team, which will be on the flag.
-     * @brief Generate a flag for a base, taking blk as the base block.
+     *  Generate a flag for a base, taking blk as the base block.
      */
     private void generateFlag(Block blk, DyeColor dye) {
 
@@ -89,7 +89,7 @@ public class Flag implements Serializable {
     /**
      * @param blk The block which is the base of the flag.
      * @return True is enough space, else false.
-     * @brief Test if the is enough space to generate the flag, with the block in argument as a base.
+     *  Test if the is enough space to generate the flag, with the block in argument as a base.
      */
 
     //
@@ -130,7 +130,7 @@ public class Flag implements Serializable {
     }
 
     /**
-     * @brief refresh settings that should be reloaded if config.yml has been changed.
+     *  refresh settings that should be reloaded if config.yml has been changed.
      */
     public void refresh(){
         _base.refresh();

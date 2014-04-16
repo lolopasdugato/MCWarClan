@@ -17,7 +17,7 @@ public class Messages {
      * @param message The message you wanted to send
      * @param type    The type of the message (see messageType)
      * @param locutor The person who will receive the message
-     * @brief Send a message to a person using a special type and a special prefix.
+     *                Send a message to a person using a special type and a special prefix.
      */
     public static void sendMessage(String message, messageType type, CommandSender locutor) {
         switch (type) {
@@ -53,7 +53,7 @@ public class Messages {
      * @param message The message you wanted to send (in an array of strings)
      * @param type    The type of the message (see messageType)
      * @param locutor The person who will receive the message
-     * @brief Send a group of messages to a person using a special type and a special prefix.
+     *                Send a group of messages to a person using a special type and a special prefix.
      */
     public static void sendMessage(String[] message, messageType type, CommandSender locutor) {
         switch (type) {
@@ -90,7 +90,7 @@ public class Messages {
      * @param message  The message you wanted to send (in multiple strings)
      * @param type     The type of the message (see messageType)
      * @param locutors An array of person who will receive the message
-     * @brief Send a message to a group using a special type and a special prefix.
+     *                 Send a message to a group using a special type and a special prefix.
      */
     public static void sendMessage(String[] message, messageType type, ArrayList<MCWarClanPlayer> locutors) {
         for (MCWarClanPlayer locutor : locutors) {
@@ -103,7 +103,7 @@ public class Messages {
     }
 
     /**
-     * @brief Send a message to a group using a special type and a special prefix.
+     *  Send a message to a group using a special type and a special prefix.
      * @param message The message you wanted to send
      * @param type The type of the message (see messageType)
      * @param locutors An array of person who will receive the message

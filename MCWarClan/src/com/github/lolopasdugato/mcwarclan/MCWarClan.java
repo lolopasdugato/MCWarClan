@@ -25,7 +25,7 @@ public class MCWarClan extends JavaPlugin implements Listener {
     //////////////////////////////////////////////////////////////////////////////
 
     /**
-     * @brief Classic MCWarClan constructor.
+     *  Classic MCWarClan constructor.
      */
     public MCWarClan(){
 
@@ -48,7 +48,7 @@ public class MCWarClan extends JavaPlugin implements Listener {
     //////////////////////////////////////////////////////////////////////////////
 
     /**
-     * @brief Init a team container.
+     *  Init a team container.
      * @return return a teamcontainer initialized
      */
 	public TeamContainer TeamContainerInit(){
@@ -67,7 +67,7 @@ public class MCWarClan extends JavaPlugin implements Listener {
 	}
 
     /**
-     * @brief Init all commands in the command executor
+     *  Init all commands in the command executor
      */
 	public void InitCommandExecutor(){
 		getCommand("showteams").setExecutor(new MCWarClanCommandExecutor(_tc, getServer()));
@@ -87,7 +87,7 @@ public class MCWarClan extends JavaPlugin implements Listener {
     }
 
     /**
-     * @brief Is called on server launch
+     *  Is called on server launch
      */
 	public void onEnable(){
 		Logger log = Logger.getLogger("minecraft");
@@ -132,7 +132,7 @@ public class MCWarClan extends JavaPlugin implements Listener {
 	}
 
     /**
-     * @brief Is called on server close.
+     *  Is called on server close.
      */
 	public void onDisable() {
 		Logger log = Logger.getLogger("minecraft");

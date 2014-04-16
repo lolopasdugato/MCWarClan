@@ -75,7 +75,7 @@ public class MCWarClanLocation implements Serializable {
     //Functions
 
     /**
-     * @brief refresh settings that should be reloaded if config.yml has been changed.
+     *  refresh settings that should be reloaded if config.yml has been changed.
      */
     public void refresh(){
         // No Settings to refresh
