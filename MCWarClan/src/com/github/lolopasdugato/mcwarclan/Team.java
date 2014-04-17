@@ -260,7 +260,8 @@ public class Team extends Object implements Serializable {
             _bukkitTeam.setAllowFriendlyFire(true);
             _bukkitTeam.setCanSeeFriendlyInvisibles(false);
         }
-        _idMaster = _teamContainer.get_teamArray().size();
+        if(_idMaster < _id)
+            _idMaster = _id;
         if (_name.equals("Barbarians"))
             BARBARIAN_TEAM_ID = _id;
     }

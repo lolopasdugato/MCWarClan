@@ -122,7 +122,8 @@ public class Base implements Serializable {
      */
     public void refresh(){
         _bonusRadius = Settings.radiusHQBonus;
-        _idMaster = _team.get_bases().size();
+        if(_idMaster < _id)
+            _idMaster = _id;
     }
 
     /**
