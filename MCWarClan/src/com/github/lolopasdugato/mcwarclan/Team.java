@@ -56,7 +56,7 @@ public class Team extends Object implements Serializable {
             BARBARIAN_TEAM_ID = _id;
 //        testBase();
         initCost();
-        Messages.sendMessage("I am team " + _color.get_colorMark() + _name + " and my id is: " + _id + " (masterId:" + _idMaster + ")", Messages.messageType.DEBUG, null);
+        Messages.sendMessage("I am team " + _name + " and my id is: " + _id + " (masterId:" + _idMaster + ")", Messages.messageType.DEBUG, null);
     }
 
 
@@ -278,6 +278,22 @@ public class Team extends Object implements Serializable {
                 return _bases.get(i);
         }
         return null;
+    }
+
+    public boolean enoughMatesToBeAttack(){
+        if (!Settings.matesNeededIgnore && _teamMembers.size() != 0){
+            int playerOnline = 0;
+
+            for (int i = 0; i < _teamMembers.size(); i++){
+                if(_teamMembers.get(i).toOnlinePlayer() != null)
+                    playerOnline++;
+            }
+            if(Settings.matesNeededIsPercentage){
+                playerOnline = (playerOnline/_teamMembers.size())*100;
+            }
+            return playerOnline >= Settings.matesNeededValue;
+        }
+        return true;
     }
 
 }

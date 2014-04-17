@@ -1,9 +1,6 @@
 package com.github.lolopasdugato.mcwarclan;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.Server;
+import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -338,10 +335,12 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
                     }
                     //Check if the player's team have enough resources to create the base
                     Cost cost = Settings.baseInitialCost;
-                    if (!player.canPay(cost)) {
-                        Messages.sendMessage("You cannot create a base (not enough materials). You need: ", Messages.messageType.INGAME, p);
-                        Messages.sendMessage(cost.getResourceTypes(), Messages.messageType.INGAME, p);
-                        return true;
+                    if (p.getGameMode() != GameMode.CREATIVE) {
+                        if (!player.canPay(cost)) {
+                            Messages.sendMessage("You cannot create a base (not enough materials). You need: ", Messages.messageType.INGAME, p);
+                            Messages.sendMessage(cost.getResourceTypes(), Messages.messageType.INGAME, p);
+                            return true;
+                        }
                     }
                     //Here the player have enough resources to pay
 
@@ -402,8 +401,16 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
                     //If the flag can be created, add the base to the base array
                     player.get_team().get_bases().add(b);
 
+                    // If this base is the first one (an HQ) reset de MCWarClan spawn location for all teamMembers
+                    if(b.is_HQ()){
+                        for (int k = 0; k < player.get_team().get_teamMembers().size(); k++){
+                            player.get_team().get_teamMembers().get(k).reloadSpawn();
+                        }
+                    }
+
                     //Substract the cost of the base to player's inventory
-                    player.payTribute(cost);
+                    if (p.getGameMode() != GameMode.CREATIVE)
+                        player.payTribute(cost);
 
                     Messages.sendMessage("The new base has been created !", Messages.messageType.INGAME, p);
                     return true;

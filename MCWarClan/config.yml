@@ -28,6 +28,14 @@ teamSettings:
       EMERALD: 128
       DIAMOND: 128
       LOG: 256
+    # Define how many people should be connected to allow others to attack this team.
+    matesNeeded:
+      # if set to true, the following values will be ignored. Any team will be able to attack another one without any restriction.
+      ignore: false
+      # Define a number of members needed in a team to get attacked.
+      value: 10
+      # Define if the number is a percentage or a fix number of player.
+      percentage: true
 
 
 
@@ -38,7 +46,7 @@ baseSettings:
     radiusHQBonus: 25
     # Define the average distance between the first spawn of the map and a random barbarian spawn location.
     # Minimum value: 100
-    barbariansSpawnDistance: 250
+    barbariansSpawnDistance: 100
     # Define the minimum distance between a team HQ and another team's base
     # The formula in use is: (initialRadius + radiusHQBonus)*BaseMinHQDistanceToOthers
     # Minimum value: 2

@@ -28,6 +28,10 @@ public class Settings {
     public static Cost DEFAULTteamJoiningTribute;
     public static Cost teamCreatingTribute;
     public static Cost baseInitialCost;
+    public static boolean matesNeededIgnore;
+    public static int matesNeededValue;
+    public static boolean matesNeededIsPercentage;
+
     private Configuration _cfg;
 
     //////////////////////////////////////////////////////////////////////////////
@@ -57,6 +61,9 @@ public class Settings {
         initialTeamSize = _cfg.getInt("teamSettings.initialTeamSize");
         friendlyFire = _cfg.getBoolean("teamSettings.friendlyFire");
         seeInvisibleTeamMates = _cfg.getBoolean("teamSettings.transparentMates");
+        matesNeededIgnore = _cfg.getBoolean("teamSettings.matesNeeded.ignore");
+        matesNeededValue = _cfg.getInt("teamSettings.matesNeeded.value");
+        matesNeededIsPercentage = _cfg.getBoolean("teamSettings.matesNeeded.percentage");
 
         initialRadius = _cfg.getInt("baseSettings.initialRadius");
         radiusHQBonus = _cfg.getInt("baseSettings.radiusHQBonus");
