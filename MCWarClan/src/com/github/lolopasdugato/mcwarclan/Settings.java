@@ -19,7 +19,7 @@ public class Settings {
     public static int radiusHQBonus;
     public static int barbariansSpawnDistance;
     public static int baseMinHQDistanceToOthers;
-    public static int baseMinDistanceToSpawn;
+    // public static int baseMinDistanceToSpawn; USELESS
     public static int uncensoredItemsAmount;
     public static String classicWorldName;
     public static boolean debugMode;
@@ -33,6 +33,7 @@ public class Settings {
     public static int matesNeededValue;
     public static boolean matesNeededIsPercentage;
     public static boolean obsidianBreakable;
+    public static int secureBarbarianDistance;
 
     private Configuration _cfg;
 
@@ -71,7 +72,8 @@ public class Settings {
         radiusHQBonus = _cfg.getInt("baseSettings.radiusHQBonus");
         barbariansSpawnDistance = _cfg.getInt("baseSettings.barbariansSpawnDistance");
         baseMinHQDistanceToOthers = _cfg.getInt("baseSettings.baseMinHQDistanceToOthers");
-        baseMinDistanceToSpawn = _cfg.getInt("baseSettings.baseMinDistanceToSpawn");
+        // baseMinDistanceToSpawn = _cfg.getInt("baseSettings.baseMinDistanceToSpawn"); USELESS
+        secureBarbarianDistance = _cfg.getInt("baseSettings.secureBarbarianDistance");
 
         uncensoredItemsAmount = _cfg.getInt("otherSettings.uncensoredItemsAmount");
         classicWorldName = _cfg.getString("otherSettings.classicWorldName");

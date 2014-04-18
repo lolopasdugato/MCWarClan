@@ -1,7 +1,9 @@
 package com.github.lolopasdugato.mcwarclan;
 
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 
 import java.io.Serializable;
 
@@ -124,6 +126,36 @@ public class Base implements Serializable {
         _bonusRadius = Settings.radiusHQBonus;
         if(_idMaster < _id)
             _idMaster = _id;
+    }
+
+    public static boolean isBuildableIn(TeamContainer tc, Location loc, Player player){
+        Location barbSpawn = Bukkit.getWorld(Settings.classicWorldName).getSpawnLocation();
+        final double distFromBarbarianSpawn = barbSpawn.distance(player.getLocation());
+        if (distFromBarbarianSpawn < Settings.barbariansSpawnDistance + Settings.secureBarbarianDistance + Settings.radiusHQBonus + Settings.initialRadius) {
+            Messages.sendMessage("You cannot create a base near the Barbarian spawn.", Messages.messageType.INGAME, player);
+            return false;
+        }
+
+        for (int i = 0; i < tc.get_teamArray().size(); i++){
+            Team actualTeam = tc.get_teamArray().get(i);
+            for (int j = 0; j < actualTeam.get_teamMembers().size(); j++){
+
+            }
+        }
+        return false;
+    }
+
+    public boolean isNearBase(boolean includeSafeZone, Location loc){
+        int tmpRadius = (_radius + _bonusRadius) * 2;
+        if (includeSafeZone)
+            tmpRadius += Settings.baseMinHQDistanceToOthers;
+        boolean isInXAxe = false;
+        boolean isInZAxe = false;
+        if(loc.getX() < _loc.get_x() + tmpRadius && loc.getX() > _loc.get_x() - tmpRadius)
+            isInXAxe = true;
+        if(loc.getZ() < _loc.get_z() + tmpRadius && loc.getZ() > _loc.get_z() - tmpRadius)
+            isInZAxe = true;
+        return (isInXAxe && isInZAxe);
     }
 
     /**

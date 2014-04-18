@@ -42,19 +42,25 @@ teamSettings:
 
 baseSettings:
     # Define the first influence radius of a normal base.
-    initialRadius: 50
+    # If this radius is upgraded while playing (not via this config file) the maximum radius is initialRadius + radiusHQBonus.
+    # Do not set those values too high or you will experience many problems to create a new base while other base already exist.
+    # minimum value: 5
+    initialRadius: 10
     # Define the influence bonus for the first base (HeadQuarter) of a team.
-    radiusHQBonus: 25
+    # minimum value: 5
+    radiusHQBonus: 15
     # Define the average distance between the first spawn of the map and a random barbarian spawn location.
     # Minimum value: 100
     barbariansSpawnDistance: 100
-    # Define the minimum distance between a team HQ and another team's base
-    # The formula in use is: (initialRadius + radiusHQBonus)*BaseMinHQDistanceToOthers
-    # Minimum value: 2
-    baseMinHQDistanceToOthers: 4
+    # Number of minimum block between the barbarian spawn and the border of a buildable HQ.
+    secureBarbarianDistance: 25
+    # Define the minimum distance between a team HQ and another team's base borderland.
+    # The formula in use is: (initialRadius + radiusHQBonus)*2 + basMinHQDistance.
+    # Minimum value: 0
+    baseMinHQDistanceToOthers: 50
     # Define the minimum distance between a team base and the basic map spawn
     # The formula in use is: initialRadius*BaseMinDistance
-    baseMinDistanceToSpawn: 10
+    # baseMinDistanceToSpawn: 10 TO DELETE, USELESS
     baseInitialCost:
       WOOL: 6
       LOG: 6

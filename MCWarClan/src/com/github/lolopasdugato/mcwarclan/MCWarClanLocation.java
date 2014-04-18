@@ -32,47 +32,47 @@ public class MCWarClanLocation implements Serializable {
         _z = loc.getZ();
     }
 
-    //Getters
+    //////////////////////////////////////////////////////////////////////////////
+    //--------------------------------- Getters ----------------------------------
+    //////////////////////////////////////////////////////////////////////////////
 
     public String get_worldName() {
         return _worldName;
     }
-
-    //Setters
-    public void set_worldName(String _worldName) {
-        this._worldName = _worldName;
-    }
-
     public double get_x() {
         return _x;
     }
-
-    public void set_x(double _x) {
-        this._x = _x;
-    }
-
     public double get_y() {
         return _y;
     }
-
-    public void set_y(double _y) {
-        this._y = _y;
-    }
-
     public double get_z() {
         return _z;
     }
 
+    //////////////////////////////////////////////////////////////////////////////
+    //--------------------------------- Setters ----------------------------------
+    //////////////////////////////////////////////////////////////////////////////
+
+    public void set_worldName(String _worldName) {
+        this._worldName = _worldName;
+    }
+    public void set_x(double _x) {
+        this._x = _x;
+    }
+    public void set_y(double _y) {
+        this._y = _y;
+    }
     public void set_z(double _z) {
         this._z = _z;
     }
 
+    //////////////////////////////////////////////////////////////////////////////
+    //--------------------------------- Functions --------------------------------
+    //////////////////////////////////////////////////////////////////////////////
+
     public Location getLocation(){
         return new Location(Bukkit.getServer().getWorld(_worldName), _x, _y, _z);
     }
-
-
-    //Functions
 
     /**
      *  refresh settings that should be reloaded if config.yml has been changed.
