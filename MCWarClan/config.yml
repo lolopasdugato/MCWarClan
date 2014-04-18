@@ -67,3 +67,6 @@ otherSettings:
   debugMode: true
   # Define if the barbarian spawn is reloaded each time the barbarian player dies.
   randomBarbarianSpawn: true
+  # Makes obsidian breakable even if it's in an enemy base.
+  # You should let this option to true, otherwise, anyone can protect it's base by putting many obsidian all around their flag.
+  obsidianBreakable: true

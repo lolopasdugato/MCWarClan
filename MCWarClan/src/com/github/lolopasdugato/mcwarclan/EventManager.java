@@ -40,11 +40,11 @@ public class EventManager implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void onPlayerJoin(PlayerJoinEvent evt) {
-        MCWarClanPlayer player = _tc.getPlayer(evt.getPlayer().getName());
         if (_tc == null) {
             Messages.sendMessage("The main team manager cannot be found. Please contact the creator to solve this problem.", Messages.messageType.ALERT, null);
             return;
         }
+        MCWarClanPlayer player = _tc.getPlayer(evt.getPlayer().getName());
         if (player == null) {
             Messages.sendMessage("Welcome, this server is using MCWarClan " + MCWarClan.VERSION + ", have fun !", Messages.messageType.INGAME, evt.getPlayer());
             Team barbarians = _tc.getTeam(Team.BARBARIAN_TEAM_ID);
@@ -58,14 +58,16 @@ public class EventManager implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL)
     private void onPlayerDeath(PlayerRespawnEvent evt) {
-        MCWarClanPlayer player = _tc.getPlayer(evt.getPlayer().getName());
-        if (player.get_team().get_id() == Team.BARBARIAN_TEAM_ID && Settings.randomBarbarianSpawn) {
-            player.reloadSpawn();
+        if (evt.getPlayer().getBedSpawnLocation() == null) {                // priority to bed spawn.
+            MCWarClanPlayer player = _tc.getPlayer(evt.getPlayer().getName());
+            if (player.get_team().get_id() == Team.BARBARIAN_TEAM_ID && Settings.randomBarbarianSpawn) {
+                player.reloadSpawn();
+            }
+            Location playerSpawn = player.get_spawn().getLocation();
+            playerSpawn.getChunk().load();
+            Messages.sendMessage(player.get_name() + " has spawn in x:" + player.get_spawn().get_x() + ", y:" + player.get_spawn().get_y() + ", z:" + player.get_spawn().get_z(), Messages.messageType.DEBUG, null);
+            evt.setRespawnLocation(playerSpawn);
         }
-        Location playerSpawn = player.get_spawn().getLocation();
-        playerSpawn.getChunk().load();
-        Messages.sendMessage(player.get_name() + " has spawn in x:" + player.get_spawn().get_x() + ", y:" + player.get_spawn().get_y() + ", z:" + player.get_spawn().get_z(), Messages.messageType.DEBUG, null);
-        evt.setRespawnLocation(playerSpawn);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -110,16 +112,22 @@ public class EventManager implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL)
     private void onBlockBreak(BlockBreakEvent evt) {
-        MCWarClanPlayer player = _tc.getPlayer(evt.getPlayer().getName());
+        if (evt.getBlock().getType() == Material.OBSIDIAN && Settings.obsidianBreakable){
+            // Do nothing
+            return;
+        }
+        else {
+            MCWarClanPlayer player = _tc.getPlayer(evt.getPlayer().getName());
+            if (player != null) {
+                Base currentBase = player.getCurrentBase();
+                if (currentBase != null && currentBase.get_team().isEnemyToTeam(player.get_team())) {
+                    Messages.sendMessage("You cannot break block in the enemy base !", Messages.messageType.INGAME, evt.getPlayer());
+                    evt.setCancelled(true);
+                }
+            } else
+                Messages.sendMessage("Error, please ask an admin to be add to a team !", Messages.messageType.INGAME, evt.getPlayer());
+        }
 
-        if (player != null) {
-            Base currentBase = player.getCurrentBase();
-            if (currentBase != null && currentBase.get_team().isEnemyToTeam(player.get_team())) {
-                Messages.sendMessage("You cannot break block in the enemy base !", Messages.messageType.INGAME, evt.getPlayer());
-                evt.setCancelled(true);
-            }
-        } else
-            Messages.sendMessage("Error, please ask an admin to be add to a team !", Messages.messageType.INGAME, evt.getPlayer());
     }
 
     @EventHandler

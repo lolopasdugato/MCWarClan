@@ -131,10 +131,10 @@ public class MCWarClanPlayer implements Serializable {
     }
 
     /**
-     *  reload a new spawn for a barbarian.
+     *  reload the spawn for a player.
      */
     public void reloadSpawn(){
-        if(_team.get_id() == Team.BARBARIAN_TEAM_ID) {
+        if (_team.get_id() == Team.BARBARIAN_TEAM_ID) {
             // define spawn as a barbarian spawn
             Location barbarianSpawn = getBarbarianSpawn(Settings.barbariansSpawnDistance);
             while(!spawnOK(barbarianSpawn)){

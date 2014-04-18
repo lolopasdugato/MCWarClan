@@ -32,6 +32,7 @@ public class Settings {
     public static boolean matesNeededIgnore;
     public static int matesNeededValue;
     public static boolean matesNeededIsPercentage;
+    public static boolean obsidianBreakable;
 
     private Configuration _cfg;
 
@@ -76,6 +77,7 @@ public class Settings {
         classicWorldName = _cfg.getString("otherSettings.classicWorldName");
         debugMode = _cfg.getBoolean("otherSettings.debugMode");
         randomBarbarianSpawn = _cfg.getBoolean("otherSettings.randomBarbarianSpawn");
+        obsidianBreakable = _cfg.getBoolean("otherSettings.obsidianBreakable");
 
 
         // Initializing blue entry cost

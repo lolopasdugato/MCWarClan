@@ -132,11 +132,14 @@ public class Base implements Serializable {
      * @return True if the location is in this base.
      */
     public boolean isInBase(Location loc){
+        int tmpRadius = _radius;
+        if(_HQ)
+            tmpRadius += _bonusRadius;
         boolean isInXAxe = false;
         boolean isInZAxe = false;
-        if(loc.getX() < _loc.get_x() + _radius && loc.getX() > _loc.get_x() - _radius)
+        if(loc.getX() < _loc.get_x() + tmpRadius && loc.getX() > _loc.get_x() - tmpRadius)
             isInXAxe = true;
-        if(loc.getZ() < _loc.get_z() + _radius && loc.getZ() > _loc.get_z() - _radius)
+        if(loc.getZ() < _loc.get_z() + tmpRadius && loc.getZ() > _loc.get_z() - tmpRadius)
             isInZAxe = true;
         return (isInXAxe && isInZAxe);
     }
