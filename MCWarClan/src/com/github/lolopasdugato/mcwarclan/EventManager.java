@@ -75,7 +75,7 @@ public class EventManager implements Listener {
         MCWarClanPlayer player = _tc.getPlayer(evt.getPlayer().getName());
 
         if (player != null) {
-            Base currentBaseLocation = player.getCurrentBase();
+            Base currentBaseLocation = _tc.getBase(evt.getBlockPlaced().getLocation());
             if (currentBaseLocation != null && currentBaseLocation.get_team().isEnemyToTeam(player.get_team())) {   // Check if in enemy territory
                 Team currentEnemyTeam = currentBaseLocation.get_team();
                 if ((evt.getBlockPlaced().getType() == Material.TNT || evt.getBlockPlaced().getType() == Material.LADDER
@@ -119,7 +119,7 @@ public class EventManager implements Listener {
         else {
             MCWarClanPlayer player = _tc.getPlayer(evt.getPlayer().getName());
             if (player != null) {
-                Base currentBase = player.getCurrentBase();
+                Base currentBase = _tc.getBase(evt.getBlock().getLocation());
                 if (currentBase != null && currentBase.get_team().isEnemyToTeam(player.get_team())) {
                     Messages.sendMessage("You cannot break block in the enemy base !", Messages.messageType.INGAME, evt.getPlayer());
                     evt.setCancelled(true);

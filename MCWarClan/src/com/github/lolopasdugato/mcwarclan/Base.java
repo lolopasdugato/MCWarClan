@@ -128,23 +128,12 @@ public class Base implements Serializable {
             _idMaster = _id;
     }
 
-    public static boolean isBuildableIn(TeamContainer tc, Location loc, Player player){
-        Location barbSpawn = Bukkit.getWorld(Settings.classicWorldName).getSpawnLocation();
-        final double distFromBarbarianSpawn = barbSpawn.distance(player.getLocation());
-        if (distFromBarbarianSpawn < Settings.barbariansSpawnDistance + Settings.secureBarbarianDistance + Settings.radiusHQBonus + Settings.initialRadius) {
-            Messages.sendMessage("You cannot create a base near the Barbarian spawn.", Messages.messageType.INGAME, player);
-            return false;
-        }
-
-        for (int i = 0; i < tc.get_teamArray().size(); i++){
-            Team actualTeam = tc.get_teamArray().get(i);
-            for (int j = 0; j < actualTeam.get_teamMembers().size(); j++){
-
-            }
-        }
-        return false;
-    }
-
+    /**
+     * Check if you're near this base
+     * @param includeSafeZone if we include teh safe zone, we will incle the minimum distance between 2 HQ in the math.
+     * @param loc
+     * @return true or false.
+     */
     public boolean isNearBase(boolean includeSafeZone, Location loc){
         int tmpRadius = (_radius + _bonusRadius) * 2;
         if (includeSafeZone)

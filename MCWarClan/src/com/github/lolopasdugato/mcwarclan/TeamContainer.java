@@ -1,6 +1,7 @@
 package com.github.lolopasdugato.mcwarclan;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
@@ -340,6 +341,23 @@ public class TeamContainer implements Serializable {
         for (int i = 0; i < _teamArray.size(); i++) {
             if (_teamArray.get(i).get_id() == Team.BARBARIAN_TEAM_ID)
                 return _teamArray.get(i);
+        }
+        return null;
+    }
+
+    /**
+     * Returns the base area where the location is if so, return null if no results matches.
+     * @param loc
+     * @return
+     */
+    public Base getBase(Location loc) {
+        ArrayList<Team> teams = _teamArray;
+        Base b;
+        for (int i = 0; i < teams.size(); i++) {
+            b = teams.get(i).getBase(loc);
+            if (b != null) {
+                return b;
+            }
         }
         return null;
     }
