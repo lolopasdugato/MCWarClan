@@ -42,11 +42,9 @@ public class Team extends Object implements Serializable {
         _teamMembers = new ArrayList<MCWarClanPlayer>();
         _bases = new ArrayList<Base>();
 
-        //TODO never update (to be removed?)
         _teamSize = teamSize;
         //
 
-        //TODO doubloon with _teamMembers
         _teamContainer = teamContainer;
         //
 

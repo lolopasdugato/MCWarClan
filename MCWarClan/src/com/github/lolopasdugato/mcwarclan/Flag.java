@@ -1,6 +1,7 @@
 package com.github.lolopasdugato.mcwarclan;
 
 import org.bukkit.DyeColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -16,6 +17,7 @@ public class Flag implements Serializable {
     static final public int flagHeight = 2;
     static final public int flagLength = 2;
     static private final long serialVersionUID = 6;
+    private final Pattern _pattern;
     private Base _base;
 
     //////////////////////////////////////////////////////////////////////////////
@@ -50,6 +52,62 @@ public class Flag implements Serializable {
         } else {
             throw new Exception.NotEnoughSpaceException();
         }
+
+
+        //test
+        Messages.sendMessage("Test for version 2", Messages.messageType.DEBUG, null);
+        _pattern = flagPattern();
+
+        //test if the pattern can be fit in the location
+        Location newloc = blk.getLocation();
+        newloc.setX(blk.getX() + 5);
+        newloc.setY(blk.getY() + 5);
+        newloc.setZ(blk.getZ() + 5);
+
+        if (_pattern.isEmpty(blk.getWorld(), newloc) != true) {
+            throw new Exception.NotEnoughSpaceException();
+        }
+
+        //Generate the flag with the new method
+
+        _pattern.generate(blk.getWorld(), newloc);
+
+        Messages.sendMessage("SUCCESS", Messages.messageType.DEBUG, null);
+    }
+
+    /**
+     * Used to generate a basic flag pattern
+     *
+     * @return The pattern of the flag
+     */
+    private Pattern flagPattern() {
+
+        //Create the empty pattern
+        Pattern pat = new Pattern();
+
+
+        //Generate the stick
+        for (int i = 0; i < stickHeight; i++) {
+            pat.add(new BlockModule(Material.WOOD, 0, i, 0));
+        }
+
+        //Set position for drawing the flag
+//        blk = blk.getRelative(BlockFace.DOWN).getRelative(BlockFace.NORTH);
+
+        //Create the flag with the right color
+//        Block tmp = blk;
+        BlockState bs;
+        for (int h = 0; h < flagHeight; h++) {
+            for (int l = 0; l < flagLength; l++) {
+//                tmp = blk.getRelative(0, -h, -l);
+//                tmp.setType(Material.WOOL);
+                pat.add(new BlockModule(Material.WOOL, 0, stickHeight - (h + 1), 1 + l));
+//                bs = tmp.getState();
+//                bs.setData(new Wool(dye));
+//                bs.update();
+            }
+        }
+        return pat;
     }
 
     //////////////////////////////////////////////////////////////////////////////
@@ -136,4 +194,6 @@ public class Flag implements Serializable {
         _base.refresh();
         // No Settings
     }
+
+
 }

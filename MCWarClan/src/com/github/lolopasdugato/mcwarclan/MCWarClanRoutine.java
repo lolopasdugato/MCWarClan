@@ -14,9 +14,11 @@ public abstract class MCWarClanRoutine extends BukkitRunnable {
     //------------------------------- Constructors -------------------------------
     //////////////////////////////////////////////////////////////////////////////
 
+
     protected MCWarClanRoutine(JavaPlugin plugin) {
         _plugin = plugin;
     }
+
 
     public static class ContestedBaseRoutine extends MCWarClanRoutine {
 
@@ -41,7 +43,7 @@ public abstract class MCWarClanRoutine extends BukkitRunnable {
             boolean alive = false;
             while (i < _opponents.get_teamMembers().size() && !alive) {
                 // If there is still an opponent in the contested base, the war continue.
-                //TODO Change this trick
+                //TODO Change this trick (the comma thing)
                 Messages.sendMessage("i= " + i + "arraySize= " + _opponents.get_teamMembers().size(),
                         Messages.messageType.DEBUG, null);
                 if (_opponents.get_teamMembers().get(i).isInEnemyTerritory() == _base)
