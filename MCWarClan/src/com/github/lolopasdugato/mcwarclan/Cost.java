@@ -58,7 +58,7 @@ public class Cost implements Serializable{
      * @return
      */
     public boolean addValue(String materialName, int numberOfMaterials){
-        return Material.getMaterial(materialName) != null && _costEquivalence.add(new Equivalence(materialName, numberOfMaterials));
+        return Material.getMaterial(materialName) != null && numberOfMaterials >= 0 && _costEquivalence.add(new Equivalence(materialName, numberOfMaterials)) ;
     }
 
     /**
