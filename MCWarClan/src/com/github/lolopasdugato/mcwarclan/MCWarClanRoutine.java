@@ -44,7 +44,7 @@ public abstract class MCWarClanRoutine extends BukkitRunnable {
                 //TODO Change this trick
                 Messages.sendMessage("i= " + i + "arraySize= " + _opponents.get_teamMembers().size(),
                         Messages.messageType.DEBUG, null);
-                if (_opponents.get_teamMembers().get(i).isInEnemyTerritory() == _base)
+                if (_opponents.get_teamMembers().get(i).getCurrentBase() == _base)
                     alive = true;
                 i++;
             }

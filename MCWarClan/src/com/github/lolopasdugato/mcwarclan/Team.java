@@ -272,7 +272,7 @@ public class Team extends Object implements Serializable {
      * @param loc the location to check
      * @return Return the base if found, null else.
      */
-    public Base isInTerritory(Location loc) {
+    public Base getBase(Location loc) {
         for (int i = 0; i < _bases.size(); i++) {
             if (_bases.get(i).isInBase(loc))
                 return _bases.get(i);
@@ -281,7 +281,9 @@ public class Team extends Object implements Serializable {
     }
 
     public boolean enoughMatesToBeAttack(){
-        if (!Settings.matesNeededIgnore && _teamMembers.size() != 0){
+        if (!Settings.matesNeededIgnore){
+            if (_teamMembers.size() == 0)
+                return false;
             int playerOnline = 0;
 
             for (int i = 0; i < _teamMembers.size(); i++){

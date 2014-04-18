@@ -73,18 +73,28 @@ public class EventManager implements Listener {
         MCWarClanPlayer player = _tc.getPlayer(evt.getPlayer().getName());
 
         if (player != null) {
-            if (player.isInEnemyTerritory(evt.getBlockPlaced().getLocation())) {   // Check if in enemy territory
-                if (evt.getBlockPlaced().getType() == Material.TNT || evt.getBlockPlaced().getType() == Material.LADDER
-                        || evt.getBlockPlaced().getType() == Material.LEVER) {    // Check if it's a special
-                    // block
-                    if (evt.getPlayer().getItemInHand().getAmount() >= Settings.uncensoredItemsAmount) {  // Check if the guy has the amount of item required to place the special block
-                        evt.getPlayer().getItemInHand().setAmount(evt.getPlayer().getItemInHand().getAmount() - Settings.uncensoredItemsAmount - 1);
-                        return;
-                    } else {
-                        // evt.getBlockPlaced().breakNaturally();
+            Base currentBaseLocation = player.getCurrentBase();
+            if (currentBaseLocation != null && currentBaseLocation.get_team().isEnemyToTeam(player.get_team())) {   // Check if in enemy territory
+                Team currentEnemyTeam = currentBaseLocation.get_team();
+                if ((evt.getBlockPlaced().getType() == Material.TNT || evt.getBlockPlaced().getType() == Material.LADDER
+                        || evt.getBlockPlaced().getType() == Material.LEVER)){    // Check if it's a special block
+                    if(currentEnemyTeam.enoughMatesToBeAttack()) {    // Check if the team can be attack atm
+                        if (evt.getPlayer().getItemInHand().getAmount() >= Settings.uncensoredItemsAmount) {  // Check if the guy has the amount of item required to place the special block
+                            evt.getPlayer().getItemInHand().setAmount(evt.getPlayer().getItemInHand().getAmount() - Settings.uncensoredItemsAmount - 1);
+                            return;
+                        } else {
+                            // evt.getBlockPlaced().breakNaturally();
+                            evt.setCancelled(true);
+                            evt.getPlayer().updateInventory();
+                            Messages.sendMessage("You need at least " + Settings.uncensoredItemsAmount + " " + evt.getBlockPlaced().getType().toString() + " to place it into an enemy base !", Messages.messageType.INGAME, evt.getPlayer());
+                        }
+                    }
+                    else{
+                        Messages.sendMessage("Sorry, but the " + currentEnemyTeam.get_color().get_colorMark() + currentEnemyTeam.get_name() + " §6cannot be attack, not enough member connected.",
+                                Messages.messageType.INGAME, evt.getPlayer());
                         evt.setCancelled(true);
                         evt.getPlayer().updateInventory();
-                        Messages.sendMessage("You need at least " + Settings.uncensoredItemsAmount + " " + evt.getBlockPlaced().getType().toString() + " to place it into an enemy base !", Messages.messageType.INGAME, evt.getPlayer());
+                        return;
                     }
                 } else {
                     evt.setCancelled(true);
@@ -103,7 +113,8 @@ public class EventManager implements Listener {
         MCWarClanPlayer player = _tc.getPlayer(evt.getPlayer().getName());
 
         if (player != null) {
-            if (player.isInEnemyTerritory(evt.getBlock().getLocation())) {
+            Base currentBase = player.getCurrentBase();
+            if (currentBase != null && currentBase.get_team().isEnemyToTeam(player.get_team())) {
                 Messages.sendMessage("You cannot break block in the enemy base !", Messages.messageType.INGAME, evt.getPlayer());
                 evt.setCancelled(true);
             }
@@ -123,8 +134,8 @@ public class EventManager implements Listener {
                 MCWarClanPlayer player = _tc.getPlayer(ent.getUniqueId());
 
                 //If the player is in enemy territory
-                Base b = player.isInEnemyTerritory();
-                if (b != null) {
+                Base b = player.getCurrentBase();
+                if (b != null && b.get_team().isEnemyToTeam(player.get_team())) {
                     //A war may be beginning, so the base is now contested.
 
                     if (b.isContested()) {
