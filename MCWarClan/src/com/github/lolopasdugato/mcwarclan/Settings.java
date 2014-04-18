@@ -1,5 +1,6 @@
 package com.github.lolopasdugato.mcwarclan;
 
+import com.avaje.ebeaninternal.server.cluster.mcast.Message;
 import org.bukkit.configuration.Configuration;
 
 import java.util.Iterator;
@@ -119,7 +120,7 @@ public class Settings {
         while (it.hasNext()) {
             String matName = (String) it.next();
             if (!toFill.addValue(matName, _cfg.getInt(path + "." + matName)))
-                return null;
+                Messages.sendMessage("Material '" + matName + "' unrecognize in config.yml, ignoring it...", Messages.messageType.ALERT, null);
         }
         return toFill;
     }

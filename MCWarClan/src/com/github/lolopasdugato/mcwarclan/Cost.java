@@ -1,5 +1,7 @@
 package com.github.lolopasdugato.mcwarclan;
 
+import org.bukkit.Material;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -56,7 +58,7 @@ public class Cost implements Serializable{
      * @return
      */
     public boolean addValue(String materialName, int numberOfMaterials){
-        return _costEquivalence.add(new Equivalence(materialName, numberOfMaterials));
+        return Material.getMaterial(materialName) != null && _costEquivalence.add(new Equivalence(materialName, numberOfMaterials));
     }
 
     /**

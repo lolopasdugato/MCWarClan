@@ -17,6 +17,7 @@ teamSettings:
         WOOL: 1
         LOG: 128
         COBBLESTONE: 64
+        BullSHIIIt: 224
       DEFAULT:
         WOOL: 32
         LOG: 64
