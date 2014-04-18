@@ -1,60 +1,128 @@
+#####################
+#####################
 teamSettings:
-    # Define the maximum number of team that can be created during the game. this number should be superior to 3 and inferior to 11
+#####################
+#####################
+
+    # Define the maximum number of team that can be created during the game. this number should be superior to 3 and inferior to 10
     maxNumberOfTeam: 4
+
     # Define how many players can join a single team when this team has no upgrade.
+    # Min value: 2
+    # Max value: none
     initialTeamSize: 10
+
+    # Define if players can hurts each others in the same team (except barbarian)
     friendlyFire: false
+
+    # Enables the fact that other team members of your team can see you even if you're under an invisible potion effect.
     seeInvisibleTeamMates: true
+
     # List bellow the different materials that could be asked for tribute to join a team.
+    # Blue and Red teams are the two basic teams available in the game. The DEFAULT price is linked to the new teams that could be created.
     teamJoiningTribute:
-      # List bellow the price for all those materials for each team
       BLUE:
         WOOL: 1
         LOG: 64
         COBBLESTONE: 64
         IRON_INGOT: 10
       RED:
+        COAL: -20
         WOOL: 1
         LOG: 128
         COBBLESTONE: 64
+        BullSHIIIt: 224
       DEFAULT:
         WOOL: 32
         LOG: 64
         DIAMOND: 10
         IRON_INGOT: 32
         EMERALD: 1
+
     # List bellow the different materials that could be asked for tribute to create a team.
     teamCreatingTribute:
       EMERALD: 128
       DIAMOND: 128
       LOG: 256
 
+    # Define how many people should be connected to allow others to attack this team.
+    matesNeeded:
+      # If set to true, the following values will be ignored. Any team will be able to attack another one without any restriction.
+      ignore: false
+      # Define a number of members needed in a team to get attacked.
+      # Min value: 0
+      # Max value: 100 if it's a percentage. Otherwise, none.
+      value: 10
+      # Define if the number is a percentage or a fix number of player.
+      percentage: true
 
 
+#####################
+#####################
 baseSettings:
+#####################
+#####################
+
     # Define the first influence radius of a normal base.
-    initialRadius: 50
-    # Define the influence bonus for the first base (HeadQuarter) of a team.
-    radiusHQBonus: 25
+    # If this radius is upgraded while playing (not via this config file) the maximum radius is initialRadius + radiusHQBonus.
+    # Do not set radius values too high or you will experience many problems to create a new base while other base already exist.
+    # Min value: 5
+    # Max value: none
+    initialRadius: 10
+
+    # Define the influence bonus for the first base (HeadQuarter) of a team, and by the way, the maximum influence of a base after a full upgrade (initialRadius + radiusHQBonus).
+    # Min value: 5
+    # Max value: none
+    radiusHQBonus: 40
+
     # Define the average distance between the first spawn of the map and a random barbarian spawn location.
-    # Minimum value: 100
-    barbariansSpawnDistance: 250
-    # Define the minimum distance between a team HQ and another team's base
-    # The formula in use is: (initialRadius + radiusHQBonus)*BaseMinHQDistanceToOthers
-    # Minimum value: 2
-    baseMinHQDistanceToOthers: 4
-    # Define the minimum distance between a team base and the basic map spawn
-    # The formula in use is: initialRadius*BaseMinDistance
-    baseMinDistanceToSpawn: 10
+    # Min value: 100
+    # Max value: none
+    barbariansSpawnDistance: 100
+
+    # Number of minimum block between the barbarian spawn and the border of a buildable team base.
+    # Min value: 0
+    # Max value: none
+    secureBarbarianDistance: 25
+
+    # Define the minimum distance between a team HQ and another team's base borderland while attempting to build an HQ.
+    # The formula in use is: (initialRadius + radiusHQBonus)*2 + basMinHQDistance.
+    # Min value: 0
+    # Max value: none
+    baseMinHQDistanceToOthers: 50
+
+    # Define the cost of a base while creating the base.
+    # Be careful, the more base you create, the higher the price is.
+    # By the way, to set your own value, edit this file and then, delete the following files:
+    # yourworldname/data/scoreboard.dat
+    # plugins/MCWarClan/TeamContainer.ser
     baseInitialCost:
       WOOL: 6
       LOG: 6
       EMERALD: 10
       DIAMOND: 10
 
+#####################
+#####################
 otherSettings:
-  uncensoredItemsAmount: 5
+#####################
+#####################
+
+  # Define the amount of item uncensored items you should have in your inventory to place it into the enemy base.
+  # These items are TNT, Ladders, and Levers
+  # Min value: 1
+  # Max value: none
+  uncensoredItemsAmount: -1
+
+  # The name of the world you're currently playing on.
   classicWorldName: world
+
+  # Set to true if you are a developer :D
   debugMode: true
+
   # Define if the barbarian spawn is reloaded each time the barbarian player dies.
   randomBarbarianSpawn: true
+
+  # Makes obsidian breakable even if it's in an enemy base.
+  # You should let this option to true, otherwise, anyone can protect it's base by putting many obsidian all around their flag.
+  obsidianBreakable: true

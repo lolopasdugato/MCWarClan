@@ -13,9 +13,9 @@ import java.io.Serializable;
 public class Flag implements Serializable {
 
     // private enum _type;
-    static final public int stickHeight = 5;
+    static final public int stickHeight = 6;
     static final public int flagHeight = 2;
-    static final public int flagLength = 2;
+    static final public int flagLength = 3;
     static private final long serialVersionUID = 6;
     private final Pattern _pattern;
     private Base _base;
@@ -123,7 +123,7 @@ public class Flag implements Serializable {
 
         //Generate the stick
         for (int i = 0; i < stickHeight; i++) {
-            blk.setType(Material.WOOD);
+            blk.setType(Material.LOG);
             blk = blk.getRelative(BlockFace.UP);
         }
 

@@ -1,7 +1,9 @@
 package com.github.lolopasdugato.mcwarclan;
 
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 
 import java.io.Serializable;
 
@@ -122,7 +124,27 @@ public class Base implements Serializable {
      */
     public void refresh(){
         _bonusRadius = Settings.radiusHQBonus;
-        _idMaster = _team.get_bases().size();
+        if(_idMaster < _id)
+            _idMaster = _id;
+    }
+
+    /**
+     * Check if you're near this base
+     * @param includeSafeZone if we include teh safe zone, we will incle the minimum distance between 2 HQ in the math.
+     * @param loc
+     * @return true or false.
+     */
+    public boolean isNearBase(boolean includeSafeZone, Location loc){
+        int tmpRadius = (_radius + _bonusRadius) * 2;
+        if (includeSafeZone)
+            tmpRadius += Settings.baseMinHQDistanceToOthers;
+        boolean isInXAxe = false;
+        boolean isInZAxe = false;
+        if(loc.getX() < _loc.get_x() + tmpRadius && loc.getX() > _loc.get_x() - tmpRadius)
+            isInXAxe = true;
+        if(loc.getZ() < _loc.get_z() + tmpRadius && loc.getZ() > _loc.get_z() - tmpRadius)
+            isInZAxe = true;
+        return (isInXAxe && isInZAxe);
     }
 
     /**
@@ -131,11 +153,14 @@ public class Base implements Serializable {
      * @return True if the location is in this base.
      */
     public boolean isInBase(Location loc){
+        int tmpRadius = _radius;
+        if(_HQ)
+            tmpRadius += _bonusRadius;
         boolean isInXAxe = false;
         boolean isInZAxe = false;
-        if(loc.getX() < _loc.get_x() + _radius && loc.getX() > _loc.get_x() - _radius)
+        if(loc.getX() < _loc.get_x() + tmpRadius && loc.getX() > _loc.get_x() - tmpRadius)
             isInXAxe = true;
-        if(loc.getZ() < _loc.get_z() + _radius && loc.getZ() > _loc.get_z() - _radius)
+        if(loc.getZ() < _loc.get_z() + tmpRadius && loc.getZ() > _loc.get_z() - tmpRadius)
             isInZAxe = true;
         return (isInXAxe && isInZAxe);
     }

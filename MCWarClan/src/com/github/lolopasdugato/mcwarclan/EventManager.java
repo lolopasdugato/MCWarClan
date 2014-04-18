@@ -40,11 +40,11 @@ public class EventManager implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void onPlayerJoin(PlayerJoinEvent evt) {
-        MCWarClanPlayer player = _tc.getPlayer(evt.getPlayer().getName());
         if (_tc == null) {
             Messages.sendMessage("The main team manager cannot be found. Please contact the creator to solve this problem.", Messages.messageType.ALERT, null);
             return;
         }
+        MCWarClanPlayer player = _tc.getPlayer(evt.getPlayer().getName());
         if (player == null) {
             Messages.sendMessage("Welcome, this server is using MCWarClan " + MCWarClan.VERSION + ", have fun !", Messages.messageType.INGAME, evt.getPlayer());
             Team barbarians = _tc.getTeam(Team.BARBARIAN_TEAM_ID);
@@ -58,14 +58,16 @@ public class EventManager implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL)
     private void onPlayerDeath(PlayerRespawnEvent evt) {
-        MCWarClanPlayer player = _tc.getPlayer(evt.getPlayer().getName());
-        if (player.get_team().get_id() == Team.BARBARIAN_TEAM_ID && Settings.randomBarbarianSpawn) {
-            player.reloadSpawn();
+        if (evt.getPlayer().getBedSpawnLocation() == null) {                // priority to bed spawn.
+            MCWarClanPlayer player = _tc.getPlayer(evt.getPlayer().getName());
+            if (player.get_team().get_id() == Team.BARBARIAN_TEAM_ID && Settings.randomBarbarianSpawn) {
+                player.reloadSpawn();
+            }
+            Location playerSpawn = player.get_spawn().getLocation();
+            playerSpawn.getChunk().load();
+            Messages.sendMessage(player.get_name() + " has spawn in x:" + player.get_spawn().get_x() + ", y:" + player.get_spawn().get_y() + ", z:" + player.get_spawn().get_z(), Messages.messageType.DEBUG, null);
+            evt.setRespawnLocation(playerSpawn);
         }
-        Location playerSpawn = player.get_spawn().getLocation();
-        playerSpawn.getChunk().load();
-        Messages.sendMessage(player.get_name() + " has spawn in x:" + player.get_spawn().get_x() + ", y:" + player.get_spawn().get_y() + ", z:" + player.get_spawn().get_z(), Messages.messageType.DEBUG, null);
-        evt.setRespawnLocation(playerSpawn);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -73,18 +75,28 @@ public class EventManager implements Listener {
         MCWarClanPlayer player = _tc.getPlayer(evt.getPlayer().getName());
 
         if (player != null) {
-            if (player.isInEnemyTerritory(evt.getBlockPlaced().getLocation())) {   // Check if in enemy territory
-                if (evt.getBlockPlaced().getType() == Material.TNT || evt.getBlockPlaced().getType() == Material.LADDER
-                        || evt.getBlockPlaced().getType() == Material.LEVER) {    // Check if it's a special
-                    // block
-                    if (evt.getPlayer().getItemInHand().getAmount() >= Settings.uncensoredItemsAmount) {  // Check if the guy has the amount of item required to place the special block
-                        evt.getPlayer().getItemInHand().setAmount(evt.getPlayer().getItemInHand().getAmount() - Settings.uncensoredItemsAmount - 1);
-                        return;
-                    } else {
-                        // evt.getBlockPlaced().breakNaturally();
+            Base currentBaseLocation = _tc.getBase(evt.getBlockPlaced().getLocation());
+            if (currentBaseLocation != null && currentBaseLocation.get_team().isEnemyToTeam(player.get_team())) {   // Check if in enemy territory
+                Team currentEnemyTeam = currentBaseLocation.get_team();
+                if ((evt.getBlockPlaced().getType() == Material.TNT || evt.getBlockPlaced().getType() == Material.LADDER
+                        || evt.getBlockPlaced().getType() == Material.LEVER)){    // Check if it's a special block
+                    if(currentEnemyTeam.enoughMatesToBeAttack()) {    // Check if the team can be attack atm
+                        if (evt.getPlayer().getItemInHand().getAmount() >= Settings.uncensoredItemsAmount) {  // Check if the guy has the amount of item required to place the special block
+                            evt.getPlayer().getItemInHand().setAmount(evt.getPlayer().getItemInHand().getAmount() - Settings.uncensoredItemsAmount - 1);
+                            return;
+                        } else {
+                            // evt.getBlockPlaced().breakNaturally();
+                            evt.setCancelled(true);
+                            evt.getPlayer().updateInventory();
+                            Messages.sendMessage("You need at least " + Settings.uncensoredItemsAmount + " " + evt.getBlockPlaced().getType().toString() + " to place it into an enemy base !", Messages.messageType.INGAME, evt.getPlayer());
+                        }
+                    }
+                    else{
+                        Messages.sendMessage("Sorry, but the " + currentEnemyTeam.get_color().get_colorMark() + currentEnemyTeam.get_name() + " §6cannot be attack, not enough member connected.",
+                                Messages.messageType.INGAME, evt.getPlayer());
                         evt.setCancelled(true);
                         evt.getPlayer().updateInventory();
-                        Messages.sendMessage("You need at least " + Settings.uncensoredItemsAmount + " " + evt.getBlockPlaced().getType().toString() + " to place it into an enemy base !", Messages.messageType.INGAME, evt.getPlayer());
+                        return;
                     }
                 } else {
                     evt.setCancelled(true);
@@ -100,15 +112,22 @@ public class EventManager implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL)
     private void onBlockBreak(BlockBreakEvent evt) {
-        MCWarClanPlayer player = _tc.getPlayer(evt.getPlayer().getName());
+        if (evt.getBlock().getType() == Material.OBSIDIAN && Settings.obsidianBreakable){
+            // Do nothing
+            return;
+        }
+        else {
+            MCWarClanPlayer player = _tc.getPlayer(evt.getPlayer().getName());
+            if (player != null) {
+                Base currentBase = _tc.getBase(evt.getBlock().getLocation());
+                if (currentBase != null && currentBase.get_team().isEnemyToTeam(player.get_team())) {
+                    Messages.sendMessage("You cannot break block in the enemy base !", Messages.messageType.INGAME, evt.getPlayer());
+                    evt.setCancelled(true);
+                }
+            } else
+                Messages.sendMessage("Error, please ask an admin to be add to a team !", Messages.messageType.INGAME, evt.getPlayer());
+        }
 
-        if (player != null) {
-            if (player.isInEnemyTerritory(evt.getBlock().getLocation())) {
-                Messages.sendMessage("You cannot break block in the enemy base !", Messages.messageType.INGAME, evt.getPlayer());
-                evt.setCancelled(true);
-            }
-        } else
-            Messages.sendMessage("Error, please ask an admin to be add to a team !", Messages.messageType.INGAME, evt.getPlayer());
     }
 
     @EventHandler
@@ -123,8 +142,8 @@ public class EventManager implements Listener {
                 MCWarClanPlayer player = _tc.getPlayer(ent.getUniqueId());
 
                 //If the player is in enemy territory
-                Base b = player.isInEnemyTerritory();
-                if (b != null) {
+                Base b = player.getCurrentBase();
+                if (b != null && b.get_team().isEnemyToTeam(player.get_team())) {
                     //A war may be beginning, so the base is now contested.
 
                     if (b.isContested()) {

@@ -1,5 +1,6 @@
 package com.github.lolopasdugato.mcwarclan;
 
+import com.avaje.ebeaninternal.server.cluster.mcast.Message;
 import org.bukkit.configuration.Configuration;
 
 import java.util.Iterator;
@@ -18,7 +19,6 @@ public class Settings {
     public static int radiusHQBonus;
     public static int barbariansSpawnDistance;
     public static int baseMinHQDistanceToOthers;
-    public static int baseMinDistanceToSpawn;
     public static int uncensoredItemsAmount;
     public static String classicWorldName;
     public static boolean debugMode;
@@ -28,6 +28,12 @@ public class Settings {
     public static Cost DEFAULTteamJoiningTribute;
     public static Cost teamCreatingTribute;
     public static Cost baseInitialCost;
+    public static boolean matesNeededIgnore;
+    public static int matesNeededValue;
+    public static boolean matesNeededIsPercentage;
+    public static boolean obsidianBreakable;
+    public static int secureBarbarianDistance;
+
     private Configuration _cfg;
 
     //////////////////////////////////////////////////////////////////////////////
@@ -53,21 +59,28 @@ public class Settings {
      * @return if the loadConfig failed, return false.
      */
     public boolean loadConfig() {
-        maxNumberOfTeam = _cfg.getInt("teamSettings.maxNumberOfTeam");
-        initialTeamSize = _cfg.getInt("teamSettings.initialTeamSize");
+        maxNumberOfTeam = secureValue(_cfg.getInt("teamSettings.maxNumberOfTeam"), 4, TeamContainer.MAXTEAMSIZE);
+        initialTeamSize = secureValue(_cfg.getInt("teamSettings.initialTeamSize"), 2, -1);
         friendlyFire = _cfg.getBoolean("teamSettings.friendlyFire");
         seeInvisibleTeamMates = _cfg.getBoolean("teamSettings.transparentMates");
+        matesNeededIgnore = _cfg.getBoolean("teamSettings.matesNeeded.ignore");
+        matesNeededIsPercentage = _cfg.getBoolean("teamSettings.matesNeeded.percentage");
+        if(matesNeededIsPercentage)
+            matesNeededValue = secureValue(_cfg.getInt("teamSettings.matesNeeded.value"), 0, 100);
+        else
+            matesNeededValue = secureValue(_cfg.getInt("teamSettings.matesNeeded.value"), 0, -1);
 
-        initialRadius = _cfg.getInt("baseSettings.initialRadius");
-        radiusHQBonus = _cfg.getInt("baseSettings.radiusHQBonus");
-        barbariansSpawnDistance = _cfg.getInt("baseSettings.barbariansSpawnDistance");
-        baseMinHQDistanceToOthers = _cfg.getInt("baseSettings.baseMinHQDistanceToOthers");
-        baseMinDistanceToSpawn = _cfg.getInt("baseSettings.baseMinDistanceToSpawn");
+        initialRadius = secureValue(_cfg.getInt("baseSettings.initialRadius"), 5, -1);
+        radiusHQBonus = secureValue(_cfg.getInt("baseSettings.radiusHQBonus"), 5, -1);
+        barbariansSpawnDistance = secureValue(_cfg.getInt("baseSettings.barbariansSpawnDistance"), 100, -1);
+        baseMinHQDistanceToOthers = secureValue(_cfg.getInt("baseSettings.baseMinHQDistanceToOthers"), 0, -1);
+        secureBarbarianDistance = secureValue(_cfg.getInt("baseSettings.secureBarbarianDistance"), 0, -1);
 
-        uncensoredItemsAmount = _cfg.getInt("otherSettings.uncensoredItemsAmount");
+        uncensoredItemsAmount = secureValue(_cfg.getInt("otherSettings.uncensoredItemsAmount"), 1, -1);
         classicWorldName = _cfg.getString("otherSettings.classicWorldName");
         debugMode = _cfg.getBoolean("otherSettings.debugMode");
         randomBarbarianSpawn = _cfg.getBoolean("otherSettings.randomBarbarianSpawn");
+        obsidianBreakable = _cfg.getBoolean("otherSettings.obsidianBreakable");
 
 
         // Initializing blue entry cost
@@ -111,9 +124,18 @@ public class Settings {
         Iterator it = keys.iterator();
         while (it.hasNext()) {
             String matName = (String) it.next();
-            if (!toFill.addValue(matName, _cfg.getInt(path + "." + matName)))
-                return null;
+            int matNumber = secureValue(_cfg.getInt(path + "." + matName), 0, -1);
+            if (!toFill.addValue(matName, matNumber))
+                Messages.sendMessage("Material '" + matName + "' unrecognized in config.yml, ignoring it...", Messages.messageType.ALERT, null);
         }
         return toFill;
+    }
+
+    private int secureValue(int valueToSecure, int minValue, int maxValue){
+        if (valueToSecure > maxValue && maxValue != -1)
+            valueToSecure = maxValue;
+        if (valueToSecure < minValue && minValue != -1)
+            valueToSecure = minValue;
+        return valueToSecure;
     }
 }

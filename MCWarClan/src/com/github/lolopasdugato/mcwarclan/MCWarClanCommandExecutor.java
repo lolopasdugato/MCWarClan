@@ -1,9 +1,6 @@
 package com.github.lolopasdugato.mcwarclan;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.Server;
+import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -338,10 +335,12 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
                     }
                     //Check if the player's team have enough resources to create the base
                     Cost cost = Settings.baseInitialCost;
-                    if (!player.canPay(cost)) {
-                        Messages.sendMessage("You cannot create a base (not enough materials). You need: ", Messages.messageType.INGAME, p);
-                        Messages.sendMessage(cost.getResourceTypes(), Messages.messageType.INGAME, p);
-                        return true;
+                    if (p.getGameMode() != GameMode.CREATIVE) {
+                        if (!player.canPay(cost)) {
+                            Messages.sendMessage("You cannot create a base (not enough materials). You need: ", Messages.messageType.INGAME, p);
+                            Messages.sendMessage(cost.getResourceTypes(), Messages.messageType.INGAME, p);
+                            return true;
+                        }
                     }
                     //Here the player have enough resources to pay
 
@@ -349,6 +348,10 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
                     Location loc = p.getTargetBlock(null, 10).getLocation();
                     final ArrayList<Team> teams = _tc.get_teamArray();
                     ArrayList<Base> bases;
+
+                    boolean isHQ = false;
+                    if (player.get_team().get_bases().size() == 0)
+                        isHQ = true;
 
                     boolean overlap = false;
                     int i = 0, j = 0;
@@ -359,7 +362,7 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
                         if (teams.get(i) != player.get_team()) {
                             bases = teams.get(i).get_bases();
                             while (j < bases.size() && !overlap) {
-                                if (bases.get(j).isInBase(loc))
+                                if (bases.get(j).isNearBase(isHQ, loc))
                                     overlap = true;
                                 j++;
                             }
@@ -371,14 +374,20 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
                     //Verification of the barbarian spawn
                     Location barbSpawn = Bukkit.getWorld(Settings.classicWorldName).getSpawnLocation();
                     final double dist = barbSpawn.distance(p.getLocation());
-                    if (dist < Settings.barbariansSpawnDistance) {
+                    if (dist < Settings.barbariansSpawnDistance + Settings.secureBarbarianDistance + Settings.radiusHQBonus + Settings.initialRadius) {
                         Messages.sendMessage("You cannot create a base near the Barbarian spawn.", Messages.messageType.INGAME, p);
                         return true;
                     }
 
+                    Messages.sendMessage("initial radius: " + Settings.initialRadius + ", HQbonusradius: " + Settings.radiusHQBonus + ", baseMinHQDistanceToOthers: " + Settings.baseMinHQDistanceToOthers + ".", Messages.messageType.DEBUG, null);
+
 
                     if (overlap) {
                         Messages.sendMessage("You cannot create a base near another enemy base.", Messages.messageType.INGAME, p);
+                        if (isHQ)
+                            Messages.sendMessage("Moreover, this is your first base, so you have to build it " + (Settings.baseMinHQDistanceToOthers + (Settings.initialRadius + Settings.radiusHQBonus)*2 ) + " blocks far from the other teams bases"
+                                    , Messages.messageType.INGAME, p);
+
                         return true;
                     }
 
@@ -387,9 +396,6 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
                     //Now we try to create the flag
                     Base b = null;
                     try {
-                        boolean isHQ = false;
-                        if (player.get_team().get_bases().size() == 0)
-                            isHQ = true;
                         b = new Base(isHQ, player.get_team(), new MCWarClanLocation(loc));
                     } catch (Exception.NotEnoughSpaceException e) {
                         Messages.sendMessage("There is not enough space to create the base.", Messages.messageType.INGAME, p);
@@ -402,8 +408,16 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
                     //If the flag can be created, add the base to the base array
                     player.get_team().get_bases().add(b);
 
+                    // If this base is the first one (an HQ) reset de MCWarClan spawn location for all teamMembers
+                    if(b.is_HQ()){
+                        for (int k = 0; k < player.get_team().get_teamMembers().size(); k++){
+                            player.get_team().get_teamMembers().get(k).reloadSpawn();
+                        }
+                    }
+
                     //Substract the cost of the base to player's inventory
-                    player.payTribute(cost);
+                    if (p.getGameMode() != GameMode.CREATIVE)
+                        player.payTribute(cost);
 
                     Messages.sendMessage("The new base has been created !", Messages.messageType.INGAME, p);
                     return true;

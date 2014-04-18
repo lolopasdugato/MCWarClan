@@ -16,6 +16,9 @@ import java.util.UUID;
  * Created by Loïc on 14/04/2014.
  */
 public class MCWarClanPlayer implements Serializable {
+
+    static private final long serialVersionUID = 9;
+
     private UUID _uuid;
     private String _name;
     private Team _team;
@@ -128,10 +131,10 @@ public class MCWarClanPlayer implements Serializable {
     }
 
     /**
-     *  reload a new spawn for a barbarian.
+     *  reload the spawn for a player.
      */
     public void reloadSpawn(){
-        if(_team.get_id() == Team.BARBARIAN_TEAM_ID) {
+        if (_team.get_id() == Team.BARBARIAN_TEAM_ID) {
             // define spawn as a barbarian spawn
             Location barbarianSpawn = getBarbarianSpawn(Settings.barbariansSpawnDistance);
             while(!spawnOK(barbarianSpawn)){
@@ -236,29 +239,11 @@ public class MCWarClanPlayer implements Serializable {
         return valueToPay == 0;
     }
 
-    /**
-     * @depreciated See the new isInTerritory() function which return a base.
-     *  NOTE : With the new function, we just check for the player, not for the all teammates (match class logic)
-     *  Verify if someone of the team t is in an enemy territory.
-     * @param loc the location where we want to check.
-     * @return Returns true if the location of the guy is considered as an enemy territory.
-     */
-    public boolean isInEnemyTerritory(Location loc){
-        TeamContainer tc = _team.get_teamContainer();
-        for(int i = 0; i < tc.get_teamArray().size(); i++){
-            if (tc.get_teamArray().get(i).isEnemyToTeam(_team) && tc.get_teamArray().get(i).isInTerritory(loc) != null) {
-                return true;
-            }
-        }
-        return false;
-    }
-
 
     /**
      * @return Returns the base area where the player is if so, return null if no results matches.
-     *  Verify if the player is in an enemy territory.
      */
-    public Base isInEnemyTerritory() {
+    public Base getCurrentBase() {
         ArrayList<Team> teams = _team.get_teamContainer().get_teamArray();
         Base b;
         Player p = toOnlinePlayer();
@@ -271,8 +256,8 @@ public class MCWarClanPlayer implements Serializable {
         }
 
         for (int i = 0; i < teams.size(); i++) {
-            b = teams.get(i).isInTerritory(p.getLocation());
-            if (teams.get(i).isEnemyToTeam(_team) && b != null) {
+            b = teams.get(i).getBase(p.getLocation());
+            if (b != null) {
                 return b;
             }
         }

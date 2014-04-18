@@ -54,7 +54,7 @@ public class Team extends Object implements Serializable {
             BARBARIAN_TEAM_ID = _id;
 //        testBase();
         initCost();
-        Messages.sendMessage("I am team " + _color.get_colorMark() + _name + " and my id is: " + _id + " (masterId:" + _idMaster + ")", Messages.messageType.DEBUG, null);
+        Messages.sendMessage("I am team " + _name + " and my id is: " + _id + " (masterId:" + _idMaster + ")", Messages.messageType.DEBUG, null);
     }
 
 
@@ -258,7 +258,8 @@ public class Team extends Object implements Serializable {
             _bukkitTeam.setAllowFriendlyFire(true);
             _bukkitTeam.setCanSeeFriendlyInvisibles(false);
         }
-        _idMaster = _teamContainer.get_teamArray().size();
+        if(_idMaster < _id)
+            _idMaster = _id;
         if (_name.equals("Barbarians"))
             BARBARIAN_TEAM_ID = _id;
     }
@@ -269,12 +270,30 @@ public class Team extends Object implements Serializable {
      * @param loc the location to check
      * @return Return the base if found, null else.
      */
-    public Base isInTerritory(Location loc) {
+    public Base getBase(Location loc) {
         for (int i = 0; i < _bases.size(); i++) {
             if (_bases.get(i).isInBase(loc))
                 return _bases.get(i);
         }
         return null;
+    }
+
+    public boolean enoughMatesToBeAttack(){
+        if (!Settings.matesNeededIgnore){
+            if (_teamMembers.size() == 0)
+                return false;
+            int playerOnline = 0;
+
+            for (int i = 0; i < _teamMembers.size(); i++){
+                if(_teamMembers.get(i).toOnlinePlayer() != null)
+                    playerOnline++;
+            }
+            if(Settings.matesNeededIsPercentage){
+                playerOnline = (playerOnline/_teamMembers.size())*100;
+            }
+            return playerOnline >= Settings.matesNeededValue;
+        }
+        return true;
     }
 
 }
