@@ -4,12 +4,16 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.player.PlayerBucketEmptyEvent;
+import org.bukkit.event.player.PlayerBucketEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -57,10 +61,11 @@ public class EventManager implements Listener {
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
-    private void onPlayerDeath(PlayerRespawnEvent evt) {
+    private void onPlayerRespawn(PlayerRespawnEvent evt) {
         if (evt.getPlayer().getBedSpawnLocation() == null) {                // priority to bed spawn.
             MCWarClanPlayer player = _tc.getPlayer(evt.getPlayer().getName());
-            if (player.get_team().get_id() == Team.BARBARIAN_TEAM_ID && Settings.randomBarbarianSpawn || player.get_team().getHQ().isContested()) {
+            if (player.get_team().get_id() == Team.BARBARIAN_TEAM_ID && Settings.randomBarbarianSpawn
+                    || (player.get_team().get_bases().size() != 0 && player.get_team().getHQ().isContested())) {
                 player.reloadSpawn();
             }
             Location playerSpawn = player.get_spawn().getLocation();
@@ -81,15 +86,17 @@ public class EventManager implements Listener {
                 if ((evt.getBlockPlaced().getType() == Material.TNT || evt.getBlockPlaced().getType() == Material.LADDER
                         || evt.getBlockPlaced().getType() == Material.LEVER)){    // Check if it's a special block
                     if(currentEnemyTeam.enoughMatesToBeAttack()) {    // Check if the team can be attack atm
-                        if (evt.getPlayer().getItemInHand().getAmount() >= Settings.uncensoredItemsAmount) {  // Check if the guy has the amount of item required to place the special block
+                        if (evt.getPlayer().getItemInHand().getAmount() >= Settings.uncensoredItemsAmount && Settings.uncensoredItemsAmount > 1) {  // Check if the guy has the amount of item required to place the special block
                             evt.getPlayer().getItemInHand().setAmount(evt.getPlayer().getItemInHand().getAmount() - Settings.uncensoredItemsAmount - 1);
                             return;
-                        } else {
+                        } else if (Settings.uncensoredItemsAmount > 1){
                             // evt.getBlockPlaced().breakNaturally();
                             evt.setCancelled(true);
                             evt.getPlayer().updateInventory();
                             Messages.sendMessage("You need at least " + Settings.uncensoredItemsAmount + " " + evt.getBlockPlaced().getType().toString() + " to place it into an enemy base !", Messages.messageType.INGAME, evt.getPlayer());
                         }
+                        else
+                            return;
                     }
                     else{
                         Messages.sendMessage("Sorry, but the " + currentEnemyTeam.get_color().get_colorMark() + currentEnemyTeam.get_name() + " §6cannot be attack, not enough member connected.",
@@ -109,6 +116,21 @@ public class EventManager implements Listener {
             Messages.sendMessage("Error, please ask an admin to be add to a team !", Messages.messageType.INGAME, evt.getPlayer());
     }
 
+    @EventHandler
+    private void onPlayerBucketEmpty(PlayerBucketEmptyEvent evt){
+        Player player = evt.getPlayer();
+        MCWarClanPlayer mcPlayer = _tc.getPlayer(player.getName());
+        if(mcPlayer != null){
+            Base currentBaseLocation = _tc.getBase(evt.getBlockClicked().getLocation());
+            if(currentBaseLocation != null && currentBaseLocation.get_team().isEnemyToTeam(mcPlayer.get_team())){
+                evt.setCancelled(true);
+                player.updateInventory();
+                Messages.sendMessage("You cannot place block (except TNT, Ladders, and Levers...) in an enemy base !", Messages.messageType.INGAME, player);
+            }
+        }
+        else
+            Messages.sendMessage("Error, please ask an admin to be add to a team !", Messages.messageType.INGAME, player);
+    }
 
     @EventHandler(priority = EventPriority.NORMAL)
     private void onBlockBreak(BlockBreakEvent evt) {
@@ -167,6 +189,13 @@ public class EventManager implements Listener {
 
                 }
             }
+        }
+    }
+
+    @EventHandler
+    private void onEntityExplode(EntityExplodeEvent evt){
+        if(evt.getEntityType() == EntityType.CREEPER){
+            evt.setCancelled(!Settings.allowCreeperDestroyFields);
         }
     }
 

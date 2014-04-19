@@ -134,59 +134,6 @@ public class Color implements Serializable {
     //////////////////////////////////////////////////////////////////////////////
 
     /**
-     * @deprecated perf wasting. Use the new attribute.
-     * @return Retruns a dye color for a wool.
-     */
-    DyeColor toDyeColor() {
-        DyeColor dye;
-        if (_colorName.equals("RED")) {
-            dye = DyeColor.RED;
-
-        } else if (_colorName.equals("BLUE")) {
-            dye = DyeColor.BLUE;
-
-        } else if (_colorName.equals("GREEN")) {
-            dye = DyeColor.GREEN;
-
-        } else if (_colorName.equals("YELLOW")) {
-            dye = DyeColor.YELLOW;
-
-        } else if (_colorName.equals("BLACK")) {
-            dye = DyeColor.BLACK;
-
-        } else if (_colorName.equals("WHITE")) {
-            dye = DyeColor.WHITE;
-
-        } else if (_colorName.equals("MAGENTA")) {
-            dye = DyeColor.MAGENTA;
-
-        } else if (_colorName.equals("GRAY")) {
-            dye = DyeColor.GRAY;
-
-        } else if (_colorName.equals("ORANGE")) {
-            dye = DyeColor.ORANGE;
-
-        } else if (_colorName.equals("PURPLE")) {
-            dye = DyeColor.PURPLE;
-
-        } else if (_colorName.equals("LIGHTGREY")) {
-            dye = DyeColor.SILVER;
-
-        } else if (_colorName.equals("LIGHTGREEN")) {
-            dye = DyeColor.LIME;
-
-        } else if (_colorName.equals("CYAN")) {
-            dye = DyeColor.CYAN;
-
-        } else if (_colorName.equals("LIGHTBLUE")) {
-            dye = DyeColor.LIGHT_BLUE;
-        } else
-            dye = DyeColor.WHITE;
-
-        return dye;
-    }
-
-    /**
      *  refresh settings that should be reloaded if config.yml has been changed.
      */
     public void refresh(){

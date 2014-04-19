@@ -33,6 +33,7 @@ public class Settings {
     public static boolean matesNeededIsPercentage;
     public static boolean obsidianBreakable;
     public static int secureBarbarianDistance;
+    public static boolean allowCreeperDestroyFields;
 
     private Configuration _cfg;
 
@@ -81,6 +82,7 @@ public class Settings {
         debugMode = _cfg.getBoolean("otherSettings.debugMode");
         randomBarbarianSpawn = _cfg.getBoolean("otherSettings.randomBarbarianSpawn");
         obsidianBreakable = _cfg.getBoolean("otherSettings.obsidianBreakable");
+        allowCreeperDestroyFields = _cfg.getBoolean("otherSettings.allowCreeperDestroyFields");
 
 
         // Initializing blue entry cost

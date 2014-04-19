@@ -1,39 +1,36 @@
 package com.github.lolopasdugato.mcwarclan;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.BlockState;
+import org.bukkit.material.Wool;
+
+import java.io.Serializable;
 
 /**
  * Created by Seb on 17/04/2014.
  */
-public class BlockModule {
+public class BlockModule implements Serializable{
 
-//    private Block _blk;
+    static private final long serialVersionUID = 11;
 
-    private int _x;
-    private int _y;
-    private int _z;
+    private Pattern _pattern;
+    private MCWarClanLocation _location;
     private Material _material;
 
     //////////////////////////////////////////////////////////////////////////////
     //------------------------------- Constructors -------------------------------
     //////////////////////////////////////////////////////////////////////////////
 
-    //    public BlockModule(Material material, Block blk)
-    public BlockModule(Material material, int x, int y, int z) {
-        this._material = material;
-//        this._blk = blk;
-        _x = x;
-        _y = y;
-        _z = z;
+    public BlockModule(Material material, MCWarClanLocation location, Pattern pattern){
+        _material = material;
+        _location = location;
+        _pattern = pattern;
     }
 
     //////////////////////////////////////////////////////////////////////////////
     //--------------------------------- Getters ----------------------------------
     //////////////////////////////////////////////////////////////////////////////
-
-//    public Block get_blk() {
-//        return _blk;
-//    }
 
     public Material get_material() {
         return _material;
@@ -43,35 +40,34 @@ public class BlockModule {
         this._material = _material;
     }
 
-    public int get_x() {
-        return _x;
-    }
-
-    public int get_y() {
-        return _y;
-    }
-
     //////////////////////////////////////////////////////////////////////////////
     //--------------------------------- Setters ----------------------------------
     //////////////////////////////////////////////////////////////////////////////
 
-//    public void set_blk(Block _blk) {
-//        this._blk = _blk;
-//    }
 
-    public int get_z() {
-        return _z;
+    //////////////////////////////////////////////////////////////////////////////
+    //--------------------------------- Functions --------------------------------
+    //////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Transform a BlockModule into a block in the real minecraft world
+     */
+    public void toBlock(){
+        Location loc = _location.getLocation();
+        loc.getBlock().setType(_material);
+        if (loc.getBlock().getType() == Material.WOOL){
+            BlockState bs = loc.getBlock().getState();
+            Wool wool = (Wool) bs.getData();
+            wool.setColor(_pattern.get_flag().get_base().get_team().get_color().get_dye());
+            bs.update();
+        }
     }
 
-    public void setX(int x) {
-        this._x = x;
-    }
-
-    public void setY(int y) {
-        this._y = y;
-    }
-
-    public void setZ(int z) {
-        this._z = z;
+    /**
+     * Check if the BlockModule is referring to an empty block (AIR) in the real minecraft world;
+     * @return true if Material.AIR.
+     */
+    public boolean isAir(){
+        return _location.getLocation().getBlock().isEmpty();
     }
 }

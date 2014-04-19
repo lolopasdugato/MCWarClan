@@ -401,7 +401,7 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
                         Messages.sendMessage("There is not enough space to create the base.", Messages.messageType.INGAME, p);
                         return true;
                     } catch (Exception.NotValidFlagLocationException e) {
-                        Messages.sendMessage("There is not a solid block under the flag.", Messages.messageType.INGAME, p);
+                        Messages.sendMessage("There is not a solid block under the flag, or the flag is under the sea level (64 blocks).", Messages.messageType.INGAME, p);
                         return true;
                     }
 

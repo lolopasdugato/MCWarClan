@@ -32,6 +32,13 @@ public class MCWarClanLocation implements Serializable {
         _z = loc.getZ();
     }
 
+    public MCWarClanLocation(MCWarClanLocation loc) {
+        _worldName = loc.get_worldName();
+        _x = loc.get_x();
+        _y = loc.get_y();
+        _z = loc.get_z();
+    }
+
     //////////////////////////////////////////////////////////////////////////////
     //--------------------------------- Getters ----------------------------------
     //////////////////////////////////////////////////////////////////////////////
