@@ -134,21 +134,39 @@ public class MCWarClanPlayer implements Serializable {
      *  reload the spawn for a player.
      */
     public void reloadSpawn(){
-        if (_team.get_id() == Team.BARBARIAN_TEAM_ID) {
+
+        if (_team.get_bases().size() != 0 && _team.getHQ().isContested()){
+            // Setting spawn to the border of the HQ.
+            Base HQ = _team.getHQ();
+            _spawn = HQ.get_loc();
+            int signX = 1;
+            int signZ = 1;
+            if (new Random().nextBoolean())
+                signX = -1;
+            if (new Random().nextBoolean())
+                signZ = -1;
+            double randomX = (new Random().nextInt(21) + HQ.get_radius() + _spawn.get_x()) * signX;
+            double randomZ = (new Random().nextInt(21) + HQ.get_radius() + _spawn.get_z()) * signZ;
+            _spawn.set_x(randomX);
+            _spawn.set_z(randomZ);
+            Messages.sendMessage( _name + " will spawn in x:" + _spawn.get_x() + ", y:" + _spawn.get_y() + ", z:" + _spawn.get_z() + " (ContestedHQ).",
+                    Messages.messageType.DEBUG, null);
+        }
+        else if(_team.get_bases().size() != 0){
+            _spawn = _team.getHQ().get_loc();
+            _spawn.set_x(_spawn.get_x() + 2);
+            Messages.sendMessage( _name + " will spawn in x:" + _spawn.get_x() + ", y:" + _spawn.get_y() + ", z:" + _spawn.get_z() + " (NormalHQState).",
+                    Messages.messageType.DEBUG, null);
+        }
+        else {                                  // Otherwise, it should be a barbarian or the player is handled like a barbarian because the team has no HQ.
             // define spawn as a barbarian spawn
             Location barbarianSpawn = getBarbarianSpawn(Settings.barbariansSpawnDistance);
             while(!spawnOK(barbarianSpawn)){
                 barbarianSpawn = upLocation(barbarianSpawn, 1);
             }
             _spawn = new MCWarClanLocation(barbarianSpawn);
-        }
-        else if(_team.get_bases().size() != 0){
-            _spawn = _team.getHQ().get_loc();
-            _spawn.set_x(_spawn.get_x() + 2);
-        }
-        else{
-            _spawn = new MCWarClanLocation(Bukkit.getWorld(Settings.classicWorldName).getSpawnLocation());
-            Messages.sendMessage("No HQ found for " + _team.get_name() + ". Using " + Settings.classicWorldName + "'s spawn for " + _name + ".", Messages.messageType.ALERT, null);
+            Messages.sendMessage( _name + " will spawn in x:" + _spawn.get_x() + ", y:" + _spawn.get_y() + ", z:" + _spawn.get_z() + " (Barbarian).",
+                    Messages.messageType.DEBUG, null);
         }
     }
 

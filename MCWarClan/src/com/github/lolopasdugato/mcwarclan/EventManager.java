@@ -60,7 +60,7 @@ public class EventManager implements Listener {
     private void onPlayerDeath(PlayerRespawnEvent evt) {
         if (evt.getPlayer().getBedSpawnLocation() == null) {                // priority to bed spawn.
             MCWarClanPlayer player = _tc.getPlayer(evt.getPlayer().getName());
-            if (player.get_team().get_id() == Team.BARBARIAN_TEAM_ID && Settings.randomBarbarianSpawn) {
+            if (player.get_team().get_id() == Team.BARBARIAN_TEAM_ID && Settings.randomBarbarianSpawn || player.get_team().getHQ().isContested()) {
                 player.reloadSpawn();
             }
             Location playerSpawn = player.get_spawn().getLocation();

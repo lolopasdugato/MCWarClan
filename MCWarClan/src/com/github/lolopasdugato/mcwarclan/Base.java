@@ -12,7 +12,8 @@ public class Base implements Serializable {
 	static private final long serialVersionUID = 5;
     private static int _idMaster = 0;
     private boolean _HQ;            // Determine if this is an HQ or not
-    private int _radius; 			// Determine the radius protection effect of this base
+    private int _initialRadius;     // First radius of protection for a normal base
+    private int _radius; 			// Determine the radius protection effect of this base.
     private int _bonusRadius;       // Determine the radius bonus for the HQ.
 	private Team _team;				// Team which this object is attached to
 	private Flag _flag;				// The flag attached to this base
@@ -39,10 +40,14 @@ public class Base implements Serializable {
         _HQ = HQ;
         _team = team;
         _loc = loc;
-        _radius = Settings.initialRadius;   // WARNING: shouldn't be reloaded !
-        _bonusRadius = Settings.radiusHQBonus;
+        _initialRadius = Settings.initialRadius;    // WARNING: shouldn't be reloaded ! (except if it doesn't change during the game)
+        _bonusRadius = Settings.radiusHQBonus;      // WARNING: shouldn't be reloaded ! (except if it doesn't change during the game)
         _cost = Settings.baseInitialCost;   // WARNING shouldn't be reload !
         _id = _idMaster;
+        if (_HQ)
+            _radius = _initialRadius + _bonusRadius;
+        else
+            _radius = _initialRadius;
         //Test if the flag can be created, and throw NotEnoughSpaceException is not.
         _flag = new Flag(this);
 
@@ -53,6 +58,10 @@ public class Base implements Serializable {
     //--------------------------------- Getters ----------------------------------
     //////////////////////////////////////////////////////////////////////////////
 
+
+    public int get_initialRadius() {
+        return _initialRadius;
+    }
 
     public boolean is_HQ() {
         return _HQ;
@@ -123,7 +132,13 @@ public class Base implements Serializable {
      *  refresh settings that should be reloaded if config.yml has been changed.
      */
     public void refresh(){
+        // This refresh should be changed if the radius can change during the game.
         _bonusRadius = Settings.radiusHQBonus;
+        _initialRadius = Settings.initialRadius;
+        if(_HQ)
+            _radius = _initialRadius + _bonusRadius;
+        else
+            _radius = _initialRadius;
         if(_idMaster < _id)
             _idMaster = _id;
     }
@@ -135,7 +150,7 @@ public class Base implements Serializable {
      * @return true or false.
      */
     public boolean isNearBase(boolean includeSafeZone, Location loc){
-        int tmpRadius = (_radius + _bonusRadius) * 2;
+        int tmpRadius = (_initialRadius + _bonusRadius) * 2;    // Maximum radius * 2
         if (includeSafeZone)
             tmpRadius += Settings.baseMinHQDistanceToOthers;
         boolean isInXAxe = false;
@@ -153,14 +168,11 @@ public class Base implements Serializable {
      * @return True if the location is in this base.
      */
     public boolean isInBase(Location loc){
-        int tmpRadius = _radius;
-        if(_HQ)
-            tmpRadius += _bonusRadius;
         boolean isInXAxe = false;
         boolean isInZAxe = false;
-        if(loc.getX() < _loc.get_x() + tmpRadius && loc.getX() > _loc.get_x() - tmpRadius)
+        if(loc.getX() < _loc.get_x() + _radius && loc.getX() > _loc.get_x() - _radius)
             isInXAxe = true;
-        if(loc.getZ() < _loc.get_z() + tmpRadius && loc.getZ() > _loc.get_z() - tmpRadius)
+        if(loc.getZ() < _loc.get_z() + _radius && loc.getZ() > _loc.get_z() - _radius)
             isInZAxe = true;
         return (isInXAxe && isInZAxe);
     }
