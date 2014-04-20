@@ -1,5 +1,7 @@
 package com.github.lolopasdugato.mcwarclan;
 
+import com.github.lolopasdugato.mcwarclan.customexceptions.MaximumTeamCapacityReachedException;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
@@ -44,20 +46,26 @@ public class EventManager implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void onPlayerJoin(PlayerJoinEvent evt) {
-        if (_tc == null) {
-            Messages.sendMessage("The main team manager cannot be found. Please contact the creator to solve this problem.", Messages.messageType.ALERT, null);
-            return;
+        try{
+            if (_tc == null) {
+                Messages.sendMessage("The main team manager cannot be found. Please contact the creator to solve this problem.", Messages.messageType.ALERT, null);
+                Bukkit.shutdown();
+                return;
+            }
+            MCWarClanPlayer player = _tc.getPlayer(evt.getPlayer().getName());
+            if (player == null) {
+                Messages.sendMessage("Welcome, this server is using MCWarClan " + MCWarClan.VERSION + ", have fun !", Messages.messageType.INGAME, evt.getPlayer());
+                Team barbarians = _tc.getTeam(Team.BARBARIAN_TEAM_ID);
+                player = new MCWarClanPlayer(evt.getPlayer(), barbarians);
+                barbarians.addTeamMate(player);
+                player.spawn();
+                Messages.sendMessage(player.get_name() + " has spawn in x:" + player.get_spawn().get_x() + ", y:" + player.get_spawn().get_y() + ", z:" + player.get_spawn().get_z(), Messages.messageType.DEBUG, null);
+            } else
+                Messages.sendMessage("Welcome back, this server is using MCWarClan " + MCWarClan.VERSION + ", have fun !", Messages.messageType.INGAME, evt.getPlayer());
+        } catch (MaximumTeamCapacityReachedException e){
+            e.sendDebugMessage();
+            Bukkit.shutdown();
         }
-        MCWarClanPlayer player = _tc.getPlayer(evt.getPlayer().getName());
-        if (player == null) {
-            Messages.sendMessage("Welcome, this server is using MCWarClan " + MCWarClan.VERSION + ", have fun !", Messages.messageType.INGAME, evt.getPlayer());
-            Team barbarians = _tc.getTeam(Team.BARBARIAN_TEAM_ID);
-            player = new MCWarClanPlayer(evt.getPlayer(), barbarians);
-            barbarians.addTeamMate(player);
-            player.spawn();
-            Messages.sendMessage(player.get_name() + " has spawn in x:" + player.get_spawn().get_x() + ", y:" + player.get_spawn().get_y() + ", z:" + player.get_spawn().get_z(), Messages.messageType.DEBUG, null);
-        } else
-            Messages.sendMessage("Welcome back, this server is using MCWarClan " + MCWarClan.VERSION + ", have fun !", Messages.messageType.INGAME, evt.getPlayer());
     }
 
     @EventHandler(priority = EventPriority.NORMAL)

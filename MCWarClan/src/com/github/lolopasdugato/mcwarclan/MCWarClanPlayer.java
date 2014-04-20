@@ -1,5 +1,9 @@
 package com.github.lolopasdugato.mcwarclan;
 
+import com.github.lolopasdugato.mcwarclan.customexceptions.InvalidColorException;
+import com.github.lolopasdugato.mcwarclan.customexceptions.InvalidNameException;
+import com.github.lolopasdugato.mcwarclan.customexceptions.MaximumNumberOfTeamReachedException;
+import com.github.lolopasdugato.mcwarclan.customexceptions.MaximumTeamCapacityReachedException;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -286,7 +290,76 @@ public class MCWarClanPlayer implements Serializable {
         return null;
     }
 
+    /**
+     * Check if this player can contest a base.
+     * @return true if he can.
+     */
     public boolean canContest(){
         return _team.get_bases().size() != 0;
+    }
+
+    /**
+     * Switch a player from a team to a team.
+     * @param teamToSwitchTo
+     * @return
+     */
+    public boolean switchTo(Team teamToSwitchTo){
+        try{
+            _team.deleteTeamMate(this);
+            teamToSwitchTo.addTeamMate(this);
+        } catch (MaximumTeamCapacityReachedException e) {
+            e.sendDebugMessage();
+            Player player = toOnlinePlayer();
+            if (player != null)
+                Messages.sendMessage("Too many members in " + teamToSwitchTo.getColoredName() + " cannot switch you to this team !", Messages.messageType.INGAME, toOnlinePlayer());
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Kick a player from it's current team to the barbarian team.
+     * @return
+     */
+    public boolean kick(){
+        Team Barbarians = _team.get_teamContainer().getTeam(Team.BARBARIAN_TEAM_ID);
+        return switchTo(Barbarians);
+    }
+
+    /**
+     * Create a team for a specified player.
+     * @param t
+     * @return
+     */
+    public boolean createTeam(Team t) {
+        Player player = toOnlinePlayer();
+        try {
+            TeamContainer teamManager = _team.get_teamContainer();
+            teamManager.checkTeamValidity(t);
+            if(!canPay(teamManager.get_creatingCost())) {
+                Messages.sendMessage("You need more resources to create this team. Here is an exhaustive list of all materials required: ", Messages.messageType.INGAME, player);
+                Messages.sendMessage(teamManager.get_creatingCost().getResourceTypes(), Messages.messageType.INGAME, player);
+                return false;
+            }
+            payTribute(teamManager.get_creatingCost());
+            if(!teamManager.addTeam(t)) {
+                Messages.sendMessage("Cannot add the team for unknown reason...", Messages.messageType.DEBUG, null);
+                Messages.sendMessage("Cannot add the team for unknown reason...", Messages.messageType.INGAME, player);
+                return false;
+            }
+        } catch (InvalidColorException e) {
+            e.sendDebugMessage();
+            Messages.sendMessage("Sorry, but name or color is already taken by another team. Here is the colorname list: ", Messages.messageType.INGAME, player);
+            Messages.sendMessage("§2GREEN, §eYELLOW, §0BLACK, §dMAGENTA, §5PURPRLE, §3CYAN, §bLIGHTBLUE", Messages.messageType.INGAME, player);
+            return false;
+        } catch (InvalidNameException e) {
+            e.sendDebugMessage();
+            Messages.sendMessage("Sorry, this name is already taken !", Messages.messageType.INGAME, player);
+            return false;
+        } catch (MaximumNumberOfTeamReachedException e) {
+            Messages.sendMessage("Sorry, maximum number of team reached !", Messages.messageType.INGAME, player);
+            return false;
+        }
+        return true;
     }
 }

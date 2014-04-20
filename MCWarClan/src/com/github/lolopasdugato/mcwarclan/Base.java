@@ -158,9 +158,9 @@ public class Base implements Serializable {
             tmpRadius += Settings.baseMinHQDistanceToOthers;
         boolean isInXAxe = false;
         boolean isInZAxe = false;
-        if(loc.getX() < _loc.get_x() + tmpRadius && loc.getX() > _loc.get_x() - tmpRadius)
+        if (loc.getX() < _loc.get_x() + tmpRadius && loc.getX() > _loc.get_x() - tmpRadius)
             isInXAxe = true;
-        if(loc.getZ() < _loc.get_z() + tmpRadius && loc.getZ() > _loc.get_z() - tmpRadius)
+        if (loc.getZ() < _loc.get_z() + tmpRadius && loc.getZ() > _loc.get_z() - tmpRadius)
             isInZAxe = true;
         return (isInXAxe && isInZAxe);
     }
@@ -179,6 +179,4 @@ public class Base implements Serializable {
             isInZAxe = true;
         return (isInXAxe && isInZAxe);
     }
-
-
 }

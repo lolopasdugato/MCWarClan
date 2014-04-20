@@ -86,9 +86,7 @@ public abstract class MCWarClanRoutine extends BukkitRunnable {
                     // If the attacked team lost their main base (HeadQuarter)
                     if(_base.is_HQ()){
                         TeamContainer teamManager = _opponents.get_teamContainer();
-                        for (int j = 0; j < teamManager.get_teamArray().size(); j++){
-                            teamManager.get_teamArray().get(j).sendMessage(attackedTeam.get_color().get_colorMark() + attackedTeam.get_name() + " §6lost and will be destroyed ! They just lost their HeadQuarters like kids...");
-                        }
+                        teamManager.sendMessage(attackedTeam.getColoredName() + " lost and will be destroyed ! They just lost their HeadQuarters like kids...");
                         attackedTeam.loose();
                         _opponents.captureBase(_base);
                     }

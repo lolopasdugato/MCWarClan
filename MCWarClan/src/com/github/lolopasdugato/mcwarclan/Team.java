@@ -1,5 +1,6 @@
 package com.github.lolopasdugato.mcwarclan;
 
+import com.github.lolopasdugato.mcwarclan.customexceptions.MaximumTeamCapacityReachedException;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -154,6 +155,14 @@ public class Team extends Object implements Serializable {
     //////////////////////////////////////////////////////////////////////////////
 
     /**
+     * Return a colored name.
+     * @return
+     */
+    public String getColoredName() {
+        return _color.get_colorMark() + _name + "§6";
+    }
+
+    /**
      * Initialize the join cost, depending on the team.
      */
     public void initCost() {
@@ -167,48 +176,65 @@ public class Team extends Object implements Serializable {
 
     /**
      * Add a player to this team.
-     *
      * @param player
+     * @throws MaximumTeamCapacityReachedException
      * @return
      */
-    public boolean addTeamMate(MCWarClanPlayer player) {
-        // If the current team is one of those two, there is no limit
-        if (_id == BARBARIAN_TEAM_ID) {
-            _teamMembers.add(player);
-            player.set_team(this);
-            if (!_bukkitTeam.hasPlayer(player.toOfflinePlayer()))
-                _bukkitTeam.addPlayer(player.toOfflinePlayer());
-            player.reloadSpawn();
-            return true;
-        } else if (_teamMembers.size() >= _teamSize) {
+    public boolean addTeamMate(MCWarClanPlayer player) throws MaximumTeamCapacityReachedException {
+        try {
+            // If the current team is the barbarian one, there is no limit
+            if (_id == BARBARIAN_TEAM_ID) {
+                _teamMembers.add(player);
+                player.set_team(this);
+                if (!_bukkitTeam.hasPlayer(player.toOfflinePlayer()))
+                    _bukkitTeam.addPlayer(player.toOfflinePlayer());
+                player.reloadSpawn();
+
+            // If the maximum team size is reached
+            } else if (_teamMembers.size() >= _teamSize) {
+                throw new MaximumTeamCapacityReachedException("In addTeamMate, cannot add" + player.get_name() + " to team " + _name + " maximum size reached(" + _teamSize + "/" + _teamMembers.size() + ")");
+
+                // Normal case
+            } else {
+                player.set_team(this);
+                _teamMembers.add(player);
+                if (!_bukkitTeam.hasPlayer(player.toOfflinePlayer()))
+                    _bukkitTeam.addPlayer(player.toOfflinePlayer());
+                player.reloadSpawn();
+            }
+        // Thrown by _bukkitTeam.addPlayer() && _bukkitTeam.hasPlayer()
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
             return false;
-        } else {
-            player.set_team(this);
-            _teamMembers.add(player);
-            if (!_bukkitTeam.hasPlayer(player.toOfflinePlayer()))
-                _bukkitTeam.addPlayer(player.toOfflinePlayer());
-            player.reloadSpawn();
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+            return false;
         }
         return true;
     }
 
     /**
      * Delete a player from this team and the bukkit team
-     *
-     * @param player the player to delete
-     * @return true if
+     * @param player
+     * @return
      */
     public boolean deleteTeamMate(MCWarClanPlayer player) {
-        if (_teamMembers.remove(player) && _bukkitTeam.removePlayer(player.toOfflinePlayer())) {
+        try {
+            _teamMembers.remove(player);
+            _bukkitTeam.removePlayer(player.toOfflinePlayer());
             player.set_team(null);
-            return true;
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+            return false;
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+            return false;
         }
-        return false;
+        return true;
     }
 
     /**
      * list all player's name in this team
-     *
      * @return Return a list of player in the team.
      */
     public String[] playerList() {
@@ -225,24 +251,15 @@ public class Team extends Object implements Serializable {
 
     /**
      * Check if the team is enemy to the player team.
-     *
      * @param playerTeam, the team of the player.
      * @return If true, this team is enemy to the player team.
      */
     public boolean isEnemyToTeam(Team playerTeam) {
-        if (!_name.equals(playerTeam.get_name()))
-            return true;
-        return false;
+        return !_name.equals(playerTeam.get_name());
     }
-
-    //      WARNING     \\
-    //      WARNING     \\
-    //      WARNING     \\
-    // Not tested !
 
     /**
      * Returns the team's HQ.
-     *
      * @return
      */
     public Base getHQ() {
@@ -262,14 +279,21 @@ public class Team extends Object implements Serializable {
         for (Base _base : _bases) {
             _base.refresh();
         }
-        if (_id != 3) {
-            _bukkitTeam.setAllowFriendlyFire(Settings.friendlyFire);
-            _bukkitTeam.setCanSeeFriendlyInvisibles(Settings.seeInvisibleTeamMates);
-        } else {
-            _bukkitTeam.setAllowFriendlyFire(true);
-            _bukkitTeam.setCanSeeFriendlyInvisibles(false);
+        try {
+            if (_id != 3) {
+                _bukkitTeam.setAllowFriendlyFire(Settings.friendlyFire);
+                _bukkitTeam.setCanSeeFriendlyInvisibles(Settings.seeInvisibleTeamMates);
+            } else {
+                _bukkitTeam.setAllowFriendlyFire(true);
+                _bukkitTeam.setCanSeeFriendlyInvisibles(false);
+            }
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
         }
-        if(_idMaster < _id)
+
+        if (_idMaster < _id)
             _idMaster = _id;
         if (_name.equals("Barbarians"))
             BARBARIAN_TEAM_ID = _id;
@@ -277,14 +301,13 @@ public class Team extends Object implements Serializable {
 
     /**
      * Check if a location is in the team territory
-     *
      * @param loc the location to check
-     * @return Return the base if found, null else.
+     * @return Return the base if found, otherwise returns null.
      */
     public Base getBase(Location loc) {
-        for (int i = 0; i < _bases.size(); i++) {
-            if (_bases.get(i).isInBase(loc))
-                return _bases.get(i);
+        for (Base _base : _bases) {
+            if (_base.isInBase(loc))
+                return _base;
         }
         return null;
     }
@@ -299,11 +322,11 @@ public class Team extends Object implements Serializable {
                 return false;
             int playerOnline = 0;
 
-            for (int i = 0; i < _teamMembers.size(); i++){
-                if(_teamMembers.get(i).toOnlinePlayer() != null)
+            for (MCWarClanPlayer _teamMember : _teamMembers) {
+                if (_teamMember.toOnlinePlayer() != null)
                     playerOnline++;
             }
-            if(Settings.matesNeededIsPercentage){
+            if (Settings.matesNeededIsPercentage){
                 playerOnline = (playerOnline/_teamMembers.size())*100;
             }
             return playerOnline >= Settings.matesNeededValue;
@@ -319,17 +342,16 @@ public class Team extends Object implements Serializable {
         Team teamToDelete = new Team(this);
         Team barbarians = _teamContainer.getTeam(Team.BARBARIAN_TEAM_ID);
         for (int i = 0; i < _bases.size(); i++){
-            Base baseToDelete = _bases.get(i);
-            _bases.remove(baseToDelete);
+            // Delete flag ?
+            _bases.remove(_bases.get(i));
+            // Do not delete the link between base and team to prevent nullPointerException if other battles are in progress at the same time.
         }
         _bases = null;  // Destroying the container.
         for (int i = 0; i < teamToDelete.get_teamMembers().size(); i++){
-            MCWarClanPlayer looser = teamToDelete.get_teamMembers().get(i);
-            deleteTeamMate(looser);
-            barbarians.addTeamMate(looser);
+            teamToDelete.get_teamMembers().get(i).kick();
         }
         if(!_teamContainer.deleteTeam(this)){
-            Messages.sendMessage(_name + " cannot be deleted for unknown reason !", Messages.messageType.DEBUG, null);
+            Messages.sendMessage(_name + " cannot be deleted because of bukkitTeam Exception !", Messages.messageType.DEBUG, null);
         }
     }
 
@@ -354,6 +376,10 @@ public class Team extends Object implements Serializable {
         _bases.remove(baseToDelete);
     }
 
+    /**
+     * Change a base characteristics to make this base become a new base of this team.
+     * @param baseToCapture
+     */
     public void captureBase(Base baseToCapture){
         baseToCapture.isContested(false);
         baseToCapture.set_HQ(false);

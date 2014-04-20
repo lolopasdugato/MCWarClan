@@ -1,5 +1,8 @@
 package com.github.lolopasdugato.mcwarclan;
 
+import com.github.lolopasdugato.mcwarclan.customexceptions.InvalidColorException;
+import com.github.lolopasdugato.mcwarclan.customexceptions.InvalidNameException;
+import com.github.lolopasdugato.mcwarclan.customexceptions.MaximumNumberOfTeamReachedException;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.scoreboard.Objective;
@@ -119,22 +122,20 @@ public class TeamContainer implements Serializable {
     //////////////////////////////////////////////////////////////////////////////
 
     /**
-     * verify if the team could be added to the TeamContainer.
-     *
+     * Verify if the team could be added to the TeamContainer.
      * @param t the team to add.
-     * @return return true if the team is valid.
      */
-    public boolean isTeamValid(Team t) {
-        for (int i = 0; i < _teamArray.size(); i++) {
+    public void checkTeamValidity(Team t) throws InvalidColorException, InvalidNameException, MaximumNumberOfTeamReachedException {
+        if(_teamArray.size() >= Settings.maxNumberOfTeam)
+            throw new MaximumNumberOfTeamReachedException("In createTeam, The maximum number of team is reached (" + _teamArray.size() + "/" + Settings.maxNumberOfTeam + ") !");
+        for (Team a_team : _teamArray) {
             // Check color
-            if (t.get_color().get_colorName().equals(_teamArray.get(i).get_color().get_colorName()) || !t.get_color().is_validColor()) {
-                return false;
-            }
+            if (t.get_color().get_colorName().equals(a_team.get_color().get_colorName()) || !t.get_color().is_validColor())
+                throw new InvalidColorException("In checkTeamValidity, " + t.get_color().get_colorName() + " is already used or invalidate by the plugin.");
             // Check name
-            if (t.get_name().toUpperCase().equals(_teamArray.get(i).get_name().toUpperCase()))
-                return false;
+            if (t.get_name().toUpperCase().equals(a_team.get_name().toUpperCase()))
+                throw new InvalidNameException("In checkTeamValidity, " + t.get_name() + " is already taken.");
         }
-        return true;
     }
 
     /**
@@ -144,7 +145,7 @@ public class TeamContainer implements Serializable {
      * @return true if the team has been successfully added.
      */
     public boolean addTeam(Team t) {
-        if (_teamArray.size() < _maxTeams && isTeamValid(t)) {
+        try {
             // Can only be done if no other teams has the same name.
             _teamArray.add(t);
             if (_scoreboard.getTeam(t.get_name()) == null)
@@ -166,22 +167,26 @@ public class TeamContainer implements Serializable {
             t.get_bukkitTeam().setPrefix(t.get_color().get_colorMark() + "[" + t.get_name().substring(0, 3) + "]§r");
             t.get_bukkitTeam().setDisplayName(t.get_color().get_colorMark() + t.get_name() + "§r");
             return true;
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+            return false;
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+            return false;
         }
-        Messages.sendMessage("Error while adding " + t.get_name() + " !", Messages.messageType.DEBUG, null);
-        return false;
     }
 
     /**
      * Delete a team from both teamContainer
-     *
      * @param t the team to delete
      * @return if the removing action has worked, it returns true.
      */
-    // WARNING: NOT TESTED
     public boolean deleteTeam(Team t) {
-        t.get_bukkitTeam().unregister();
-        if (!_teamArray.remove(t)) {
-            _scoreboard.registerNewTeam(t.get_name());
+        try {
+            t.get_bukkitTeam().unregister();
+            _teamArray.remove(t);
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
             return false;
         }
         return true;
@@ -189,15 +194,14 @@ public class TeamContainer implements Serializable {
 
     /**
      * Search a player through the different teams in the teamContainer.
-     *
      * @param playerName the name of the player.
      * @return returns the player if it works, otherwise, it will return null.
      */
     public MCWarClanPlayer getPlayer(String playerName) {
-        for (int i = 0; i < _teamArray.size(); i++) {
-            for (int j = 0; j < _teamArray.get(i).get_teamMembers().size(); j++) {
-                if (_teamArray.get(i).get_teamMembers().get(j).get_name().equals(playerName)) {
-                    return _teamArray.get(i).get_teamMembers().get(j);
+        for (Team a_team : _teamArray) {
+            for (int j = 0; j < a_team.get_teamMembers().size(); j++) {
+                if (a_team.get_teamMembers().get(j).get_name().equals(playerName)) {
+                    return a_team.get_teamMembers().get(j);
                 }
             }
         }
@@ -210,10 +214,10 @@ public class TeamContainer implements Serializable {
      * Search a player through the different teams in the teamContainer.
      */
     public MCWarClanPlayer getPlayer(UUID uuid) {
-        for (int i = 0; i < _teamArray.size(); i++) {
-            for (int j = 0; j < _teamArray.get(i).get_teamMembers().size(); j++) {
-                if (_teamArray.get(i).get_teamMembers().get(j).get_uuid().equals(uuid)) {
-                    return _teamArray.get(i).get_teamMembers().get(j);
+        for (Team a_team : _teamArray) {
+            for (int j = 0; j < a_team.get_teamMembers().size(); j++) {
+                if (a_team.get_teamMembers().get(j).get_uuid().equals(uuid)) {
+                    return a_team.get_teamMembers().get(j);
                 }
             }
         }
@@ -223,7 +227,6 @@ public class TeamContainer implements Serializable {
 
     /**
      * Search a team using the team name.
-     *
      * @param teamName the team name.
      * @return returns teh team if it has found something, otherwise, returns null.
      */
@@ -332,15 +335,14 @@ public class TeamContainer implements Serializable {
     }
 
     /**
-     * get a team using it's ID.
-     *
+     * Get a team using it's ID.
      * @param id
      * @return
      */
     public Team getTeam(int id) {
-        for (int i = 0; i < _teamArray.size(); i++) {
-            if (_teamArray.get(i).get_id() == Team.BARBARIAN_TEAM_ID)
-                return _teamArray.get(i);
+        for (Team a_team : _teamArray) {
+            if (a_team.get_id() == id)
+                return a_team;
         }
         return null;
     }
@@ -360,5 +362,15 @@ public class TeamContainer implements Serializable {
             }
         }
         return null;
+    }
+
+    /**
+     * Send a message to all players.
+     * @param message
+     */
+    public void sendMessage(String message) {
+        for (Team a_team : _teamArray) {
+            a_team.sendMessage(message);
+        }
     }
 }
