@@ -1,6 +1,5 @@
 package com.github.lolopasdugato.mcwarclan;
 
-import com.avaje.ebeaninternal.server.cluster.mcast.Message;
 import org.bukkit.configuration.Configuration;
 
 import java.util.Iterator;
@@ -61,7 +60,7 @@ public class Settings {
      * @return if the loadConfig failed, return false.
      */
     public boolean loadConfig() {
-        maxNumberOfTeam = secureValue(_cfg.getInt("teamSettings.maxNumberOfTeam"), 4, TeamContainer.MAXTEAMSIZE);
+        maxNumberOfTeam = secureValue(_cfg.getInt("teamSettings.maxNumberOfTeam"), 4, TeamManager.MAXTEAMSIZE);
         initialTeamSize = secureValue(_cfg.getInt("teamSettings.initialTeamSize"), 2, -1);
         friendlyFire = _cfg.getBoolean("teamSettings.friendlyFire");
         seeInvisibleTeamMates = _cfg.getBoolean("teamSettings.transparentMates");

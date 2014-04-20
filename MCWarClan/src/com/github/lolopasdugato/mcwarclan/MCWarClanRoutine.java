@@ -1,6 +1,5 @@
 package com.github.lolopasdugato.mcwarclan;
 
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -85,7 +84,7 @@ public abstract class MCWarClanRoutine extends BukkitRunnable {
                     attackedTeam.sendMessage("You just lost your base against " + _opponents.get_color().get_colorMark() + _opponents.get_name() + " §6kids... you could have done it in a better way...");
                     // If the attacked team lost their main base (HeadQuarter)
                     if(_base.is_HQ()){
-                        TeamContainer teamManager = _opponents.get_teamContainer();
+                        TeamManager teamManager = _opponents.get_teamManager();
                         teamManager.sendMessage(attackedTeam.getColoredName() + " lost and will be destroyed ! They just lost their HeadQuarters like kids...");
                         attackedTeam.loose();
                         _opponents.captureBase(_base);

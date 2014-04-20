@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 public class MCWarClanCommandExecutor implements CommandExecutor {
 	
-	private TeamContainer _tc;
+	private TeamManager _tc;
 	private Server _server;
 
     //////////////////////////////////////////////////////////////////////////////
@@ -22,7 +22,7 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
      * @param tc
      * @param server
      */
-	public MCWarClanCommandExecutor(TeamContainer tc, Server server) {
+	public MCWarClanCommandExecutor(TeamManager tc, Server server) {
 		_tc = tc;
 		_server = server;
 	}

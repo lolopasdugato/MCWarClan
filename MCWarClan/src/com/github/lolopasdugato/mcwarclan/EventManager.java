@@ -15,7 +15,6 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
-import org.bukkit.event.player.PlayerBucketEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -24,7 +23,7 @@ import org.bukkit.scheduler.BukkitTask;
 
 public class EventManager implements Listener {
 
-    private TeamContainer _tc;
+    private TeamManager _tc;
     private JavaPlugin _plugin;
 
     //////////////////////////////////////////////////////////////////////////////
@@ -35,7 +34,7 @@ public class EventManager implements Listener {
      * @param tc
      *  Classic Event constructor.
      */
-    public EventManager(TeamContainer tc, JavaPlugin plugin) {
+    public EventManager(TeamManager tc, JavaPlugin plugin) {
         _tc = tc;
         _plugin = plugin;
     }

@@ -17,7 +17,7 @@ public class Team extends Object implements Serializable {
     private String _name;                            // Represent the team name.
     private ArrayList<MCWarClanPlayer> _teamMembers;
     private int _teamSize;                            // Represent the maximum size of a team a it's creation. SHOULD NOT BE REFRESH
-    private TeamContainer _teamContainer;            // The team container to which this team is linked to
+    private TeamManager _teamManager;            // The team container to which this team is linked to
     private ArrayList<Base> _bases;                    // Represent bases of a team
     private Cost _cost;                             // The cost to join a team
     private transient org.bukkit.scoreboard.Team _bukkitTeam;  // An instance of a bukkitTeam
@@ -35,9 +35,9 @@ public class Team extends Object implements Serializable {
      * @param color
      * @param name
      * @param teamSize
-     * @param teamContainer
+     * @param teamManager
      */
-    public Team(Color color, String name, int teamSize, TeamContainer teamContainer) {
+    public Team(Color color, String name, int teamSize, TeamManager teamManager) {
         _idMaster++;
         _color = color;
         // _team = new ArrayList<String>();
@@ -47,7 +47,7 @@ public class Team extends Object implements Serializable {
         _teamSize = teamSize;
         //
 
-        _teamContainer = teamContainer;
+        _teamManager = teamManager;
         //
 
         _name = name;
@@ -65,7 +65,7 @@ public class Team extends Object implements Serializable {
         _name = t.get_name();
         _teamMembers = t.get_teamMembers();
         _teamSize = t.get_teamSize();
-        _teamContainer = t.get_teamContainer();
+        _teamManager = t.get_teamManager();
         _bases = t.get_bases();
         _cost = t.get_cost();
         _bukkitTeam = t.get_bukkitTeam();
@@ -109,12 +109,12 @@ public class Team extends Object implements Serializable {
         this._teamSize = _teamSize;
     }
 
-    public TeamContainer get_teamContainer() {
-        return _teamContainer;
+    public TeamManager get_teamManager() {
+        return _teamManager;
     }
 
-    public void set_teamContainer(TeamContainer _teamContainer) {
-        this._teamContainer = _teamContainer;
+    public void set_teamManager(TeamManager _teamManager) {
+        this._teamManager = _teamManager;
     }
 
     //////////////////////////////////////////////////////////////////////////////
@@ -340,7 +340,7 @@ public class Team extends Object implements Serializable {
     public void loose(){
         _hasLost = true;
         Team teamToDelete = new Team(this);
-        Team barbarians = _teamContainer.getTeam(Team.BARBARIAN_TEAM_ID);
+        Team barbarians = _teamManager.getTeam(Team.BARBARIAN_TEAM_ID);
         for (int i = 0; i < _bases.size(); i++){
             // Delete flag ?
             _bases.remove(_bases.get(i));
@@ -350,7 +350,7 @@ public class Team extends Object implements Serializable {
         for (int i = 0; i < teamToDelete.get_teamMembers().size(); i++){
             teamToDelete.get_teamMembers().get(i).kick();
         }
-        if(!_teamContainer.deleteTeam(this)){
+        if(!_teamManager.deleteTeam(this)){
             Messages.sendMessage(_name + " cannot be deleted because of bukkitTeam Exception !", Messages.messageType.DEBUG, null);
         }
     }

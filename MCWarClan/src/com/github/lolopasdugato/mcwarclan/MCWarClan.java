@@ -15,7 +15,7 @@ public class MCWarClan extends JavaPlugin implements Listener {
 
     public static String VERSION = "v0.1";
     public BukkitTask _tsk;
-    protected TeamContainer _tc;
+    protected TeamManager _tc;
     protected EventManager _em;
     protected Settings _cfg;
     protected boolean _hardStop;
@@ -35,13 +35,13 @@ public class MCWarClan extends JavaPlugin implements Listener {
     //--------------------------------- Getters ----------------------------------
     //////////////////////////////////////////////////////////////////////////////
 	
-	public TeamContainer get_tc() { return _tc; }
+	public TeamManager get_tc() { return _tc; }
 
     //////////////////////////////////////////////////////////////////////////////
     //--------------------------------- Setters ----------------------------------
     //////////////////////////////////////////////////////////////////////////////
 
-	public void set_tc(TeamContainer _tc) { this._tc = _tc; }
+	public void set_tc(TeamManager _tc) { this._tc = _tc; }
 
     //////////////////////////////////////////////////////////////////////////////
     //--------------------------------- Functions --------------------------------
@@ -51,9 +51,9 @@ public class MCWarClan extends JavaPlugin implements Listener {
      *  Init a team container.
      * @return return a teamcontainer initialized
      */
-	public TeamContainer TeamContainerInit(){
-        TeamContainer tc = new TeamContainer(Settings.maxNumberOfTeam);
-		if(new File("plugins/MCWarClan/TeamContainer.ser").exists()){
+	public TeamManager TeamContainerInit(){
+        TeamManager tc = new TeamManager(Settings.maxNumberOfTeam);
+		if(new File("plugins/MCWarClan/TeamManager.ser").exists()){
 			tc = tc.deSerialize();
             tc.refresh();
 		}
@@ -100,8 +100,8 @@ public class MCWarClan extends JavaPlugin implements Listener {
             log.info("|-_MCWARCLAN_-| Config load has failed !");
         else
             log.info("|-_MCWARCLAN_-| OK !");
-        if((new File(Settings.classicWorldName + "/data/scoreboard.dat").exists() && !new File("plugins/MCWarClan/TeamContainer.ser").exists())){
-            log.severe("To prevent any error, MCWarClan will be disable. Please delete " + Settings.classicWorldName + "/data/scoreboard.dat and /plugins/MCWarClan/TeamContainer.ser");
+        if((new File(Settings.classicWorldName + "/data/scoreboard.dat").exists() && !new File("plugins/MCWarClan/TeamManager.ser").exists())){
+            log.severe("To prevent any error, MCWarClan will be disable. Please delete " + Settings.classicWorldName + "/data/scoreboard.dat and /plugins/MCWarClan/TeamManager.ser");
             _hardStop = true;
         }
         else{

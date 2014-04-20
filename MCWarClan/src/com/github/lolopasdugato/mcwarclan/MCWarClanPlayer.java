@@ -266,7 +266,7 @@ public class MCWarClanPlayer implements Serializable {
      * @return Returns the base area where the player is if so, return null if no results matches.
      */
     public Base getCurrentBase() {
-        ArrayList<Team> teams = _team.get_teamContainer().get_teamArray();
+        ArrayList<Team> teams = _team.get_teamManager().get_teamArray();
         Base b;
         Player p = toOnlinePlayer();
 
@@ -322,7 +322,7 @@ public class MCWarClanPlayer implements Serializable {
      * @return
      */
     public boolean kick(){
-        Team Barbarians = _team.get_teamContainer().getTeam(Team.BARBARIAN_TEAM_ID);
+        Team Barbarians = _team.get_teamManager().getTeam(Team.BARBARIAN_TEAM_ID);
         return switchTo(Barbarians);
     }
 
@@ -334,7 +334,7 @@ public class MCWarClanPlayer implements Serializable {
     public boolean createTeam(Team t) {
         Player player = toOnlinePlayer();
         try {
-            TeamContainer teamManager = _team.get_teamContainer();
+            TeamManager teamManager = _team.get_teamManager();
             teamManager.checkTeamValidity(t);
             if(!canPay(teamManager.get_creatingCost())) {
                 Messages.sendMessage("You need more resources to create this team. Here is an exhaustive list of all materials required: ", Messages.messageType.INGAME, player);
