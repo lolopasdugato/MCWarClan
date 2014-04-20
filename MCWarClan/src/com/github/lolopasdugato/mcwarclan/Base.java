@@ -91,6 +91,8 @@ public class Base implements Serializable {
         return _radius;
     }
 
+    public int get_id() { return _id; }
+
     //////////////////////////////////////////////////////////////////////////////
     //--------------------------------- Setters ----------------------------------
     //////////////////////////////////////////////////////////////////////////////
@@ -141,6 +143,7 @@ public class Base implements Serializable {
             _radius = _initialRadius;
         if(_idMaster < _id)
             _idMaster = _id;
+        _contested = false;
     }
 
     /**

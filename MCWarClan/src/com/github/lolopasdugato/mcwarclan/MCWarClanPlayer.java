@@ -138,7 +138,7 @@ public class MCWarClanPlayer implements Serializable {
         if (_team.get_bases().size() != 0 && _team.getHQ().isContested()){
             // Setting spawn to the border of the HQ.
             Base HQ = _team.getHQ();
-            _spawn = HQ.get_loc();
+            _spawn = new MCWarClanLocation(HQ.get_loc());
             int signX = 1;
             int signZ = 1;
             if (new Random().nextBoolean())
@@ -153,7 +153,7 @@ public class MCWarClanPlayer implements Serializable {
                     Messages.messageType.DEBUG, null);
         }
         else if(_team.get_bases().size() != 0){
-            _spawn = _team.getHQ().get_loc();
+            _spawn = new MCWarClanLocation(_team.getHQ().get_loc());
             _spawn.set_x(_spawn.get_x() + 2);
             Messages.sendMessage( _name + " will spawn in x:" + _spawn.get_x() + ", y:" + _spawn.get_y() + ", z:" + _spawn.get_z() + " (NormalHQState).",
                     Messages.messageType.DEBUG, null);
