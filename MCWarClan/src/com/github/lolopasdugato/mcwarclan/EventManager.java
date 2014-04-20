@@ -162,11 +162,10 @@ public class EventManager implements Listener {
             if (ent.getType() == EntityType.PLAYER) {
                 //Get the player
                 MCWarClanPlayer player = _tc.getPlayer(ent.getUniqueId());
-                Messages.sendMessage(player.get_name() + " received damages.", Messages.messageType.DEBUG, null);
                 //If the player is in enemy territory
                 Base b = player.getCurrentBase();
                 if (b != null && b.get_team().isEnemyToTeam(player.get_team()) && player.get_team().get_id() != Team.BARBARIAN_TEAM_ID) {
-                    if(b.get_team().enoughMatesToBeAttack()){
+                    if(b.get_team().enoughMatesToBeAttack() && player.canContest()){
 
                         //A war may be beginning, so the base is now contested.
 
@@ -180,30 +179,14 @@ public class EventManager implements Listener {
 
                         // Inform the attacked team !
                         Team attackedTeam = b.get_team();
-                        for (int i = 0; i < attackedTeam.get_teamMembers().size(); i++){
-                            Player toInform = attackedTeam.get_teamMembers().get(i).toOnlinePlayer();
-                            if(toInform != null)
-                            Messages.sendMessage("You are attacked by " + player.get_team().get_color().get_colorMark() + player.get_team().get_name() + " !",
-                                    Messages.messageType.INGAME, toInform);
-                        }
-                        Team attackingTeam = b.get_team();
-                        for (int i = 0; i < attackingTeam.get_teamMembers().size(); i++){
-                            Player toInform = attackingTeam.get_teamMembers().get(i).toOnlinePlayer();
-                            if(toInform != null)
-                                Messages.sendMessage("Your team is attacking " + attackedTeam.get_color().get_colorMark() + attackedTeam.get_name() + " !",
-                                        Messages.messageType.INGAME, toInform);
-                        }
+                        Team attackingTeam = player.get_team();
+                        attackedTeam.sendMessage("You are attacked by " + attackingTeam.get_color().get_colorMark() + attackingTeam.get_name() + " !");
+                        attackingTeam.sendMessage("Your team is attacking " + attackedTeam.get_color().get_colorMark() + attackedTeam.get_name() + " !");
 
                         //Create a new thread in order to check if the enemies are defeated
                         BukkitTask tks = new MCWarClanRoutine.ContestedBaseRoutine(_plugin, b,
                                 player.get_team()).runTaskTimer(_plugin,
                                 0, 100);
-
-                        //Send a message to all players involved in the battle
-                        Messages.sendMessage(new String[]{"Battle start in opponent base."}, Messages.messageType.DEBUG,
-                                player.get_team().get_teamMembers());
-                        Messages.sendMessage(new String[]{"Battle start in your base."}, Messages.messageType.DEBUG,
-                                b.get_team().get_teamMembers());
                     }
                 }
             }

@@ -70,4 +70,25 @@ public class BlockModule implements Serializable{
     public boolean isAir(){
         return _location.getLocation().getBlock().isEmpty();
     }
+
+    /**
+     * Check if the block at the current BlockModule position is the same material.
+     * @return
+     */
+    public boolean isPlaced(){
+        return _location.getLocation().getBlock().getType().equals(_material);
+    }
+
+    public void erase(){
+        if(_location.getLocation().getBlock().getType().equals(_material)) {
+            _location.getLocation().getBlock().setType(Material.AIR);
+            Messages.sendMessage("Materials are the same ! Erasing...", Messages.messageType.DEBUG, null);
+        }
+        else
+            Messages.sendMessage("Cannot erase ! materials are not the same !", Messages.messageType.DEBUG, null);
+    }
+
+    public void forceErase(){
+        _location.getLocation().getBlock().setType(Material.AIR);
+    }
 }

@@ -1,5 +1,6 @@
 package com.github.lolopasdugato.mcwarclan;
 
+import com.avaje.ebeaninternal.server.cluster.mcast.Message;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -57,9 +58,33 @@ public class Flag implements Serializable {
         return _base;
     }
 
+    public Pattern get_pattern() {
+        return _pattern;
+    }
+
     //////////////////////////////////////////////////////////////////////////////
     //--------------------------------- Functions --------------------------------
     //////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Check if the flag pattern is destroyed at a certain percentage.
+     * @param percentage
+     * @return
+     */
+    public boolean isDestroyed(int percentage){
+        int percentageOfBlocksDestroyed = (_pattern.getNumberOfEmptyBlocks() * 100)/_pattern.get_pattern().size();
+        Messages.sendMessage("percentageOfBlocksDestroyed: " + percentageOfBlocksDestroyed + "(" + _pattern.getNumberOfEmptyBlocks() + "), pattern size: " + _pattern.get_pattern().size() + ", percentage needed: " + percentage + "."
+                , Messages.messageType.DEBUG, null);
+        return percentageOfBlocksDestroyed >= percentage;
+    }
+
+    public void destroy(){
+        _pattern.erase();
+    }
+
+    public void forceDestroy(){
+        _pattern.forceErase();
+    }
 
     /**
      *  refresh settings that should be reloaded if config.yml has been changed.

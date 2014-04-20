@@ -51,6 +51,7 @@ public class Pattern implements Serializable {
         return _flag;
     }
 
+    public ArrayList<BlockModule> get_pattern() { return _pattern; }
 
     //////////////////////////////////////////////////////////////////////////////
     //-------------------------------- Setters ---------------------------------
@@ -125,6 +126,37 @@ public class Pattern implements Serializable {
                 newLoc.set_z(newLoc.get_z() + 1 + l);
                 add(Material.WOOL, newLoc);
             }
+        }
+    }
+
+    /**
+     * Get the number of blocks in the pattern that are not in the real minecraft world
+     * @return
+     */
+    public int getNumberOfEmptyBlocks(){
+        int numberOfEmptyBlocks = 0;
+        for (BlockModule module : _pattern) {
+            if (!module.isPlaced())
+                numberOfEmptyBlocks++;
+        }
+        return numberOfEmptyBlocks;
+    }
+
+    /**
+     * Erase blocks that are in the real world and the same type of the pattern BlockModule concerned.
+     */
+    public void erase(){
+        for (BlockModule module : _pattern) {
+            module.erase();
+        }
+    }
+
+    /**
+     * Erase blocks that are in the real world even if they are not the same type of the pattern BlockModule concerned.
+     */
+    public void forceErase(){
+        for (BlockModule module : _pattern) {
+            module.forceErase();
         }
     }
 }

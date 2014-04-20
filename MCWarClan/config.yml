@@ -102,6 +102,11 @@ baseSettings:
       EMERALD: 10
       DIAMOND: 10
 
+    # Define the percentage of the flag that should be destroyed before the beginning of the base capture.
+    # Min value: 25
+    # Max value: 100
+    destroyFlagPercentage: 90
+
 #####################
 #####################
 otherSettings:

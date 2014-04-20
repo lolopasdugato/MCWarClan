@@ -34,6 +34,7 @@ public class Settings {
     public static boolean obsidianBreakable;
     public static int secureBarbarianDistance;
     public static boolean allowCreeperDestroyFields;
+    public static int destroyFlagPercentage;
 
     private Configuration _cfg;
 
@@ -76,6 +77,7 @@ public class Settings {
         barbariansSpawnDistance = secureValue(_cfg.getInt("baseSettings.barbariansSpawnDistance"), 100, -1);
         baseMinHQDistanceToOthers = secureValue(_cfg.getInt("baseSettings.baseMinHQDistanceToOthers"), 0, -1);
         secureBarbarianDistance = secureValue(_cfg.getInt("baseSettings.secureBarbarianDistance"), 0, -1);
+        destroyFlagPercentage = secureValue(_cfg.getInt("baseSettings.destroyFlagPercentage"), 25, 100);
 
         uncensoredItemsAmount = secureValue(_cfg.getInt("otherSettings.uncensoredItemsAmount"), 1, -1);
         classicWorldName = _cfg.getString("otherSettings.classicWorldName");

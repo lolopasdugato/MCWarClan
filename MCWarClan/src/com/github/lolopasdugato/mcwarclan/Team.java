@@ -1,6 +1,7 @@
 package com.github.lolopasdugato.mcwarclan;
 
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -13,7 +14,6 @@ public class Team extends Object implements Serializable {
     private static int _idMaster = 0;
     private Color _color;                            // Represent the team color.
     private String _name;                            // Represent the team name.
-    // private ArrayList<String> _team; 				// Represent the players in the team
     private ArrayList<MCWarClanPlayer> _teamMembers;
     private int _teamSize;                            // Represent the maximum size of a team a it's creation. SHOULD NOT BE REFRESH
     private TeamContainer _teamContainer;            // The team container to which this team is linked to
@@ -21,6 +21,7 @@ public class Team extends Object implements Serializable {
     private Cost _cost;                             // The cost to join a team
     private transient org.bukkit.scoreboard.Team _bukkitTeam;  // An instance of a bukkitTeam
     private int _id;
+    private boolean _hasLost;
 
 
     //////////////////////////////////////////////////////////////////////////////
@@ -55,6 +56,19 @@ public class Team extends Object implements Serializable {
 //        testBase();
         initCost();
         Messages.sendMessage("I am team " + _name + " and my id is: " + _id + " (masterId:" + _idMaster + ")", Messages.messageType.DEBUG, null);
+        _hasLost = false;
+    }
+
+    public Team(Team t){
+        _color = t.get_color();
+        _name = t.get_name();
+        _teamMembers = t.get_teamMembers();
+        _teamSize = t.get_teamSize();
+        _teamContainer = t.get_teamContainer();
+        _bases = t.get_bases();
+        _cost = t.get_cost();
+        _bukkitTeam = t.get_bukkitTeam();
+        _id = t.get_id();
     }
 
 
@@ -70,9 +84,9 @@ public class Team extends Object implements Serializable {
         this._color = _color;
     }
 
-    /*public ArrayList<String> get_team() {
-        return _team;
-    }*/
+    public boolean hasLost() {
+        return _hasLost;
+    }
 
     public String get_name() {
         return _name;
@@ -90,9 +104,6 @@ public class Team extends Object implements Serializable {
         return _teamSize;
     }
 
-    /*public void set_team(ArrayList<String> _team) {
-        this._team = _team;
-    }*/
     public void set_teamSize(int _teamSize) {
         this._teamSize = _teamSize;
     }
@@ -278,6 +289,10 @@ public class Team extends Object implements Serializable {
         return null;
     }
 
+    /**
+     * Calculate if there is enough team mates connected to be attacked.
+     * @return
+     */
     public boolean enoughMatesToBeAttack(){
         if (!Settings.matesNeededIgnore){
             if (_teamMembers.size() == 0)
@@ -294,6 +309,59 @@ public class Team extends Object implements Serializable {
             return playerOnline >= Settings.matesNeededValue;
         }
         return true;
+    }
+
+    /**
+     * Called when a team lost its HQ so that the team is deleted from every container. Every teamMembers will became barbarians.
+     */
+    public void loose(){
+        _hasLost = true;
+        Team teamToDelete = new Team(this);
+        Team barbarians = _teamContainer.getTeam(Team.BARBARIAN_TEAM_ID);
+        for (int i = 0; i < _bases.size(); i++){
+            Base baseToDelete = _bases.get(i);
+            _bases.remove(baseToDelete);
+        }
+        _bases = null;  // Destroying the container.
+        for (int i = 0; i < teamToDelete.get_teamMembers().size(); i++){
+            MCWarClanPlayer looser = teamToDelete.get_teamMembers().get(i);
+            deleteTeamMate(looser);
+            barbarians.addTeamMate(looser);
+        }
+        if(!_teamContainer.deleteTeam(this)){
+            Messages.sendMessage(_name + " cannot be deleted for unknown reason !", Messages.messageType.DEBUG, null);
+        }
+    }
+
+    /**
+     * Send a message to all team members.
+     * @param message the message to send.
+     */
+    public void sendMessage(String message){
+        for (MCWarClanPlayer _teamMember : _teamMembers) {
+            Player toInform = _teamMember.toOnlinePlayer();
+            if (toInform != null)
+                Messages.sendMessage(message, Messages.messageType.INGAME, toInform);
+        }
+    }
+
+    /**
+     * Simply delete softly a base.
+     * @param baseToDelete
+     */
+    public void deleteBase(Base baseToDelete){
+        baseToDelete.get_flag().destroy();
+        _bases.remove(baseToDelete);
+    }
+
+    public void captureBase(Base baseToCapture){
+        baseToCapture.isContested(false);
+        baseToCapture.set_HQ(false);
+        baseToCapture.set_radius(baseToCapture.get_initialRadius());
+        baseToCapture.set_team(this);
+        baseToCapture.get_flag().forceDestroy();
+        _bases.add(baseToCapture);
+        baseToCapture.get_flag().get_pattern().generate();
     }
 
 }

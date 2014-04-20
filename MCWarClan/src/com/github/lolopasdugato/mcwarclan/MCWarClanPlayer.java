@@ -272,6 +272,10 @@ public class MCWarClanPlayer implements Serializable {
                     Messages.messageType.DEBUG, null);
             return null;
         }
+        else if (p.isDead()){
+            Messages.sendMessage("A player is not considered as being in a base if he is dead !", Messages.messageType.DEBUG, null);
+            return null;
+        }
 
         for (int i = 0; i < teams.size(); i++) {
             b = teams.get(i).getBase(p.getLocation());
@@ -282,33 +286,7 @@ public class MCWarClanPlayer implements Serializable {
         return null;
     }
 
-
-    //Another version used in the "createbaseCommand" function
-//    private Base isInEnemyBase()
-//    {
-//        ArrayList<Team> teams = _team.get_teamContainer().get_teamArray();
-//        ArrayList<Base> bases;
-//        Player p  = toOnlinePlayer();
-//
-//        //If we cannot find the player, stop here
-//        if(p == null)
-//            return null;
-//
-//        Location loc = p.getLocation();
-//        int i = 0, j = 0;
-//
-//        while (i < teams.size()) {
-//            if (teams.get(i) != get_team()) {
-//                bases = teams.get(i).get_bases();
-//                while (j < bases.size()) {
-//                    if (bases.get(j).isInBase(loc))
-//                        return bases.get(j);
-//                    j++;
-//                }
-//            }
-//            j = 0;
-//            i++;
-//        }
-//        return null;
-//    }
+    public boolean canContest(){
+        return _team.get_bases().size() != 0;
+    }
 }

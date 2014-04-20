@@ -25,17 +25,30 @@ public abstract class MCWarClanRoutine extends BukkitRunnable {
 
         private final Team _opponents;
         private Base _base;
+        private int _flagCapCounter;
+        private final int _FlagCapTime;
+        private boolean _oneTimeMessage;
 
         protected ContestedBaseRoutine(JavaPlugin plugin, Base base, Team opponents) {
             super(plugin);
             _base = base;
             _opponents = opponents;
+            _FlagCapTime = 6; // 1min = 12*5
+            _flagCapCounter = _FlagCapTime;
+            _oneTimeMessage = false;
         }
 
         @Override
         public void run() {
             //Add routine's logic here
             Messages.sendMessage("Calling routine every 5 seconds.", Messages.messageType.DEBUG, null);
+            Team attackedTeam = _base.get_team();
+
+            // If one of the two teams has lost the game, all battles with one or the other one should be stopped.
+            if(attackedTeam.hasLost() || _opponents.hasLost()){
+                this.cancel();
+                return;
+            }
 
             // So the base is contested, know we check if there are opponents remaining
             // before changing '_contested' state.
@@ -58,23 +71,48 @@ public abstract class MCWarClanRoutine extends BukkitRunnable {
             //If there are not any enemy in the base
             Messages.sendMessage("Alive= " + alive, Messages.messageType.DEBUG, null);
             if(alive){
-                // Check if the flag is destroyed (or partially ==> do a function in the pattern class)
-                // If destroyed, send a one time message to the attacked team.
-                // After a certain amount of time capture the flag.
-                // DO NOT FORGET TO SET HQ "flag" (in th class) to false !!!!!!
+                if(_base.get_flag().isDestroyed(Settings.destroyFlagPercentage) && _flagCapCounter > 0){
+                    _flagCapCounter--;
+                    if(!_oneTimeMessage) {
+                        attackedTeam.sendMessage("One of your base is being captured by " + _opponents.get_color().get_colorMark() + _opponents.get_name() + "§6 ! Defend it !");
+                        _opponents.sendMessage("Capture process began ! Hold the position !");
+                        _oneTimeMessage = true;
+                    }
+                }
+                // If time elapsed
+                else if (_base.get_flag().isDestroyed(Settings.destroyFlagPercentage) && _flagCapCounter <= 0){
+                    _opponents.sendMessage("Well done ! You just capture a " + attackedTeam.get_color().get_colorMark() + attackedTeam.get_name() + " §6base !");
+                    attackedTeam.sendMessage("You just lost your base against " + _opponents.get_color().get_colorMark() + _opponents.get_name() + " §6kids... you could have done it in a better way...");
+                    // If the attacked team lost their main base (HeadQuarter)
+                    if(_base.is_HQ()){
+                        TeamContainer teamManager = _opponents.get_teamContainer();
+                        for (int j = 0; j < teamManager.get_teamArray().size(); j++){
+                            teamManager.get_teamArray().get(j).sendMessage(attackedTeam.get_color().get_colorMark() + attackedTeam.get_name() + " §6lost and will be destroyed ! They just lost their HeadQuarters like kids...");
+                        }
+                        attackedTeam.loose();
+                        _opponents.captureBase(_base);
+                    }
+                    // If the attacked team los a simple base
+                    else{
+                        attackedTeam.deleteBase(_base);
+                        _opponents.captureBase(_base);
+                    }
+                    this.cancel();
+                }
+                // Flag has been rebuilt
+                else if(_oneTimeMessage) {
+                    attackedTeam.sendMessage("Well done ! You just rebuilt a part of your flag, capture process has been canceled !");
+                    _opponents.sendMessage(attackedTeam.get_color().get_colorMark() + attackedTeam.get_name() + " §6has just rebuild a part of their flag, capture process has been reset ! Don't let them do what they want !");
+                    _flagCapCounter = _FlagCapTime;
+                    _oneTimeMessage = false;
+                }
             }
             else {
                 //Send the messages to all the winning team
-                Team attackedTeam = _base.get_team();
-                for (i = 0; i < attackedTeam.get_teamMembers().size(); i++){
-                    Player toInform = attackedTeam.get_teamMembers().get(i).toOnlinePlayer();
-                    if(toInform != null)
-                        Messages.sendMessage("Your base is'nt contested anymore !" + _opponents.get_color().get_colorMark() + _opponents.get_name() + " §6are defeated ! Well done !",
-                                Messages.messageType.INGAME, toInform);
-                }
+                attackedTeam.sendMessage("Your base is'nt contested anymore ! " + _opponents.get_color().get_colorMark() + _opponents.get_name() + " §6are defeated ! Well done !");
+                _opponents.sendMessage("You lost the battle against " + attackedTeam.get_color().get_colorMark() + attackedTeam.get_name() + " §6kids...");
 
                 //Change to non contested status
-                //TODO check if the value is really change outside the thread
                 _base.isContested(false);
 
 
