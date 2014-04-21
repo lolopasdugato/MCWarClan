@@ -8,9 +8,12 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
+import org.bukkit.material.Wool;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public class Base implements Serializable {
 	
@@ -155,8 +158,8 @@ public class Base implements Serializable {
     }
 
     /**
-     * Check if you're near this base
-     * @param includeSafeZone if we include teh safe zone, we will incle the minimum distance between 2 HQ in the math.
+     * Check if the location loc is near this base
+     * @param includeSafeZone if we include the safe zone, we will include the minimum distance between 2 HQ in the math.
      * @param loc
      * @return true or false.
      */
@@ -220,5 +223,99 @@ public class Base implements Serializable {
         highestBlock.setType(Material.FENCE);
         highestBlock.getRelative(BlockFace.UP).setType(Material.FENCE);
         highestBlock.getRelative(BlockFace.UP).getRelative(BlockFace.UP).setType(Material.TORCH);
+    }
+
+    /**
+     * Create indicators at the base border (the limit of the base protection)
+     */
+    public void createBaseBorder() {
+        Location baseLoc = _loc.getLocation();
+        // North east
+        baseLoc.add((_radius), 0, (_radius) * (-1));
+        Block highestBlock = baseLoc.getWorld().getHighestBlockAt(baseLoc);
+        highestBlock.setType(Material.WOOL);
+        BlockState bs = highestBlock.getState();
+        Wool wool = (Wool) bs.getData();
+        wool.setColor(_team.get_color().get_dye());
+        bs.update();
+        highestBlock.getRelative(BlockFace.UP).setType(Material.FENCE);
+        highestBlock.getRelative(BlockFace.UP).getRelative(BlockFace.UP).setType(Material.TORCH);
+        baseLoc = _loc.getLocation();
+        // North west
+        baseLoc.add((_radius) * (-1), 0, (_radius) * (-1));
+        highestBlock = baseLoc.getWorld().getHighestBlockAt(baseLoc);
+        highestBlock.setType(Material.WOOL);
+        bs = highestBlock.getState();
+        wool = (Wool) bs.getData();
+        wool.setColor(_team.get_color().get_dye());
+        bs.update();
+        highestBlock.getRelative(BlockFace.UP).setType(Material.FENCE);
+        highestBlock.getRelative(BlockFace.UP).getRelative(BlockFace.UP).setType(Material.TORCH);
+        baseLoc = _loc.getLocation();
+        // south east
+        baseLoc.add((_radius), 0, (_radius));
+        highestBlock = baseLoc.getWorld().getHighestBlockAt(baseLoc);
+        highestBlock.setType(Material.WOOL);
+        bs = highestBlock.getState();
+        wool = (Wool) bs.getData();
+        wool.setColor(_team.get_color().get_dye());
+        bs.update();
+        highestBlock.getRelative(BlockFace.UP).setType(Material.FENCE);
+        highestBlock.getRelative(BlockFace.UP).getRelative(BlockFace.UP).setType(Material.TORCH);
+        baseLoc = _loc.getLocation();
+        // south west
+        baseLoc.add((_radius) * (-1), 0, (_radius));
+        highestBlock = baseLoc.getWorld().getHighestBlockAt(baseLoc);
+        highestBlock.setType(Material.WOOL);
+        bs = highestBlock.getState();
+        wool = (Wool) bs.getData();
+        wool.setColor(_team.get_color().get_dye());
+        bs.update();
+        highestBlock.getRelative(BlockFace.UP).setType(Material.FENCE);
+        highestBlock.getRelative(BlockFace.UP).getRelative(BlockFace.UP).setType(Material.TORCH);
+    }
+
+    /**
+     * Gets the minimum information about this base in one line.
+     * @return
+     */
+    public String getMinimalInfo() {
+        if(_contested)
+            return "§6" + _name + "(§a" + _id + "§6) is under attack.";
+        else
+            return "§6" + _name + "(§a" + _id + "§6).";
+    }
+
+    /**
+     * Gets the maximum information about this base.
+     * @return
+     */
+    public String[] getInfo() {
+        ArrayList<String> info = new ArrayList<String>();
+        info.add("§6Name: " + _name);
+        info.add("§6AID: " + _id);
+        info.add("§6Protection radius: " + _radius);
+        if (_contested)
+            info.add("§6" + _name + " is currently contested !");
+        else
+            info.add("§6" + _name + " is not contested at the moment.");
+        if(_HQ)
+            info.add("§6" + _name + " is your Head Quarter.");
+        String[] infoArray = new String[info.size()];
+        for (int i = 0; i < info.size(); i++) {
+            infoArray[i] = info.get(i);
+        }
+        return infoArray;
+    }
+
+    @Override
+    public String toString() {
+        return "Base{" +
+                "_HQ=" + _HQ +
+                ", _radius=" + _radius +
+                ", _name='" + _name + '\'' +
+                ", _id=" + _id +
+                ", _contested=" + _contested +
+                '}';
     }
 }

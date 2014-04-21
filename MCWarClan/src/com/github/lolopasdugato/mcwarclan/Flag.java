@@ -1,15 +1,9 @@
 package com.github.lolopasdugato.mcwarclan;
 
-import com.avaje.ebeaninternal.server.cluster.mcast.Message;
 import com.github.lolopasdugato.mcwarclan.customexceptions.InvalidFlagLocationException;
 import com.github.lolopasdugato.mcwarclan.customexceptions.NotEnoughSpaceException;
-import org.bukkit.DyeColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.BlockState;
-import org.bukkit.material.Wool;
 
 import java.io.Serializable;
 
@@ -44,7 +38,7 @@ public class Flag implements Serializable {
             throw new InvalidFlagLocationException("The flag should be over the sea level (y > 64) !");
         }
         Messages.sendMessage("Beginning flag creation using pattern...", Messages.messageType.DEBUG, null);
-        _pattern = new Pattern(this, Pattern.patternType.CLASSIC_FLAG);
+        _pattern = new Pattern(_base.get_loc(), _base.get_team().get_color(), Pattern.patternType.CLASSIC_FLAG);
         if (!_pattern.isEmpty()) {
             throw new NotEnoughSpaceException("There is not enough empty block to place the flag !");
         }

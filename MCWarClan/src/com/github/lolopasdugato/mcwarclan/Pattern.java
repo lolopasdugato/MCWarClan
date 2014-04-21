@@ -17,25 +17,30 @@ public class Pattern implements Serializable {
     static private final long serialVersionUID = 10;
 
     public static enum patternType {
-        CLASSIC_FLAG
+        CLASSIC_FLAG, CUSTOM
     }
 
     private ArrayList<BlockModule> _pattern;
-    private Flag _flag;
+//    private Flag _flag;
+    private MCWarClanLocation _initialLocation;
+    private Color _woolColor;
     private patternType _type;
 
     //////////////////////////////////////////////////////////////////////////////
     //------------------------------- Constructors -------------------------------
     //////////////////////////////////////////////////////////////////////////////
 
-    public Pattern(Flag flag, patternType type) {
+    public Pattern(MCWarClanLocation initialLocation, Color woolColor, patternType type) {
         _pattern = new ArrayList<BlockModule>();
-        _flag = flag;
+        _initialLocation = initialLocation;
         _type = type;
+        _woolColor = woolColor;
 
         switch (type) {
             case CLASSIC_FLAG:
                 newClassicFlagPattern();
+                break;
+            case CUSTOM:
                 break;
             default:
                 Messages.sendMessage("Unknown generation type...", Messages.messageType.DEBUG, null);
@@ -47,11 +52,16 @@ public class Pattern implements Serializable {
     //--------------------------------- Getters ----------------------------------
     //////////////////////////////////////////////////////////////////////////////
 
-    public Flag get_flag() {
-        return _flag;
-    }
+//    public Flag get_flag() {
+//        return _flag;
+//    }
+
+
+    public MCWarClanLocation get_initialLocation() { return _initialLocation; }
 
     public ArrayList<BlockModule> get_pattern() { return _pattern; }
+
+    public Color get_woolColor() { return _woolColor; }
 
     //////////////////////////////////////////////////////////////////////////////
     //-------------------------------- Setters ---------------------------------
@@ -62,7 +72,9 @@ public class Pattern implements Serializable {
         _pattern.set(index, module);
     }
 
-
+    public void set_woolColor(Color _woolColor) {
+        this._woolColor = _woolColor;
+    }
     //////////////////////////////////////////////////////////////////////////////
     //-------------------------------- Functions ---------------------------------
     //////////////////////////////////////////////////////////////////////////////
@@ -110,7 +122,7 @@ public class Pattern implements Serializable {
         int stickHeight = 6;
         int flagHeight = 2;
         int flagLength = 3;
-        MCWarClanLocation initialLocation = new MCWarClanLocation(_flag.get_base().get_loc().getLocation().getBlock().getRelative(BlockFace.UP).getLocation());
+        MCWarClanLocation initialLocation = new MCWarClanLocation(_initialLocation.getLocation().getBlock().getRelative(BlockFace.UP).getLocation());
 
         // Generate the stick
         for (int i = 0; i < stickHeight; i++) {

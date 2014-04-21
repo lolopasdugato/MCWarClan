@@ -58,7 +58,7 @@ public class BlockModule implements Serializable{
         if (loc.getBlock().getType() == Material.WOOL){
             BlockState bs = loc.getBlock().getState();
             Wool wool = (Wool) bs.getData();
-            wool.setColor(_pattern.get_flag().get_base().get_team().get_color().get_dye());
+            wool.setColor(_pattern.get_woolColor().get_dye());
             bs.update();
         }
     }

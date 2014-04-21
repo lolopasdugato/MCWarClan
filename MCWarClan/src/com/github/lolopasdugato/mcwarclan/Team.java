@@ -390,6 +390,7 @@ public class Team extends Object implements Serializable {
         baseToCapture.set_team(this);
         baseToCapture.get_flag().forceDestroy();
         _bases.add(baseToCapture);
+        baseToCapture.get_flag().get_pattern().set_woolColor(_color);
         baseToCapture.get_flag().get_pattern().generate();
     }
 

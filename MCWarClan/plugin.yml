@@ -15,19 +15,19 @@ commands:
  team:
   description: List all players in your team.
   permission: mcwarclan.team
-  usage: Type /<command> (optional parameter -> player_name) to list players that are in your (or player's) team.
+  usage: Type /<command> (playername) to list players that are in your (or player's) team.
  assign:
   description: Assign a player to a team.
   permission: mcwarclan.assign
-  usage: Type /<command> (playername) && (teamname || teamcolor) to switch a player to a team.
+  usage: Type /<command> [playername] & [teamname | teamcolor] to switch a player to a team.
  unassign:
   description: Unassign a player from a team.
   permission: mcwarclan.unassign
-  usage: Type /<command> (playername) to unassign someone to a team.
+  usage: Type /<command> [playername] to unassign someone to a team.
  join:
   description: Makes you join a team.
   permission: mcwarclan.join
-  usage: Type /<command> (teamname || teamcolor) to join a team.
+  usage: Type /<command> [teamname | teamcolor] to join a team.
  leave:
   description: Makes you leave a team.
   permission: mcwarclan.leave
@@ -35,15 +35,19 @@ commands:
  createteam:
   description: Allows you to create a new team.
   permission: mcwarclan.createteam
-  usage: Type /<command> (teamname) && (teamcolor) to create the new team.
+  usage: Type /<command> [teamname] && [teamcolor] to create the new team.
  createhq:
   description: Allows you to create the team HeadQuarter.
   permission: mcwarclan.createhq
-  usage: Type /<command> (basename) to create the new base.
+  usage: Type /<command> [basename] to create the new base.
  createbase:
-  description: Allows you to create a base.
+  description: Allows you to create a base. The base reference is the base from where the plugin will start to find a place in the given direction.
   permission: mcwarclan.createbase
-  usage: Type /<command> (basename) && (base reference id) && (north || south || east || west)
+  usage: Type /<command> [basename] & [base reference id] & [north | south | east | west]
+ baseinfo:
+  description: Depending on how you call the function, it will give you information about a base. Without any argument, it will give you information of the base you are currently in.
+  permission: mcwarclan.baseinfo
+  usage: Type /<command> (base id | all)
 
   
 permissions:
@@ -59,6 +63,7 @@ permissions:
    mcwarclan.createteam: true
    mcwarclan.createhq: true
    mcwarclan.createbase: true
+   mcwarclan.baseinfo: true
  mcwarclan.showteams:
   description: List all teams in the game.
   default: true
@@ -85,4 +90,7 @@ permissions:
   default: true
  mcwarclan.createbase:
   description: Allows you to create a base.
+  default: true
+ mcwarclan.baseinfo:
+  description: Allows you to see information about your team bases.
   default: true

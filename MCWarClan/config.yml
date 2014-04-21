@@ -117,12 +117,13 @@ otherSettings:
   # These items are TNT, Ladders, and Levers
   # Min value: 1
   # Max value: none
-  uncensoredItemsAmount: -1
+  uncensoredItemsAmount: 5
 
   # The name of the world you're currently playing on.
   classicWorldName: world
 
   # Set to true if you are a developer :D
+  # Do not set to true if you do not develop something based with this plugin, or you will experience some strange issues !
   debugMode: true
 
   # Define if the barbarian spawn is reloaded each time the barbarian player dies.

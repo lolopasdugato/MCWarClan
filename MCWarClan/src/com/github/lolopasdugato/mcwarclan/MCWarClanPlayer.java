@@ -377,7 +377,7 @@ public class MCWarClanPlayer implements Serializable {
             return false;
         } else if (_team.get_bases().size() > 0) {
             Base HQ = _team.getHQ();
-            Messages.sendMessage("You can only create a single HeadQuarter ! Yours is called " + HQ.get_name() + "(id:" + HQ.get_id() + ").", Messages.messageType.INGAME, player);
+            Messages.sendMessage("You can only create a single HeadQuarter ! Yours is called " + HQ.get_name() + "(id:§a" + HQ.get_id() + "§6).", Messages.messageType.INGAME, player);
             return false;
         } else if (teams.isNearAnotherTerritory(true, baseLocation)){
             Messages.sendMessage("You cannot create an HQ too close from another base. Try somewhere else !", Messages.messageType.INGAME, player);
@@ -393,9 +393,12 @@ public class MCWarClanPlayer implements Serializable {
                 for (int k = 0; k < _team.get_teamMembers().size(); k++) {
                     _team.get_teamMembers().get(k).reloadSpawn();
                 }
-                newBase.createMaxBorderShower();
+                if (Settings.debugMode)
+                    newBase.createMaxBorderShower();
+                else
+                    newBase.createBaseBorder();
                 teams.sendMessage(_team.getColoredName() + " just created their first base ! So much time wasted...");
-                _team.sendMessage(baseName + " is your first base. Its unique id is " + newBase.get_id() + " be careful, to build the others, you will need to find some materials ! You can capture enemy bases as well...");
+                _team.sendMessage(baseName + " is your first base. Its unique id is §a" + newBase.get_id() + "§6 be careful, to build the others, you will need to find some materials ! You can capture enemy bases as well...");
             } catch (InvalidFlagLocationException e) {
                 e.sendDebugMessage();
                 Messages.sendMessage("Cannot create the flag for the following reason: " + e.getMessage(), Messages.messageType.INGAME, player);
@@ -451,8 +454,11 @@ public class MCWarClanPlayer implements Serializable {
                 payTribute(_team.get_baseCreationCost());
             Base newBase = new Base(false, _team, name, new MCWarClanLocation(newBaseLocation));
             _team.get_bases().add(newBase);
-            newBase.createMaxBorderShower();
-            teams.sendMessage("Well done " + _team.getColoredName() + ", " + _name + " just created " + name + "(id:" + newBase.get_id() + ") in the " + direction + " of " + baseReference.get_name() + " ! Its current protection radius is " + newBase.get_radius());
+            if (Settings.debugMode)
+                newBase.createMaxBorderShower();
+            else
+                newBase.createBaseBorder();
+            teams.sendMessage("Well done " + _team.getColoredName() + ", " + _name + " just created " + name + " (id:§a" + newBase.get_id() + "§6) in the " + direction + " of " + baseReference.get_name() + " ! Its current protection radius is " + newBase.get_radius() + ".");
         } catch (InvalidFlagLocationException e) {
             e.sendDebugMessage();
             Messages.sendMessage("Cannot create the flag for the following reason: " + e.getMessage(), Messages.messageType.INGAME, player);

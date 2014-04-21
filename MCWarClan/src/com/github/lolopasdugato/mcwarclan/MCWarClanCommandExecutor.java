@@ -288,6 +288,55 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
         return true;
     }
 
+    /**
+     * This command show you information about a base, depending how you call this function.
+     * @param sender
+     * @param args
+     * @return
+     */
+    public boolean baseInfoCommand(CommandSender sender, String[] args) {
+        if (sender instanceof Player) {
+            Player player = ((Player) sender).getPlayer();
+            MCWarClanPlayer mcPlayer = _tc.getPlayer(player.getUniqueId());
+            if (args.length == 0) {
+                Base playerBase = mcPlayer.getCurrentBase();
+                if (playerBase != null && playerBase.get_team().get_id() == mcPlayer.get_team().get_id()) {
+                    Messages.sendMessage("Here are the detailed information about the base you're in at the moment: ", Messages.messageType.INGAME, player);
+                    Messages.sendMessage(playerBase.getInfo(), Messages.messageType.INGAME, player);
+                } else {
+                    Messages.sendMessage("Currently, you're not in any allied base.", Messages.messageType.INGAME, player);
+                }
+            } else if (args.length == 1) {
+                if (args[0].equalsIgnoreCase("all")) {
+                    ArrayList<Base> playerBases = mcPlayer.get_team().get_bases();
+                    String[] info = new String[playerBases.size()];
+                    for (int i = 0; i < playerBases.size(); i++) {
+                        info[i] = playerBases.get(i).getMinimalInfo();
+                    }
+                    if (info.length == 0) {
+                        Messages.sendMessage("Your team don't own any base at the moment !", Messages.messageType.INGAME, player);
+                    }
+                    Messages.sendMessage("Here is a shortened list of details about your bases: ", Messages.messageType.INGAME, player);
+                    Messages.sendMessage(info, Messages.messageType.INGAME, player);
+                } else {
+                    int id = Integer.parseInt(args[0]);
+                    Base baseAsked = mcPlayer.get_team().getBase(id);
+                    if (baseAsked != null && baseAsked.get_team().get_id() == mcPlayer.get_team().get_id()) {
+                        Messages.sendMessage("Here are the detailed information about the base you're asking for :", Messages.messageType.INGAME, player);
+                        Messages.sendMessage(baseAsked.getInfo(), Messages.messageType.INGAME, player);
+                    } else {
+                        Messages.sendMessage("No allied base found for id: " + args[0] + ".", Messages.messageType.INGAME, player);
+                    }
+                }
+            } else {
+                return false;
+            }
+        } else {
+            Messages.sendMessage("You have to be a player to perform this command !", Messages.messageType.INGAME, sender);
+        }
+        return true;
+    }
+
     //////////////////////////////////////////////////////////////////////////////
     //---------------------------- onCommand Override ----------------------------
     //////////////////////////////////////////////////////////////////////////////
@@ -314,6 +363,8 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
             return createHQCommand(sender, args);
         } else if (label.equalsIgnoreCase("createbase")) {
             return createBaseCommand(sender, args);
+        } else if(label.equalsIgnoreCase("baseinfo")) {
+            return baseInfoCommand(sender,args);
         }
 		return false;
 	}
