@@ -184,15 +184,15 @@ public class EventManager implements Listener {
                         //else we must create a thread
                         b.isContested(true);
 
-                        // Inform the attacked team !
+                        // Inform the two teams !
                         Team attackedTeam = b.get_team();
                         Team attackingTeam = player.get_team();
-                        attackedTeam.sendMessage("You are attacked by " + attackingTeam.get_color().get_colorMark() + attackingTeam.get_name() + " !");
+                        attackedTeam.sendMessage(b.get_name() + " is attacked by " + attackingTeam.get_color().get_colorMark() + attackingTeam.get_name() + " !");
                         attackingTeam.sendMessage("Your team is attacking " + attackedTeam.get_color().get_colorMark() + attackedTeam.get_name() + " !");
 
                         //Create a new thread in order to check if the enemies are defeated
                         BukkitTask tks = new MCWarClanRoutine.ContestedBaseRoutine(_plugin, b,
-                                player.get_team()).runTaskTimer(_plugin,
+                                attackingTeam).runTaskTimer(_plugin,
                                 0, 100);
                     }
                 }

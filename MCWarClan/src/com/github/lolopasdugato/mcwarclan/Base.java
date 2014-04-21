@@ -292,9 +292,9 @@ public class Base implements Serializable {
      */
     public String[] getInfo() {
         ArrayList<String> info = new ArrayList<String>();
-        info.add("§6Name: " + _name);
-        info.add("§6AID: " + _id);
-        info.add("§6Protection radius: " + _radius);
+        info.add("§6Name: §a" + _name);
+        info.add("§6Base ID: §a" + _id);
+        info.add("§6Protection radius: §a" + _radius);
         if (_contested)
             info.add("§6" + _name + " is currently contested !");
         else

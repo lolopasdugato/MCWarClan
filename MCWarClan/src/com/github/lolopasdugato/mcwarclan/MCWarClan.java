@@ -70,16 +70,17 @@ public class MCWarClan extends JavaPlugin implements Listener {
      *  Init all commands in the command executor
      */
 	public void InitCommandExecutor(){
-		getCommand("showteams").setExecutor(new MCWarClanCommandExecutor(_tc, getServer()));
-		getCommand("team").setExecutor(new MCWarClanCommandExecutor(_tc, getServer()));
-		getCommand("join").setExecutor(new MCWarClanCommandExecutor(_tc, getServer()));
-		getCommand("leave").setExecutor(new MCWarClanCommandExecutor(_tc, getServer()));
-		getCommand("assign").setExecutor(new MCWarClanCommandExecutor(_tc, getServer()));
-		getCommand("unassign").setExecutor(new MCWarClanCommandExecutor(_tc, getServer()));
-		getCommand("createteam").setExecutor(new MCWarClanCommandExecutor(_tc, getServer()));
-        getCommand("createhq").setExecutor(new MCWarClanCommandExecutor(_tc, getServer()));
-        getCommand("createbase").setExecutor(new MCWarClanCommandExecutor(_tc, getServer()));
-        getCommand("baseinfo").setExecutor(new MCWarClanCommandExecutor(_tc, getServer()));
+		getCommand("showteams").setExecutor(new MCWarClanCommandExecutor(_tc, getServer(), this));
+		getCommand("team").setExecutor(new MCWarClanCommandExecutor(_tc, getServer(), this));
+		getCommand("join").setExecutor(new MCWarClanCommandExecutor(_tc, getServer(), this));
+		getCommand("leave").setExecutor(new MCWarClanCommandExecutor(_tc, getServer(), this));
+		getCommand("assign").setExecutor(new MCWarClanCommandExecutor(_tc, getServer(), this));
+		getCommand("unassign").setExecutor(new MCWarClanCommandExecutor(_tc, getServer(), this));
+		getCommand("createteam").setExecutor(new MCWarClanCommandExecutor(_tc, getServer(), this));
+        getCommand("createhq").setExecutor(new MCWarClanCommandExecutor(_tc, getServer(), this));
+        getCommand("createbase").setExecutor(new MCWarClanCommandExecutor(_tc, getServer(), this));
+        getCommand("baseinfo").setExecutor(new MCWarClanCommandExecutor(_tc, getServer(), this));
+        getCommand("contest").setExecutor(new MCWarClanCommandExecutor(_tc, getServer(), this));
     }
 
     private void initRoutines() {

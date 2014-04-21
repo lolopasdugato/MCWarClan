@@ -5,6 +5,8 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.util.ArrayList;
 
@@ -12,6 +14,7 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
 	
 	private TeamManager _tc;
 	private Server _server;
+    private JavaPlugin _plugin;
 
     //////////////////////////////////////////////////////////////////////////////
     //------------------------------- Constructors -------------------------------
@@ -22,9 +25,10 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
      * @param tc
      * @param server
      */
-	public MCWarClanCommandExecutor(TeamManager tc, Server server) {
+	public MCWarClanCommandExecutor(TeamManager tc, Server server, JavaPlugin plugin) {
 		_tc = tc;
 		_server = server;
+        _plugin = plugin;
 	}
 
     //////////////////////////////////////////////////////////////////////////////
@@ -58,8 +62,13 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
 				toJoin = _tc.searchTeam(new Color(args[1])); // Search by colorName
 
 			if (toJoin != null){
+                Team toLeave = player.get_team();
                 if (player.switchTo(toJoin)) {
                     Messages.sendMessage(player.get_name() + " has successfully been added to " + toJoin.getColoredName(), Messages.messageType.INGAME, sender);
+                    toJoin.sendMessage("Well, here is some more fresh meat ! " + player.get_name() + " has joined the team !");
+                    if (toLeave.get_id() != Team.BARBARIAN_TEAM_ID) {
+                        toLeave.sendMessage(player.get_name() + " has left the team !");
+                    }
                     if (p.isOnline()){
                         Messages.sendMessage("You have been added to team " + toJoin.getColoredName() + " by " + sender.getName(), Messages.messageType.INGAME, p.getPlayer());
                     return true;
@@ -118,7 +127,10 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
                     Messages.sendMessage(player.get_name() + " has successfully been kicked from " + toLeave.getColoredName() + ".", Messages.messageType.INGAME, sender);
                 } else {
                     Messages.sendMessage("Cannot add " + player.get_name() + "to barbarians !", Messages.messageType.ALERT, null);
+                    return true;
                 }
+
+                toLeave.sendMessage(player.get_name() + " has left the team !");
 
 				if(p.isOnline()){	// Send a message to the player concerned.
                     Messages.sendMessage("You have been kicked from team " + toLeave.getColoredName() + " by " + sender.getName() + ". You are now a §7Barbarian !",
@@ -146,6 +158,7 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
 				return true;
 			} else if (player.kick()) {
                 Messages.sendMessage("You have successfully left " + toLeave.getColoredName() + ". You are now a §7Barbarian§6 !", Messages.messageType.INGAME, sender);
+                toLeave.sendMessage(player.get_name() + " has left the team !");
                 return true;
             } else {
                 Messages.sendMessage("Due to an unknown error, you cannot leave" + toLeave.getColoredName() + ". Ask an admin to see what's happening.", Messages.messageType.INGAME, sender);
@@ -182,6 +195,10 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
                         if (player.switchTo(toJoin)) {
                             Messages.sendMessage("Well done, you left " + toLeave.getColoredName() + " and joined " + toJoin.getColoredName() + ".",
                                     Messages.messageType.INGAME, sender);
+                            toJoin.sendMessage("Well, here is some more fresh meat ! " + player.get_name() + " has joined the team !");
+                            if (toLeave.get_id() != Team.BARBARIAN_TEAM_ID) {
+                                toLeave.sendMessage(player.get_name() + " left the team !");
+                            }
                         }
 
                         if (!player.payTribute(toJoin.get_cost())) {
@@ -220,9 +237,13 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
                 Team toJoin = new Team(new Color(args[1]), args[0], Settings.initialTeamSize, _tc);
                 MCWarClanPlayer player = _tc.getPlayer(sender.getName());
                 if (player.createTeam(toJoin)) {
+                    Team toLeave = player.get_team();
                     player.switchTo(toJoin);
                     _tc.sendMessage(toJoin.getColoredName() + " has been created by " + player.get_name() + " let's prepare to surrender...");
                     Messages.sendMessage("You successfully joined " + toJoin.getColoredName() + " !", Messages.messageType.INGAME, sender);
+                    if (toLeave.get_id() != Team.BARBARIAN_TEAM_ID) {
+                        toLeave.sendMessage(player.get_name() + " has left your team to create " + toJoin.getColoredName() + " !");
+                    }
                 }
                 return true;
             }
@@ -337,6 +358,50 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
         return true;
     }
 
+    /**
+     * Allows someone to launch a contest process.
+     * @param sender
+     * @param args
+     * @return
+     */
+    public boolean contestCommand(CommandSender sender, String[] args) {
+        if (args.length != 0) {
+            return false;
+        } else if (sender instanceof  Player) {
+            Player player = ((Player) sender).getPlayer();
+            MCWarClanPlayer mcPlayer = _tc.getPlayer(player.getUniqueId());
+            Base currentBase = mcPlayer.getCurrentBase();
+            if (mcPlayer.get_team().get_id() == Team.BARBARIAN_TEAM_ID) {
+                Messages.sendMessage("You cannot contest a base when you are a §7barbarian§6 !", Messages.messageType.INGAME, player);
+            } else if (mcPlayer.get_team().get_id() == currentBase.get_team().get_id()) {
+                Messages.sendMessage("Use your mind... you cannot attack your own team base !", Messages.messageType.INGAME, player);
+            } else if (mcPlayer.get_team().get_bases().size() < 1) {
+                Messages.sendMessage("You need at least one Head Quarter, then you could launch any battle you want !", Messages.messageType.INGAME, player);
+            } else if (currentBase == null || !currentBase.get_team().isEnemyToTeam(mcPlayer.get_team())) {
+                Messages.sendMessage("You're not in an enemy base, you cannot contest this territory.", Messages.messageType.INGAME, player);
+            } else if (!currentBase.get_team().enoughMatesToBeAttack()) {
+                Messages.sendMessage("Not enough players connected in " + currentBase.get_team().getColoredName() + " to attack them.", Messages.messageType.INGAME, player);
+            } else if (currentBase.isContested()) {
+                Messages.sendMessage("This team is already attacked by another team. But nothing forbid you to help one of these two...", Messages.messageType.INGAME, player);
+            } else {
+                currentBase.isContested(true);
+                // Inform the two teams !
+                Team attackedTeam = currentBase.get_team();
+                Team attackingTeam = mcPlayer.get_team();
+                attackedTeam.sendMessage(currentBase.get_name() + " is attacked by " + attackingTeam.get_color().get_colorMark() + attackingTeam.get_name() + " !");
+                attackingTeam.sendMessage("Your team is attacking " + attackedTeam.get_color().get_colorMark() + attackedTeam.get_name() + " !");
+
+                //Create a new thread in order to check if the enemies are defeated
+                BukkitTask tks = new MCWarClanRoutine.ContestedBaseRoutine(_plugin, currentBase,
+                        attackingTeam).runTaskTimer(_plugin,
+                        0, 100);
+            }
+        } else {
+            Messages.sendMessage("You have to be a player to perform this command !", Messages.messageType.INGAME, sender);
+        }
+        return true;
+    }
+
     //////////////////////////////////////////////////////////////////////////////
     //---------------------------- onCommand Override ----------------------------
     //////////////////////////////////////////////////////////////////////////////
@@ -363,8 +428,10 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
             return createHQCommand(sender, args);
         } else if (label.equalsIgnoreCase("createbase")) {
             return createBaseCommand(sender, args);
-        } else if(label.equalsIgnoreCase("baseinfo")) {
+        } else if (label.equalsIgnoreCase("baseinfo")) {
             return baseInfoCommand(sender,args);
+        } else if (label.equalsIgnoreCase("contest")) {
+            return contestCommand(sender, args);
         }
 		return false;
 	}

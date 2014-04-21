@@ -73,15 +73,15 @@ public abstract class MCWarClanRoutine extends BukkitRunnable {
                 if(_base.get_flag().isDestroyed(Settings.destroyFlagPercentage) && _flagCapCounter > 0){
                     _flagCapCounter--;
                     if(!_oneTimeMessage) {
-                        attackedTeam.sendMessage("One of your base is being captured by " + _opponents.get_color().get_colorMark() + _opponents.get_name() + "§6 ! Defend it !");
+                        attackedTeam.sendMessage( _base.get_name() + " is being captured by " + _opponents.get_color().get_colorMark() + _opponents.get_name() + "§6 ! Defend it !");
                         _opponents.sendMessage("Capture process began ! Hold the position !");
                         _oneTimeMessage = true;
                     }
                 }
                 // If time elapsed
                 else if (_base.get_flag().isDestroyed(Settings.destroyFlagPercentage) && _flagCapCounter <= 0){
-                    _opponents.sendMessage("Well done ! You just capture a " + attackedTeam.get_color().get_colorMark() + attackedTeam.get_name() + " §6base !");
-                    attackedTeam.sendMessage("You just lost your base against " + _opponents.get_color().get_colorMark() + _opponents.get_name() + " §6kids... you could have done it in a better way...");
+                    _opponents.sendMessage("Well done ! You just captured " + _base.get_name() + ", a " + attackedTeam.get_color().get_colorMark() + attackedTeam.get_name() + " §6base !");
+                    attackedTeam.sendMessage("You just lost " + _base.get_name() + " against " + _opponents.get_color().get_colorMark() + _opponents.get_name() + " §6kids... you could have done it in a better way...");
                     // If the attacked team lost their main base (HeadQuarter)
                     if(_base.is_HQ()){
                         TeamManager teamManager = _opponents.get_teamManager();
@@ -106,7 +106,7 @@ public abstract class MCWarClanRoutine extends BukkitRunnable {
             }
             else {
                 //Send the messages to all the winning team
-                attackedTeam.sendMessage("Your base is'nt contested anymore ! " + _opponents.get_color().get_colorMark() + _opponents.get_name() + " §6are defeated ! Well done !");
+                attackedTeam.sendMessage(_base.get_name() + " is'nt contested anymore ! " + _opponents.get_color().get_colorMark() + _opponents.get_name() + " §6are defeated ! Well done !");
                 _opponents.sendMessage("You lost the battle against " + attackedTeam.get_color().get_colorMark() + attackedTeam.get_name() + " §6kids...");
 
                 //Change to non contested status

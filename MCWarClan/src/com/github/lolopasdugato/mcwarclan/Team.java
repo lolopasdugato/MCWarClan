@@ -258,7 +258,7 @@ public class Team extends Object implements Serializable {
      * @return If true, this team is enemy to the player team.
      */
     public boolean isEnemyToTeam(Team playerTeam) {
-        return !_name.equals(playerTeam.get_name());
+        return playerTeam.get_id() != _id;
     }
 
     /**

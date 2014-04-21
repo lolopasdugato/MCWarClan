@@ -291,7 +291,7 @@ public class MCWarClanPlayer implements Serializable {
      * @return true if he can.
      */
     public boolean canContest(){
-        return _team.get_bases().size() != 0;
+        return _team.get_bases().size() != 0 && _team.get_id() != Team.BARBARIAN_TEAM_ID;
     }
 
     /**

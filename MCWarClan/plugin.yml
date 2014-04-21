@@ -48,7 +48,10 @@ commands:
   description: Depending on how you call the function, it will give you information about a base. Without any argument, it will give you information of the base you are currently in.
   permission: mcwarclan.baseinfo
   usage: Type /<command> (base id | all)
-
+ contest:
+  description: Allows you to launch a battle to capture an enemy base. Before the capture process begin, destroy the enemy flag.
+  permission: mcwarclan.contest
+  usage: Type /<command> in an enemy base to launch the capture process. Don't forget to break the flag to launch the process properly !
   
 permissions:
  mcwarclan.*:
@@ -64,6 +67,7 @@ permissions:
    mcwarclan.createhq: true
    mcwarclan.createbase: true
    mcwarclan.baseinfo: true
+   mcwarclan.contest: true
  mcwarclan.showteams:
   description: List all teams in the game.
   default: true
@@ -93,4 +97,7 @@ permissions:
   default: true
  mcwarclan.baseinfo:
   description: Allows you to see information about your team bases.
+  default: true
+ mcwarclan.contest:
+  description: Allows you to launch a battle to capture an enemy base.
   default: true
