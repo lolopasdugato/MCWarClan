@@ -20,6 +20,7 @@ public class Team extends Object implements Serializable {
     private TeamManager _teamManager;            // The team container to which this team is linked to
     private ArrayList<Base> _bases;                    // Represent bases of a team
     private Cost _cost;                             // The cost to join a team
+    private Cost _baseCreationCost;
     private transient org.bukkit.scoreboard.Team _bukkitTeam;  // An instance of a bukkitTeam
     private int _id;
     private boolean _hasLost;
@@ -49,7 +50,7 @@ public class Team extends Object implements Serializable {
 
         _teamManager = teamManager;
         //
-
+        _baseCreationCost = Settings.baseInitialCost;
         _name = name;
         _id = _idMaster;
         if (_name.equals("Barbarians"))
@@ -116,6 +117,8 @@ public class Team extends Object implements Serializable {
     public void set_teamManager(TeamManager _teamManager) {
         this._teamManager = _teamManager;
     }
+
+    public Cost get_baseCreationCost() { return _baseCreationCost; }
 
     //////////////////////////////////////////////////////////////////////////////
     //--------------------------------- Setters ----------------------------------
@@ -388,6 +391,19 @@ public class Team extends Object implements Serializable {
         baseToCapture.get_flag().forceDestroy();
         _bases.add(baseToCapture);
         baseToCapture.get_flag().get_pattern().generate();
+    }
+
+    /**
+     * Get a base using it's unique ID.
+     * @param id
+     * @return
+     */
+    public Base getBase(int id) {
+        for (Base _base : _bases) {
+            if (_base.get_id() == id)
+                return _base;
+        }
+        return null;
     }
 
 }

@@ -248,7 +248,7 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
                 return false;
             } else {
                 Player p = ((Player) sender).getPlayer();
-                MCWarClanPlayer player = _tc.getPlayer(p.getName());
+                MCWarClanPlayer player = _tc.getPlayer(p.getUniqueId());
 
                 if (p.isOnline()) {
                     player.createHQ(p.getTargetBlock(null, 10).getLocation(), args[0]);
@@ -263,6 +263,29 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
             Messages.sendMessage("You have to be a player to perform this command !", Messages.messageType.INGAME, sender);
             return true;
         }
+    }
+
+    /**
+     * Allows someone to create a base.
+     * @param sender
+     * @param args
+     * @return
+     */
+    public boolean createBaseCommand(CommandSender sender, String[] args) {
+        if (args.length != 3) {
+            return false;
+        } else if (sender instanceof Player) {
+            MCWarClanPlayer player = _tc.getPlayer(((Player) sender).getUniqueId());
+            if (player != null) {
+                player.createBase(args[0], Integer.parseInt(args[1]), args[2]);
+            } else {
+                Messages.sendMessage("You're not in any team ! Ask an admin to be added to a team !", Messages.messageType.INGAME, sender);
+                Messages.sendMessage(sender.getName() + " has no team ! Add him to a team before any errors occurs !", Messages.messageType.ALERT, null);
+            }
+        } else {
+            Messages.sendMessage("You have to be a player to perform this command !", Messages.messageType.INGAME, sender);
+        }
+        return true;
     }
 
     //////////////////////////////////////////////////////////////////////////////
@@ -289,6 +312,8 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
 			return createteamCommand(sender, args);
         } else if (label.toLowerCase().equals("createhq")) {
             return createHQCommand(sender, args);
+        } else if (label.equalsIgnoreCase("createbase")) {
+            return createBaseCommand(sender, args);
         }
 		return false;
 	}

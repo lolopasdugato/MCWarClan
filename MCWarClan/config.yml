@@ -68,12 +68,12 @@ baseSettings:
     # Do not set radius values too high or you will experience many problems to create a new base while other base already exist.
     # Min value: 5
     # Max value: none
-    initialRadius: 10
+    initialRadius: 5
 
     # Define the influence bonus for the first base (HeadQuarter) of a team, and by the way, the maximum influence of a base after a full upgrade (initialRadius + radiusHQBonus).
     # Min value: 5
     # Max value: none
-    radiusHQBonus: 40
+    radiusHQBonus: 5
 
     # Define the average distance between the first spawn of the map and a random barbarian spawn location.
     # Min value: 100

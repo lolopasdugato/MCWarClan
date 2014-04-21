@@ -40,6 +40,10 @@ commands:
   description: Allows you to create the team HeadQuarter.
   permission: mcwarclan.createhq
   usage: Type /<command> (basename) to create the new base.
+ createbase:
+  description: Allows you to create a base.
+  permission: mcwarclan.createbase
+  usage: Type /<command> (basename) && (base reference id) && (north || south || east || west)
 
   
 permissions:
@@ -54,6 +58,7 @@ permissions:
    mcwarclan.leave: true
    mcwarclan.createteam: true
    mcwarclan.createhq: true
+   mcwarclan.createbase: true
  mcwarclan.showteams:
   description: List all teams in the game.
   default: true
@@ -77,4 +82,7 @@ permissions:
   default: true
  mcwarclan.createhq:
   description: Allows you to create the team HeadQuarter.
+  default: true
+ mcwarclan.createbase:
+  description: Allows you to create a base.
   default: true

@@ -5,6 +5,9 @@ import com.github.lolopasdugato.mcwarclan.customexceptions.InvalidFlagLocationEx
 import com.github.lolopasdugato.mcwarclan.customexceptions.NotEnoughSpaceException;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 
 import java.io.Serializable;
@@ -20,7 +23,7 @@ public class Base implements Serializable {
 	private Team _team;				// Team which this object is attached to
 	private Flag _flag;				// The flag attached to this base
 	private MCWarClanLocation _loc;	// Represent the location of a base
-    private Cost _cost;             // The cost to create a new base
+//    private Cost _cost;             // The cost to create a new base
     private String _name;
     private int _id;
     private boolean _contested;
@@ -44,7 +47,7 @@ public class Base implements Serializable {
         _loc = loc;
         _initialRadius = Settings.initialRadius;    // WARNING: shouldn't be reloaded ! (except if it doesn't change during the game)
         _bonusRadius = Settings.radiusHQBonus;      // WARNING: shouldn't be reloaded ! (except if it doesn't change during the game)
-        _cost = Settings.baseInitialCost;   // WARNING shouldn't be reload !
+//        _cost = Settings.baseInitialCost;   // WARNING shouldn't be reload !
         _name = name;
         _id = _idMaster;
         if (_HQ)
@@ -178,10 +181,44 @@ public class Base implements Serializable {
     public boolean isInBase(Location loc){
         boolean isInXAxe = false;
         boolean isInZAxe = false;
-        if(loc.getX() < _loc.get_x() + _radius && loc.getX() > _loc.get_x() - _radius)
+        if(loc.getX() < _loc.get_x() + _radius + 1 && loc.getX() > _loc.get_x() - _radius - 1)
             isInXAxe = true;
-        if(loc.getZ() < _loc.get_z() + _radius && loc.getZ() > _loc.get_z() - _radius)
+        if(loc.getZ() < _loc.get_z() + _radius + 1 && loc.getZ() > _loc.get_z() - _radius - 1)
             isInZAxe = true;
         return (isInXAxe && isInZAxe);
+    }
+
+    /**
+     * Useful function for borderlands debug.
+     */
+    public void createMaxBorderShower() {
+        Location baseLoc = _loc.getLocation();
+        // North east
+        baseLoc.add((Settings.initialRadius + Settings.radiusHQBonus), 0, (Settings.initialRadius + Settings.radiusHQBonus ) * (-1));
+        Block highestBlock = baseLoc.getWorld().getHighestBlockAt(baseLoc);
+        highestBlock.setType(Material.FENCE);
+        highestBlock.getRelative(BlockFace.UP).setType(Material.FENCE);
+        highestBlock.getRelative(BlockFace.UP).getRelative(BlockFace.UP).setType(Material.TORCH);
+        baseLoc = _loc.getLocation();
+        // North west
+        baseLoc.add((Settings.initialRadius + Settings.radiusHQBonus) * (-1), 0, (Settings.initialRadius + Settings.radiusHQBonus) * (-1));
+        highestBlock = baseLoc.getWorld().getHighestBlockAt(baseLoc);
+        highestBlock.setType(Material.FENCE);
+        highestBlock.getRelative(BlockFace.UP).setType(Material.FENCE);
+        highestBlock.getRelative(BlockFace.UP).getRelative(BlockFace.UP).setType(Material.TORCH);
+        baseLoc = _loc.getLocation();
+        // south east
+        baseLoc.add((Settings.initialRadius + Settings.radiusHQBonus), 0, (Settings.initialRadius + Settings.radiusHQBonus));
+        highestBlock = baseLoc.getWorld().getHighestBlockAt(baseLoc);
+        highestBlock.setType(Material.FENCE);
+        highestBlock.getRelative(BlockFace.UP).setType(Material.FENCE);
+        highestBlock.getRelative(BlockFace.UP).getRelative(BlockFace.UP).setType(Material.TORCH);
+        baseLoc = _loc.getLocation();
+        // south west
+        baseLoc.add((Settings.initialRadius + Settings.radiusHQBonus) * (-1), 0, (Settings.initialRadius + Settings.radiusHQBonus));
+        highestBlock = baseLoc.getWorld().getHighestBlockAt(baseLoc);
+        highestBlock.setType(Material.FENCE);
+        highestBlock.getRelative(BlockFace.UP).setType(Material.FENCE);
+        highestBlock.getRelative(BlockFace.UP).getRelative(BlockFace.UP).setType(Material.TORCH);
     }
 }

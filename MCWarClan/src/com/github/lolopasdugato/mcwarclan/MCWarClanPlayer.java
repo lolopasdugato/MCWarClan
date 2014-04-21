@@ -1,12 +1,11 @@
 package com.github.lolopasdugato.mcwarclan;
 
 import com.github.lolopasdugato.mcwarclan.customexceptions.*;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
+import org.bukkit.*;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import sun.plugin2.message.Message;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -369,15 +368,19 @@ public class MCWarClanPlayer implements Serializable {
         Player player = toOnlinePlayer();
         TeamManager teams = _team.get_teamManager();
         Base newBase = null;
+        if (player.getWorld().getEnvironment() != World.Environment.NORMAL) {
+            Messages.sendMessage("Sorry, but MCWarClan does not support other Environment than normal world. You cannot create you HeadQuarter there.", Messages.messageType.INGAME, player);
+            return false;
+        }
         if (_team.get_id() == Team.BARBARIAN_TEAM_ID) {
-            Messages.sendMessage("You cannot create a base as a §7barbarian§6 !", Messages.messageType.INGAME, player);
+            Messages.sendMessage("You cannot create HeadQuarter as a §7barbarian§6 !", Messages.messageType.INGAME, player);
             return false;
         } else if (_team.get_bases().size() > 0) {
             Base HQ = _team.getHQ();
             Messages.sendMessage("You can only create a single HeadQuarter ! Yours is called " + HQ.get_name() + "(id:" + HQ.get_id() + ").", Messages.messageType.INGAME, player);
             return false;
         } else if (teams.isNearAnotherTerritory(true, baseLocation)){
-            Messages.sendMessage("You cannot create an HQ too close from another enemy base. Try somewhere else !", Messages.messageType.INGAME, player);
+            Messages.sendMessage("You cannot create an HQ too close from another base. Try somewhere else !", Messages.messageType.INGAME, player);
             return false;
         } else if (Bukkit.getWorld(Settings.classicWorldName).getSpawnLocation().distance(baseLocation)
                 < Settings.barbariansSpawnDistance + Settings.secureBarbarianDistance + Settings.radiusHQBonus + Settings.initialRadius) {
@@ -387,10 +390,11 @@ public class MCWarClanPlayer implements Serializable {
             try {
                 newBase = new Base(true, _team, baseName, new MCWarClanLocation(baseLocation));
                 _team.get_bases().add(newBase);
-                for (int k = 0; k < _team.get_teamMembers().size(); k++){
+                for (int k = 0; k < _team.get_teamMembers().size(); k++) {
                     _team.get_teamMembers().get(k).reloadSpawn();
                 }
-                teams.sendMessage(_team.getColoredName() + " just created it's first base ! So much time wasted...");
+                newBase.createMaxBorderShower();
+                teams.sendMessage(_team.getColoredName() + " just created their first base ! So much time wasted...");
                 _team.sendMessage(baseName + " is your first base. Its unique id is " + newBase.get_id() + " be careful, to build the others, you will need to find some materials ! You can capture enemy bases as well...");
             } catch (InvalidFlagLocationException e) {
                 e.sendDebugMessage();
@@ -402,7 +406,62 @@ public class MCWarClanPlayer implements Serializable {
                 return false;
             }
         }
+        return true;
+    }
 
+    public boolean createBase(String name, int baseReferenceId, String direction) {
+        Player player = toOnlinePlayer();
+        TeamManager teams = _team.get_teamManager();
+        Base baseReference = _team.getBase(baseReferenceId);
+        Location newBaseLocation;
+        if (baseReference == null) {
+            Messages.sendMessage("Bad base reference id. This ID does not match any of your base.", Messages.messageType.INGAME, player);
+            return false;
+        } else {
+            newBaseLocation = new MCWarClanLocation(baseReference.get_loc()).getLocation();
+        } if (!canPay(_team.get_baseCreationCost()) && player.getGameMode() != GameMode.CREATIVE) {
+            Messages.sendMessage("Sorry, you do not have enough materials to create the new base. Here is an exhaustive list of all materials required: ", Messages.messageType.INGAME, player);
+            Messages.sendMessage(_team.get_baseCreationCost().getResourceTypes(), Messages.messageType.INGAME, player);
+            return false;
+        } else if (direction.equalsIgnoreCase("north")) {
+            newBaseLocation.add(0, 0, (Settings.initialRadius + Settings.radiusHQBonus) * (-2) - 1);
+            newBaseLocation.setY(newBaseLocation.getWorld().getHighestBlockYAt(newBaseLocation) - 1);
+        } else if (direction.equalsIgnoreCase("south")) {
+            newBaseLocation.add(0, 0, (Settings.initialRadius + Settings.radiusHQBonus) * (2) + 1);
+            newBaseLocation.setY(newBaseLocation.getWorld().getHighestBlockYAt(newBaseLocation) - 1);
+        } else if (direction.equalsIgnoreCase("east")) {
+            newBaseLocation.add((Settings.initialRadius + Settings.radiusHQBonus) * (2) + 1, 0, 0);
+            newBaseLocation.setY(newBaseLocation.getWorld().getHighestBlockYAt(newBaseLocation) - 1);
+        } else if (direction.equalsIgnoreCase("west")) {
+            newBaseLocation.add((Settings.initialRadius + Settings.radiusHQBonus) * (-2) - 1, 0, 0);
+            newBaseLocation.setY(newBaseLocation.getWorld().getHighestBlockYAt(newBaseLocation) - 1);
+        } else {
+            Messages.sendMessage("The direction '" + direction + "' is not recognized.", Messages.messageType.INGAME, player);
+            return false;
+        } if (Bukkit.getWorld(Settings.classicWorldName).getSpawnLocation().distance(newBaseLocation)
+                < Settings.barbariansSpawnDistance + Settings.secureBarbarianDistance + Settings.radiusHQBonus + Settings.initialRadius) {
+            Messages.sendMessage( name + " is too close from the barbarian spawn ! Cannot create it !", Messages.messageType.INGAME, player);
+            return false;
+        } else if (teams.isNearAnotherTerritory(false, newBaseLocation)){
+            Messages.sendMessage("You cannot create a base too close from another base. Try somewhere else !", Messages.messageType.INGAME, player);
+            return false;
+        } try {
+            newBaseLocation.getBlock().getRelative(BlockFace.UP).breakNaturally();
+            if (player.getGameMode() != GameMode.CREATIVE)
+                payTribute(_team.get_baseCreationCost());
+            Base newBase = new Base(false, _team, name, new MCWarClanLocation(newBaseLocation));
+            _team.get_bases().add(newBase);
+            newBase.createMaxBorderShower();
+            teams.sendMessage("Well done " + _team.getColoredName() + ", " + _name + " just created " + name + "(id:" + newBase.get_id() + ") in the " + direction + " of " + baseReference.get_name() + " ! Its current protection radius is " + newBase.get_radius());
+        } catch (InvalidFlagLocationException e) {
+            e.sendDebugMessage();
+            Messages.sendMessage("Cannot create the flag for the following reason: " + e.getMessage(), Messages.messageType.INGAME, player);
+            return false;
+        } catch (NotEnoughSpaceException e) {
+            e.sendDebugMessage();
+            Messages.sendMessage("Please try to create the flag somewhere else. " + e.getMessage(), Messages.messageType.INGAME, player);
+            return false;
+        }
         return true;
     }
 }
