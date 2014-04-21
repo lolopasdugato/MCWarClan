@@ -1,6 +1,8 @@
 package com.github.lolopasdugato.mcwarclan;
 
 import com.avaje.ebeaninternal.server.cluster.mcast.Message;
+import com.github.lolopasdugato.mcwarclan.customexceptions.InvalidFlagLocationException;
+import com.github.lolopasdugato.mcwarclan.customexceptions.NotEnoughSpaceException;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -22,12 +24,12 @@ public class Flag implements Serializable {
     //////////////////////////////////////////////////////////////////////////////
 
     /**
-     *  Classic Flag constructor
+     * Classic flag constructor.
      * @param base
-     * @throws Exception.NotEnoughSpaceException
-     * @throws Exception.NotValidFlagLocationException
+     * @throws NotEnoughSpaceException
+     * @throws InvalidFlagLocationException
      */
-    public Flag(Base base) throws Exception.NotEnoughSpaceException, Exception.NotValidFlagLocationException {
+    public Flag(Base base) throws NotEnoughSpaceException, InvalidFlagLocationException {
         _base = base;
 
         //Initialize the block which will be the base block we're working on.
@@ -35,16 +37,16 @@ public class Flag implements Serializable {
 
         //Have to check if the block below if solid
         if (!blk.getRelative(BlockFace.DOWN).getType().isSolid()) {
-            throw new Exception.NotValidFlagLocationException();
+            throw new InvalidFlagLocationException("There is no solid block under the flag !");
         }
         // Check if block is not below the sea level.
         else if (!(blk.getRelative(BlockFace.UP).getY() >= 64)){
-            throw new Exception.NotValidFlagLocationException();
+            throw new InvalidFlagLocationException("The flag should be over the sea level (y > 64) !");
         }
         Messages.sendMessage("Beginning flag creation using pattern...", Messages.messageType.DEBUG, null);
         _pattern = new Pattern(this, Pattern.patternType.CLASSIC_FLAG);
         if (!_pattern.isEmpty()) {
-            throw new Exception.NotEnoughSpaceException();
+            throw new NotEnoughSpaceException("There is not enough empty block to place the flag !");
         }
         _pattern.generate();
         Messages.sendMessage("Flag successfully created !", Messages.messageType.DEBUG, null);

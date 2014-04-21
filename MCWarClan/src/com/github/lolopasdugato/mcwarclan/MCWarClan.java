@@ -77,7 +77,7 @@ public class MCWarClan extends JavaPlugin implements Listener {
 		getCommand("assign").setExecutor(new MCWarClanCommandExecutor(_tc, getServer()));
 		getCommand("unassign").setExecutor(new MCWarClanCommandExecutor(_tc, getServer()));
 		getCommand("createteam").setExecutor(new MCWarClanCommandExecutor(_tc, getServer()));
-        getCommand("createbase").setExecutor(new MCWarClanCommandExecutor(_tc, getServer()));
+        getCommand("createhq").setExecutor(new MCWarClanCommandExecutor(_tc, getServer()));
     }
 
     private void initRoutines() {

@@ -373,4 +373,22 @@ public class TeamManager implements Serializable {
             a_team.sendMessage(message);
         }
     }
+
+    /**
+     * Says if the current location to verify is near a territory.
+     * @param isHQ
+     * @param locationToVerify
+     * @return
+     */
+    public boolean isNearAnotherTerritory(boolean isHQ, Location locationToVerify) {
+        ArrayList<Base> bases;
+        for (Team a_team : _teamArray) {
+            bases = a_team.get_bases();
+            for (Base base : bases) {
+                if (base.isNearBase(isHQ, locationToVerify))
+                    return true;
+            }
+        }
+        return false;
+    }
 }

@@ -1,6 +1,8 @@
 package com.github.lolopasdugato.mcwarclan;
 
 
+import com.github.lolopasdugato.mcwarclan.customexceptions.InvalidFlagLocationException;
+import com.github.lolopasdugato.mcwarclan.customexceptions.NotEnoughSpaceException;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -28,14 +30,14 @@ public class Base implements Serializable {
     //////////////////////////////////////////////////////////////////////////////
 
     /**
-     *  Classic Base constructor
+     * Classic Base constructor.
      * @param HQ
      * @param team
      * @param loc
-     * @throws Exception.NotValidFlagLocationException
-     * @throws Exception.NotEnoughSpaceException
+     * @throws NotEnoughSpaceException
+     * @throws InvalidFlagLocationException
      */
-    public Base(boolean HQ, Team team, MCWarClanLocation loc) throws Exception.NotValidFlagLocationException, Exception.NotEnoughSpaceException {
+    public Base(boolean HQ, Team team, String name, MCWarClanLocation loc) throws NotEnoughSpaceException, InvalidFlagLocationException {
         _idMaster++;
         _HQ = HQ;
         _team = team;
@@ -43,6 +45,7 @@ public class Base implements Serializable {
         _initialRadius = Settings.initialRadius;    // WARNING: shouldn't be reloaded ! (except if it doesn't change during the game)
         _bonusRadius = Settings.radiusHQBonus;      // WARNING: shouldn't be reloaded ! (except if it doesn't change during the game)
         _cost = Settings.baseInitialCost;   // WARNING shouldn't be reload !
+        _name = name;
         _id = _idMaster;
         if (_HQ)
             _radius = _initialRadius + _bonusRadius;
@@ -58,6 +61,8 @@ public class Base implements Serializable {
     //--------------------------------- Getters ----------------------------------
     //////////////////////////////////////////////////////////////////////////////
 
+
+    public String get_name() { return _name; }
 
     public int get_initialRadius() {
         return _initialRadius;

@@ -240,127 +240,28 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
      * @param args
      * @return
      */
-    private boolean createbaseCommand(CommandSender sender, String[] args) {
+    private boolean createHQCommand(CommandSender sender, String[] args) {
 
         if (sender instanceof Player)
         {
-            if (args.length > 0)
-            {
+            if (args.length != 1) {
                 return false;
-            }
-            else
-            {
+            } else {
                 Player p = ((Player) sender).getPlayer();
                 MCWarClanPlayer player = _tc.getPlayer(p.getName());
 
-
-                //Find player's location
-//                Player p = findPlayerByName(sender.getName()).getPlayer();
-
                 if (p.isOnline()) {
-
-                    //Check if the player's team is not 'Barbarians'
-                    if (player.get_team().get_id() == Team.BARBARIAN_TEAM_ID) {
-                        Messages.sendMessage("You cannot create a base as a Barbarian.", Messages.messageType.INGAME, p);
-                        return true;
-                    }
-                    //Check if the player's team have enough resources to create the base
-                    Cost cost = Settings.baseInitialCost;
-                    if (p.getGameMode() != GameMode.CREATIVE) {
-                        if (!player.canPay(cost)) {
-                            Messages.sendMessage("You cannot create a base (not enough materials). You need: ", Messages.messageType.INGAME, p);
-                            Messages.sendMessage(cost.getResourceTypes(), Messages.messageType.INGAME, p);
-                            return true;
-                        }
-                    }
-                    //Here the player have enough resources to pay
-
-                    //Now we check if the location is far enough from other bases
-                    Location loc = p.getTargetBlock(null, 10).getLocation();
-                    final ArrayList<Team> teams = _tc.get_teamArray();
-                    ArrayList<Base> bases;
-
-                    boolean isHQ = false;
-                    if (player.get_team().get_bases().size() == 0)
-                        isHQ = true;
-
-                    boolean overlap = false;
-                    int i = 0, j = 0;
-
-
-                    //TODO Move to the 'isInEnemyTerritory' function
-                    while (i < teams.size() && !overlap) {
-                        if (teams.get(i) != player.get_team()) {
-                            bases = teams.get(i).get_bases();
-                            while (j < bases.size() && !overlap) {
-                                if (bases.get(j).isNearBase(isHQ, loc))
-                                    overlap = true;
-                                j++;
-                            }
-                        }
-                        j = 0;
-                        i++;
-                    }
-
-                    //Verification of the barbarian spawn
-                    Location barbSpawn = Bukkit.getWorld(Settings.classicWorldName).getSpawnLocation();
-                    final double dist = barbSpawn.distance(p.getLocation());
-                    if (dist < Settings.barbariansSpawnDistance + Settings.secureBarbarianDistance + Settings.radiusHQBonus + Settings.initialRadius) {
-                        Messages.sendMessage("You cannot create a base near the Barbarian spawn.", Messages.messageType.INGAME, p);
-                        return true;
-                    }
-
-                    Messages.sendMessage("initial radius: " + Settings.initialRadius + ", HQbonusradius: " + Settings.radiusHQBonus + ", baseMinHQDistanceToOthers: " + Settings.baseMinHQDistanceToOthers + ".", Messages.messageType.DEBUG, null);
-
-
-                    if (overlap) {
-                        Messages.sendMessage("You cannot create a base near another enemy base.", Messages.messageType.INGAME, p);
-                        if (isHQ)
-                            Messages.sendMessage("Moreover, this is your first base, so you have to build it " + (Settings.baseMinHQDistanceToOthers + (Settings.initialRadius + Settings.radiusHQBonus)*2 ) + " blocks far from the other teams bases"
-                                    , Messages.messageType.INGAME, p);
-
-                        return true;
-                    }
-
-                    //We have check the location, with is correct regarding other bases
-
-                    //Now we try to create the flag
-                    Base b = null;
-                    try {
-                        b = new Base(isHQ, player.get_team(), new MCWarClanLocation(loc));
-                    } catch (Exception.NotEnoughSpaceException e) {
-                        Messages.sendMessage("There is not enough space to create the base.", Messages.messageType.INGAME, p);
-                        return true;
-                    } catch (Exception.NotValidFlagLocationException e) {
-                        Messages.sendMessage("There is not a solid block under the flag, or the flag is under the sea level (64 blocks).", Messages.messageType.INGAME, p);
-                        return true;
-                    }
-
-                    //If the flag can be created, add the base to the base array
-                    player.get_team().get_bases().add(b);
-
-                    // If this base is the first one (an HQ) reset de MCWarClan spawn location for all teamMembers
-                    if(b.is_HQ()){
-                        for (int k = 0; k < player.get_team().get_teamMembers().size(); k++){
-                            player.get_team().get_teamMembers().get(k).reloadSpawn();
-                        }
-                    }
-
-                    //Substract the cost of the base to player's inventory
-                    if (p.getGameMode() != GameMode.CREATIVE)
-                        player.payTribute(cost);
-
-                    Messages.sendMessage("The new base has been created !", Messages.messageType.INGAME, p);
+                    player.createHQ(p.getTargetBlock(null, 10).getLocation(), args[0]);
                     return true;
                 } else {
-                    Messages.sendMessage(p.getName() + " is note online ! Cannot proceed to the base creation.", Messages.messageType.ALERT, null);
-                    Messages.sendMessage(p.getName() + " is note online ! Cannot proceed to the base creation.", Messages.messageType.INGAME, p);
-                    return false;
+                    Messages.sendMessage(p.getName() + " is not online ! Cannot proceed to the base creation.", Messages.messageType.ALERT, null);
+                    Messages.sendMessage(p.getName() + " is not online ! Cannot proceed to the base creation.", Messages.messageType.INGAME, p);
+                    return true;
                 }
             }
         } else {
             Messages.sendMessage("You have to be a player to perform this command !", Messages.messageType.INGAME, sender);
-            return false;
+            return true;
         }
     }
 
@@ -372,34 +273,22 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 
 		
-		if((label.toLowerCase().equals("showteams") || label.toLowerCase().equals("lt") || label.toLowerCase().equals("st")) && args.length == 0){
+		if ((label.toLowerCase().equals("showteams") || label.toLowerCase().equals("lt") || label.toLowerCase().equals("st")) && args.length == 0){
 			return showteamsCommand(sender);
-		}
-		
-		else if(label.toLowerCase().equals("assign")) {
+		} else if (label.toLowerCase().equals("assign")) {
 			return assignCommand(sender, args);
-		}
-		
-		else if(label.toLowerCase().equals("team")){
+		} else if (label.toLowerCase().equals("team")){
 			return teamCommand(sender, args);
-		}
-		
-		else if(label.toLowerCase().equals("unassign") && args.length == 1) {
+		} else if (label.toLowerCase().equals("unassign") && args.length == 1) {
 			return unassignCommand(sender, args);
-		}
-		
-		else if(label.toLowerCase().equals("leave") && args.length == 0){
+		} else if (label.toLowerCase().equals("leave") && args.length == 0){
 			return leaveCommand(sender);
-		}
-		
-		else if(label.toLowerCase().equals("join") && args.length == 1){
+		} else if (label.toLowerCase().equals("join") && args.length == 1){
 			return joinCommand(sender, args);
-		}
-		
-		else if(label.toLowerCase().equals("createteam")){
+		} else if (label.toLowerCase().equals("createteam")){
 			return createteamCommand(sender, args);
-        } else if (label.toLowerCase().equals("createbase")) {
-            return createbaseCommand(sender, args);
+        } else if (label.toLowerCase().equals("createhq")) {
+            return createHQCommand(sender, args);
         }
 		return false;
 	}
