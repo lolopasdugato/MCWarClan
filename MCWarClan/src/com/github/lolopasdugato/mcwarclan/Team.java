@@ -401,6 +401,7 @@ public class Team extends Object implements Serializable {
         baseToCapture.set_HQ(false);
         baseToCapture.set_radius(baseToCapture.get_initialRadius());
         baseToCapture.set_team(this);
+        baseToCapture.set_level(1);
         baseToCapture.get_flag().forceDestroy();
         _bases.add(baseToCapture);
         baseToCapture.get_flag().get_pattern().set_woolColor(_color);

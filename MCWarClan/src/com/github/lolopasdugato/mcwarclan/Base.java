@@ -145,6 +145,9 @@ public class Base implements Serializable {
         _contested = contested;
     }
 
+    public void set_level(int _level) {
+        this._level = _level;
+    }
 
     //////////////////////////////////////////////////////////////////////////////
     //--------------------------------- Functions --------------------------------
