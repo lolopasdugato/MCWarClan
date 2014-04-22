@@ -30,6 +30,7 @@ public class Base implements Serializable {
     private String _name;
     private int _id;
     private boolean _contested;
+    private int _level;
 
     //////////////////////////////////////////////////////////////////////////////
     //------------------------------- Constructors -------------------------------
@@ -53,10 +54,14 @@ public class Base implements Serializable {
 //        _cost = Settings.baseInitialCost;   // WARNING shouldn't be reload !
         _name = name;
         _id = _idMaster;
-        if (_HQ)
+        if (_HQ) {
             _radius = _initialRadius + _bonusRadius;
-        else
+            _level = 5;
+        }
+        else {
             _radius = _initialRadius;
+            _level = 1;
+        }
         //Test if the flag can be created, and throw NotEnoughSpaceException is not.
         _flag = new Flag(this);
 
@@ -104,6 +109,10 @@ public class Base implements Serializable {
 
     public int get_id() { return _id; }
 
+    public int get_level() {
+        return _level;
+    }
+
     //////////////////////////////////////////////////////////////////////////////
     //--------------------------------- Setters ----------------------------------
     //////////////////////////////////////////////////////////////////////////////
@@ -145,13 +154,6 @@ public class Base implements Serializable {
      *  refresh settings that should be reloaded if config.yml has been changed.
      */
     public void refresh(){
-        // This refresh should be changed if the radius can change during the game.
-        _bonusRadius = Settings.radiusHQBonus;
-        _initialRadius = Settings.initialRadius;
-        if(_HQ)
-            _radius = _initialRadius + _bonusRadius;
-        else
-            _radius = _initialRadius;
         if(_idMaster < _id)
             _idMaster = _id;
         _contested = false;
@@ -281,9 +283,9 @@ public class Base implements Serializable {
      */
     public String getMinimalInfo() {
         if(_contested)
-            return "§6" + _name + "(§a" + _id + "§6) is under attack.";
+            return "§a" + _name + "§6(§a" + _id + "§6) is under attack.";
         else
-            return "§6" + _name + "(§a" + _id + "§6).";
+            return "§a" + _name + "§6(§a" + _id + "§6).";
     }
 
     /**
@@ -295,12 +297,13 @@ public class Base implements Serializable {
         info.add("§6Name: §a" + _name);
         info.add("§6Base ID: §a" + _id);
         info.add("§6Protection radius: §a" + _radius);
+        info.add("§6Current level: §a" + _level);
         if (_contested)
-            info.add("§6" + _name + " is currently contested !");
+            info.add("§a" + _name + " §6is currently contested !");
         else
-            info.add("§6" + _name + " is not contested at the moment.");
+            info.add("§a" + _name + " §6is not contested at the moment.");
         if(_HQ)
-            info.add("§6" + _name + " is your Head Quarter.");
+            info.add("§a" + _name + " §6is your Head Quarter.");
         String[] infoArray = new String[info.size()];
         for (int i = 0; i < info.size(); i++) {
             infoArray[i] = info.get(i);
@@ -308,14 +311,25 @@ public class Base implements Serializable {
         return infoArray;
     }
 
-    @Override
-    public String toString() {
-        return "Base{" +
-                "_HQ=" + _HQ +
-                ", _radius=" + _radius +
-                ", _name='" + _name + '\'' +
-                ", _id=" + _id +
-                ", _contested=" + _contested +
-                '}';
+    /**
+     * Upgrade the base level.
+     * @return
+     */
+    public boolean upgrade() {
+        if (_level >= 5) {
+            return false;
+        } else if (_team.get_money() >= Settings.radiusCost[_level - 1]) {
+            _team.pay(Settings.radiusCost[_level - 1]);
+            _level++;
+            if (_level == 5)
+                _radius = _initialRadius + _bonusRadius;
+            else {
+                int quarter = _bonusRadius/4;
+                _radius = _initialRadius + quarter*(_level - 1);
+            }
+            createBaseBorder();
+            return true;
+        }
+        return false;
     }
 }

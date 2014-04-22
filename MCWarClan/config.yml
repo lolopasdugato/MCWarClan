@@ -5,12 +5,12 @@ teamSettings:
 #####################
 
     # Define the maximum number of team that can be created during the game. this number should be superior to 3 and inferior to 10
-    maxNumberOfTeam: 4
+    maxNumberOfTeam: 10
 
     # Define how many players can join a single team when this team has no upgrade.
     # Min value: 2
     # Max value: none
-    initialTeamSize: 10
+    initialTeamSize: 5
 
     # Define if players can hurts each others in the same team (except barbarian)
     friendlyFire: false
@@ -20,30 +20,40 @@ teamSettings:
 
     # List bellow the different materials that could be asked for tribute to join a team.
     # Blue and Red teams are the two basic teams available in the game. The DEFAULT price is linked to the new teams that could be created.
+    # You cannot ask for more than 256 of each materials. Remember that a player can carry a maximum of 2304 items.
     teamJoiningTribute:
       BLUE:
         WOOL: 1
         LOG: 64
         COBBLESTONE: 64
+        COAL: 32
         IRON_INGOT: 10
       RED:
-        COAL: -20
         WOOL: 1
         LOG: 128
-        COBBLESTONE: 64
-        BullSHIIIt: 224
+        COBBLESTONE: 128
+        IRON_INGOT: 1
       DEFAULT:
-        WOOL: 32
+        WOOL: 1
         LOG: 64
+        COBBLESTONE: 64
         DIAMOND: 10
-        IRON_INGOT: 32
+        COAL: 32
+        IRON_INGOT: 16
         EMERALD: 1
 
     # List bellow the different materials that could be asked for tribute to create a team.
     teamCreatingTribute:
-      EMERALD: 128
-      DIAMOND: 128
+      WOOL: 16
+      EMERALD: 5
+      DIAMOND: 8
       LOG: 256
+      COBBLESTONE: 256
+      COAL: 64
+      IRON_INGOT: 32
+      ENDER_PEARL: 10
+      BONE: 16
+      GLOWSTONE_DUST: 64
 
     # Define how many people should be connected to allow others to attack this team.
     matesNeeded:
@@ -52,7 +62,7 @@ teamSettings:
       # Define a number of members needed in a team to get attacked.
       # Min value: 0
       # Max value: 100 if it's a percentage. Otherwise, none.
-      value: 10
+      value: 30
       # Define if the number is a percentage or a fix number of player.
       percentage: true
 
@@ -66,30 +76,40 @@ baseSettings:
     # Define the first influence radius of a normal base.
     # If this radius is upgraded while playing (not via this config file) the maximum radius is initialRadius + radiusHQBonus.
     # Do not set radius values too high or you will experience many problems to create a new base while other base already exist.
+    # To prevent any game corruption, we recommend you TO NOT CHANGE RADIUS VALUES when the game has been launched (1 base created).
     # Min value: 5
     # Max value: none
-    initialRadius: 5
+    initialRadius: 10
 
     # Define the influence bonus for the first base (HeadQuarter) of a team, and by the way, the maximum influence of a base after a full upgrade (initialRadius + radiusHQBonus).
     # Min value: 5
     # Max value: none
-    radiusHQBonus: 5
+    radiusHQBonus: 40
+
+    # This cost is evaluated in terms of emerald.
+    # The minimum values for each levels are the precedent level cost.
+    radiusCostPerLevel:
+     #LEVEL_1 is the base creation.
+     LEVEL_2: 1
+     LEVEL_3: 2
+     LEVEL_4: 3
+     LEVEL_5: 4
 
     # Define the average distance between the first spawn of the map and a random barbarian spawn location.
     # Min value: 100
     # Max value: none
-    barbariansSpawnDistance: 100
+    barbariansSpawnDistance: 250
 
     # Number of minimum block between the barbarian spawn and the border of a buildable team base.
     # Min value: 0
     # Max value: none
-    secureBarbarianDistance: 25
+    secureBarbarianDistance: 50
 
     # Define the minimum distance between a team HQ and another team's base borderland while attempting to build an HQ.
     # The formula in use is: (initialRadius + radiusHQBonus)*2 + basMinHQDistance.
     # Min value: 0
     # Max value: none
-    baseMinHQDistanceToOthers: 50
+    baseMinHQDistanceToOthers: 100
 
     # Define the cost of a base while creating the base.
     # Be careful, the more base you create, the higher the price is.
@@ -99,13 +119,29 @@ baseSettings:
     baseInitialCost:
       WOOL: 6
       LOG: 6
-      EMERALD: 10
-      DIAMOND: 10
+      DIAMOND: 1
+      GOLD_NUGGET: 10
+
+    # Define the cost that will be systematically add to the current cost to create a base.
+    baseCreationCostSystematicIncrease:
+     DIAMOND: 1
+     GOLD_NUGGET: 10
+
+    # This number represent the number of base creation that should be done before this variant cost increase applies.
+    # This number will not count captured bases.
+    numberOfBaseForVariant: 3
+
+    # This define the materials added to the base creation cost each time the variant should applies.
+    # This cost will is added with the systematical cost.
+    baseVariantIncrease:
+     EMERALD: 1
+     ENDER_PEARL: 1
+     FLINT: 3
 
     # Define the percentage of the flag that should be destroyed before the beginning of the base capture.
     # Min value: 25
     # Max value: 100
-    destroyFlagPercentage: 90
+    destroyFlagPercentage: 80
 
 #####################
 #####################

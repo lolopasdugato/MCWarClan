@@ -2,10 +2,13 @@ package com.github.lolopasdugato.mcwarclan;
 
 import com.github.lolopasdugato.mcwarclan.customexceptions.MaximumTeamCapacityReachedException;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Team extends Object implements Serializable {
 
@@ -21,9 +24,11 @@ public class Team extends Object implements Serializable {
     private ArrayList<Base> _bases;                    // Represent bases of a team
     private Cost _cost;                             // The cost to join a team
     private Cost _baseCreationCost;
+    private int _numberOfCostIncrease;
     private transient org.bukkit.scoreboard.Team _bukkitTeam;  // An instance of a bukkitTeam
     private int _id;
     private boolean _hasLost;
+    private int _money;
 
 
     //////////////////////////////////////////////////////////////////////////////
@@ -59,6 +64,8 @@ public class Team extends Object implements Serializable {
         initCost();
         Messages.sendMessage("I am team " + _name + " and my id is: " + _id + " (masterId:" + _idMaster + ")", Messages.messageType.DEBUG, null);
         _hasLost = false;
+        _numberOfCostIncrease = 1;
+        _money = 0;
     }
 
     public Team(Team t){
@@ -120,6 +127,10 @@ public class Team extends Object implements Serializable {
 
     public Cost get_baseCreationCost() { return _baseCreationCost; }
 
+    public int get_money() {
+        return _money;
+    }
+
     //////////////////////////////////////////////////////////////////////////////
     //--------------------------------- Setters ----------------------------------
     //////////////////////////////////////////////////////////////////////////////
@@ -152,8 +163,11 @@ public class Team extends Object implements Serializable {
         return _id;
     }
 
+    public void set_money(int _money) {
+        this._money = _money;
+    }
 
-    //////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
     //--------------------------------- Functions --------------------------------
     //////////////////////////////////////////////////////////////////////////////
 
@@ -407,4 +421,41 @@ public class Team extends Object implements Serializable {
         return null;
     }
 
+    /**
+     * Increase the current cost to create a base.
+     */
+    public void increaseBaseCreationCost() {
+        if (_numberOfCostIncrease % Settings.numberOfBaseForVariant == 0) {
+            _baseCreationCost.addCost(Settings.baseVariantIncrease);
+        }
+        _baseCreationCost.addCost(Settings.baseCreationCostSystematicIncrease);
+        _numberOfCostIncrease++;
+    }
+
+    /**
+     * Pay a certain amount of money.
+     * @param amount
+     */
+    public void pay(int amount) {
+        _money -= amount;
+    }
+
+    /**
+     * Drop a certain amount of Emeralds at a certain position.
+     * @param amount
+     * @param locToDropEmeralds
+     */
+    public void dropEmeralds(int amount, Location locToDropEmeralds) {
+        if (amount > _money) {
+            amount = _money;
+        }
+        pay(amount);
+        ItemStack itemStack = new ItemStack(Material.EMERALD, 1);
+        for (int i = 0; i < amount; i++) {
+            double randomX = new Random().nextDouble() * (-2) + new Random().nextDouble() * (2);
+            double randomZ = new Random().nextDouble() * (-2) + new Random().nextDouble() * (2);
+            Location randlol = new Location(locToDropEmeralds.getWorld(), locToDropEmeralds.getX() + randomX, locToDropEmeralds.getY() + 3, locToDropEmeralds.getZ() + randomZ);
+            locToDropEmeralds.getWorld().dropItem(randlol, itemStack);
+        }
+    }
 }

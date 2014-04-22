@@ -34,6 +34,10 @@ public class Settings {
     public static int secureBarbarianDistance;
     public static boolean allowCreeperDestroyFields;
     public static int destroyFlagPercentage;
+    public static Cost baseCreationCostSystematicIncrease;
+    public static int numberOfBaseForVariant;
+    public static Cost baseVariantIncrease;
+    public static int[] radiusCost;
 
     private Configuration _cfg;
 
@@ -77,6 +81,13 @@ public class Settings {
         baseMinHQDistanceToOthers = secureValue(_cfg.getInt("baseSettings.baseMinHQDistanceToOthers"), 0, -1);
         secureBarbarianDistance = secureValue(_cfg.getInt("baseSettings.secureBarbarianDistance"), 0, -1);
         destroyFlagPercentage = secureValue(_cfg.getInt("baseSettings.destroyFlagPercentage"), 25, 100);
+        numberOfBaseForVariant = secureValue(_cfg.getInt("baseSettings.numberOfBaseForVariant"), 1, -1);
+        radiusCost = new int[4];
+        radiusCost[0] = secureValue(_cfg.getInt("baseSettings.radiusCostPerLevel.LEVEL_2"), 0, -1);
+        radiusCost[1] = secureValue(_cfg.getInt("baseSettings.radiusCostPerLevel.LEVEL_3"), radiusCost[0], -1);
+        radiusCost[2] = secureValue(_cfg.getInt("baseSettings.radiusCostPerLevel.LEVEL_4"), radiusCost[1], -1);
+        radiusCost[3] = secureValue(_cfg.getInt("baseSettings.radiusCostPerLevel.LEVEL_5"), radiusCost[2], -1);
+
 
         uncensoredItemsAmount = secureValue(_cfg.getInt("otherSettings.uncensoredItemsAmount"), 1, -1);
         classicWorldName = _cfg.getString("otherSettings.classicWorldName");
@@ -110,6 +121,16 @@ public class Settings {
         baseInitialCost = fillCost(baseInitialCost, "baseSettings.baseInitialCost");
         if (baseInitialCost == null)
             return false;
+
+        // Initialize base cost increase
+        baseCreationCostSystematicIncrease = fillCost(baseCreationCostSystematicIncrease, "baseSettings.baseCreationCostSystematicIncrease");
+        if (baseCreationCostSystematicIncrease == null)
+            return false;
+
+        baseVariantIncrease = fillCost(baseVariantIncrease, "baseSettings.baseVariantIncrease");
+        if (baseVariantIncrease == null)
+            return false;
+
 
         return true;
     }

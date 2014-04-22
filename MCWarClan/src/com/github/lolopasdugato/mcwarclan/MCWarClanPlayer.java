@@ -5,6 +5,7 @@ import org.bukkit.*;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import sun.plugin2.message.Message;
 
 import java.io.Serializable;
@@ -145,8 +146,8 @@ public class MCWarClanPlayer implements Serializable {
                 signX = -1;
             if (new Random().nextBoolean())
                 signZ = -1;
-            double randomX = (new Random().nextInt(21) + HQ.get_radius() + _spawn.get_x()) * signX;
-            double randomZ = (new Random().nextInt(21) + HQ.get_radius() + _spawn.get_z()) * signZ;
+            double randomX = ((new Random().nextInt(21) + HQ.get_radius()) * signX + _spawn.get_x());
+            double randomZ = ((new Random().nextInt(21) + HQ.get_radius()) * signZ + _spawn.get_z());
             _spawn.set_x(randomX);
             _spawn.set_z(randomZ);
             Messages.sendMessage( _name + " will spawn in x:" + _spawn.get_x() + ", y:" + _spawn.get_y() + ", z:" + _spawn.get_z() + " (ContestedHQ).",
@@ -395,8 +396,7 @@ public class MCWarClanPlayer implements Serializable {
                 }
                 if (Settings.debugMode)
                     newBase.createMaxBorderShower();
-                else
-                    newBase.createBaseBorder();
+                newBase.createBaseBorder();
                 teams.sendMessage(_team.getColoredName() + " just created their first base ! So much time wasted...");
                 _team.sendMessage(baseName + " is your first base. Its unique id is §a" + newBase.get_id() + "§6 be careful, to build the others, you will need to find some materials ! You can capture enemy bases as well...");
             } catch (InvalidFlagLocationException e) {
@@ -412,6 +412,13 @@ public class MCWarClanPlayer implements Serializable {
         return true;
     }
 
+    /**
+     * Create a base at a specified position using a base for reference.
+     * @param name
+     * @param baseReferenceId
+     * @param direction
+     * @return
+     */
     public boolean createBase(String name, int baseReferenceId, String direction) {
         Player player = toOnlinePlayer();
         TeamManager teams = _team.get_teamManager();
@@ -456,8 +463,8 @@ public class MCWarClanPlayer implements Serializable {
             _team.get_bases().add(newBase);
             if (Settings.debugMode)
                 newBase.createMaxBorderShower();
-            else
-                newBase.createBaseBorder();
+            newBase.createBaseBorder();
+            _team.increaseBaseCreationCost();
             teams.sendMessage("Well done " + _team.getColoredName() + ", " + _name + " just created " + name + " (id:§a" + newBase.get_id() + "§6) in the " + direction + " of " + baseReference.get_name() + " ! Its current protection radius is " + newBase.get_radius() + ".");
         } catch (InvalidFlagLocationException e) {
             e.sendDebugMessage();
@@ -466,6 +473,37 @@ public class MCWarClanPlayer implements Serializable {
         } catch (NotEnoughSpaceException e) {
             e.sendDebugMessage();
             Messages.sendMessage("Please try to create the flag somewhere else. " + e.getMessage(), Messages.messageType.INGAME, player);
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Save Emeralds in the team treasure.
+     * @param amount
+     * @return
+     */
+    public boolean save(int amount) {
+        Player player = toOnlinePlayer();
+        int amountToSave = amount;
+        PlayerInventory playerInventory = player.getInventory();
+        if (playerInventory.contains(Material.EMERALD, amount)) {
+            do {
+                int index = playerInventory.first(Material.EMERALD);
+                ItemStack itemStack = playerInventory.getItem(index);
+                if (itemStack.getAmount() > amount) {
+                    itemStack.setAmount(itemStack.getAmount() - amount);
+                    playerInventory.setItem(index, itemStack);
+                    amount = 0;
+                } else {
+                    amount -= itemStack.getAmount();
+                    itemStack.setAmount(0);
+                    playerInventory.setItem(index, itemStack);
+                }
+            } while (amount != 0);
+            _team.set_money(_team.get_money() + amountToSave);
+            player.updateInventory();
+        } else {
             return false;
         }
         return true;

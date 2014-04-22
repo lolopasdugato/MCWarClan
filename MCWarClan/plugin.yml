@@ -52,6 +52,18 @@ commands:
   description: Allows you to launch a battle to capture an enemy base. Before the capture process begin, destroy the enemy flag.
   permission: mcwarclan.contest
   usage: Type /<command> in an enemy base to launch the capture process. Don't forget to break the flag to launch the process properly !
+ upgrade:
+  description: Allows a player to upgrade a particular base by standing into this base or by specifying its ID.
+  permission: mcwarclan.upgrade
+  usage: Type /<command> (base id)
+ savemoney:
+  description: Allows a player to store a certain amount of money into the team treasure.
+  permission: mcwarclan.savemoney
+  usage: Type /<command> [amount]
+ withdraw:
+  description: Allows a player to take emeralds from the team treasure. These emeralds will appear in the base he is currently in.
+  permission: mcwarclan.withdraw
+  usage: Type /<command> [amount]
   
 permissions:
  mcwarclan.*:
@@ -68,6 +80,9 @@ permissions:
    mcwarclan.createbase: true
    mcwarclan.baseinfo: true
    mcwarclan.contest: true
+   mcwarclan.upgrade: true
+   mcwarclan.savemoney: true
+   mcwarclan.withdraw: true
  mcwarclan.showteams:
   description: List all teams in the game.
   default: true
@@ -100,4 +115,13 @@ permissions:
   default: true
  mcwarclan.contest:
   description: Allows you to launch a battle to capture an enemy base.
+  default: true
+ mcwarclan.upgrade:
+  description: Allows a player to upgrade a particular base by standing into this base or by specifying its ID.
+  default: true
+ mcwarclan.savemoney:
+  description: Allows a player to store a certain amount of money into the team treasure.
+  default: true
+ mcwarclan.withdraw:
+  description: Allows a player to take emeralds from the team treasure. These emeralds will appear in the base he is currently in.
   default: true

@@ -58,7 +58,48 @@ public class Cost implements Serializable{
      * @return
      */
     public boolean addValue(String materialName, int numberOfMaterials){
-        return Material.getMaterial(materialName) != null && numberOfMaterials >= 0 && _costEquivalence.add(new Equivalence(materialName, numberOfMaterials)) ;
+        if (numberOfMaterials > 256) {
+            numberOfMaterials = 256;
+            Messages.sendMessage("Cannot ask for more than 256 " + materialName, Messages.messageType.DEBUG, null);
+        }
+
+        int totalNumberOfMaterials = 0;
+        for (Equivalence a_costEquivalence : _costEquivalence) {
+            totalNumberOfMaterials += a_costEquivalence.get_materialValue();
+        }
+        if (totalNumberOfMaterials + numberOfMaterials > 2304) {
+            Messages.sendMessage("Cannot add " + materialName + " or a unique player would not be able to pay this tribute due to inventory capacity.", Messages.messageType.ALERT, null);
+            return false;
+        }
+        int i = 0;
+        boolean materialFound = false;
+        while (i < _costEquivalence.size() && !materialFound) {
+            if (_costEquivalence.get(i).get_materialName().equalsIgnoreCase(materialName)) {
+                _costEquivalence.get(i).set_materialValue(_costEquivalence.get(i).get_materialValue() + numberOfMaterials);
+                materialFound = true;
+            }
+            i++;
+        }
+        if (!materialFound) {
+            _costEquivalence.add(new Equivalence(materialName, numberOfMaterials));
+        }
+        return Material.getMaterial(materialName) != null && numberOfMaterials >= 0;
+    }
+
+    /**
+     * Add a cost to another.
+     * @param costToAdd
+     * @return
+     */
+    public boolean addCost(Cost costToAdd) {
+        ArrayList<Equivalence> costToAddEqui = costToAdd.get_costEquivalence();
+        Cost newCost = new Cost(this);
+        for (int i = 0; i < costToAddEqui.size(); i++) {
+            if(!newCost.addValue(costToAddEqui.get(i).get_materialName(), costToAddEqui.get(i).get_materialValue()))
+                return false;
+        }
+        _costEquivalence = newCost.get_costEquivalence();
+        return true;
     }
 
     /**
