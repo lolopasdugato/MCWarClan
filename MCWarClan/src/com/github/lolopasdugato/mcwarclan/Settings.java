@@ -38,6 +38,7 @@ public class Settings {
     public static int numberOfBaseForVariant;
     public static Cost baseVariantIncrease;
     public static int[] radiusCost;
+    public static int moneyloss;
 
     private Configuration _cfg;
 
@@ -87,6 +88,7 @@ public class Settings {
         radiusCost[1] = secureValue(_cfg.getInt("baseSettings.radiusCostPerLevel.LEVEL_3"), radiusCost[0], -1);
         radiusCost[2] = secureValue(_cfg.getInt("baseSettings.radiusCostPerLevel.LEVEL_4"), radiusCost[1], -1);
         radiusCost[3] = secureValue(_cfg.getInt("baseSettings.radiusCostPerLevel.LEVEL_5"), radiusCost[2], -1);
+        moneyloss = secureValue(_cfg.getInt("baseSettings.moneyloss"), 10, 50);
 
 
         uncensoredItemsAmount = secureValue(_cfg.getInt("otherSettings.uncensoredItemsAmount"), 1, -1);

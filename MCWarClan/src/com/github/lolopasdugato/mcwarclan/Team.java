@@ -344,7 +344,7 @@ public class Team extends Object implements Serializable {
                     playerOnline++;
             }
             if (Settings.matesNeededIsPercentage){
-                playerOnline = (playerOnline/_teamMembers.size())*100;
+                playerOnline = (int) (((double)playerOnline/(double)_teamMembers.size())*100.0);
             }
             return playerOnline >= Settings.matesNeededValue;
         }
@@ -357,7 +357,6 @@ public class Team extends Object implements Serializable {
     public void loose(){
         _hasLost = true;
         Team teamToDelete = new Team(this);
-        Team barbarians = _teamManager.getTeam(Team.BARBARIAN_TEAM_ID);
         for (int i = 0; i < _bases.size(); i++){
             // Delete flag ?
             _bases.remove(_bases.get(i));
@@ -406,6 +405,7 @@ public class Team extends Object implements Serializable {
         _bases.add(baseToCapture);
         baseToCapture.get_flag().get_pattern().set_woolColor(_color);
         baseToCapture.get_flag().get_pattern().generate();
+        baseToCapture.createBaseBorder();
     }
 
     /**

@@ -95,6 +95,11 @@ baseSettings:
      LEVEL_4: 3
      LEVEL_5: 4
 
+    # Percentage of money lost when a base is captured
+    # Min value: 10
+    # Max value: 50
+    moneyloss: 10
+
     # Define the average distance between the first spawn of the map and a random barbarian spawn location.
     # Min value: 100
     # Max value: none
