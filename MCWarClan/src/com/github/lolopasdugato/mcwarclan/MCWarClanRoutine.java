@@ -30,7 +30,7 @@ public abstract class MCWarClanRoutine extends BukkitRunnable {
         private int _flagCapCounter;
         private boolean _oneTimeMessage;
 
-        protected ContestedBaseRoutine(Base base, Team opponents) {
+        public ContestedBaseRoutine(Base base, Team opponents) {
             _base = base;
             _opponents = opponents;
             _FlagCapTime = 6; // 1min = 12*5
