@@ -4,7 +4,6 @@
 
 package com.github.lolopasdugato.mcwarclan;
 
-import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
@@ -129,7 +128,7 @@ public class MCWarClan extends JavaPlugin implements Listener {
             log.info("|-_MCWARCLAN_-| OK !");
             // Could be perfless but nee exact precision.
             // Moreover, very light task.
-            BukkitTask tsk = new MCWarClanRoutine.CountDaysRoutine(_tc).runTaskTimer(this, 0, 1);
+            BukkitTask tsk = new MCWarClanRoutine.CountDaysRoutine(_tc).runTaskTimer(this, 0, 200);
             log.info("|-_MCWARCLAN_-| MCWarClan has been successfully launched !");
         }
 

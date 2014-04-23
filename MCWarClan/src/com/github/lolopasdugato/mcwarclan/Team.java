@@ -30,7 +30,8 @@ public class Team extends Object implements Serializable {
     private int _id;
     private boolean _hasLost;
     private int _money;
-    private long _birthDay;
+    private long _birthDay;                     // the time of the team's birth
+    private int _age;                           // the age of the team in days
 
 
     //////////////////////////////////////////////////////////////////////////////
@@ -138,6 +139,10 @@ public class Team extends Object implements Serializable {
         return _money;
     }
 
+    public void set_money(int _money) {
+        this._money = _money;
+    }
+
     public boolean is_hasLost() {
         return _hasLost;
     }
@@ -146,13 +151,21 @@ public class Team extends Object implements Serializable {
         return _birthDay;
     }
 
-    public int get_numberOfCostIncrease() {
-        return _numberOfCostIncrease;
+    public int get_age() {
+        return _age;
     }
 
     //////////////////////////////////////////////////////////////////////////////
     //--------------------------------- Setters ----------------------------------
     //////////////////////////////////////////////////////////////////////////////
+
+    public void set_age(int age) {
+        this._age = age;
+    }
+
+    public int get_numberOfCostIncrease() {
+        return _numberOfCostIncrease;
+    }
 
     public Cost get_cost() {
         return _cost;
@@ -180,10 +193,6 @@ public class Team extends Object implements Serializable {
 
     public int get_id() {
         return _id;
-    }
-
-    public void set_money(int _money) {
-        this._money = _money;
     }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -478,4 +487,6 @@ public class Team extends Object implements Serializable {
             locToDropEmeralds.getWorld().dropItem(randlol, itemStack);
         }
     }
+
+
 }

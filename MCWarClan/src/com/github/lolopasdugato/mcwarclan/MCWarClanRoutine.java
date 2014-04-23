@@ -1,7 +1,6 @@
 package com.github.lolopasdugato.mcwarclan;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Server;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -26,9 +25,9 @@ public abstract class MCWarClanRoutine extends BukkitRunnable {
     public static class ContestedBaseRoutine extends MCWarClanRoutine {
 
         private final Team _opponents;
+        private final int _FlagCapTime;
         private Base _base;
         private int _flagCapCounter;
-        private final int _FlagCapTime;
         private boolean _oneTimeMessage;
 
         protected ContestedBaseRoutine(Base base, Team opponents) {
@@ -58,7 +57,6 @@ public abstract class MCWarClanRoutine extends BukkitRunnable {
             boolean alive = false;
             while (i < _opponents.get_teamMembers().size() && !alive) {
                 // If there is still an opponent in the contested base, the war continue.
-                //TODO Change this trick (the comma thing)
                 Base currentOppoBase = _opponents.get_teamMembers().get(i).getCurrentBase();
                 if (currentOppoBase != null && currentOppoBase.get_id() == _base.get_id()){
                     alive = true;
@@ -121,23 +119,7 @@ public abstract class MCWarClanRoutine extends BukkitRunnable {
                 //Kill the thread after the end of the war
                 this.cancel();
             }
-
-
-
-            //1- It need to have enemies connected in order to allow capturing there base.
-            //2- You enter in the base area with a weapon in your hand or inventory
-
-
-            //2bisbis - Proximity detection (if the player can see an enemy or not)
-            //2bis - You damage their area with TNT, attack an enemy or take damage from an enemy in is territory
-            //for TNT --> tntPrimed.getSource (return Entity)
-
         }
-
-        public void tntExploded() {
-
-        }
-
     }
 
     public static class CountDaysRoutine extends MCWarClanRoutine {
@@ -150,14 +132,33 @@ public abstract class MCWarClanRoutine extends BukkitRunnable {
         @Override
         public void run() {
             ArrayList<Team> teams = _teamManager.get_teamArray();
+            long baseTime;
+
             long currentTime = Bukkit.getServer().getWorld(Settings.classicWorldName).getFullTime();
+
+            Messages.sendMessage("Check if money earned at " + currentTime + ".", Messages.messageType.DEBUG, null);
+
             for (Team team : teams) {
-                if ((team.get_birthDay() - currentTime) % (Settings.waitingTime * 24000) == 0 && team.get_id() != Team.BARBARIAN_TEAM_ID) {
-                    int emeraldToEarn = 0;
-                    emeraldToEarn += Settings.emeraldPerTeamMember * team.get_teamMembers().size();
-                    Messages.sendMessage("Daily count launched at " + currentTime + "!", Messages.messageType.DEBUG, null);
-                    team.sendMessage("Today, your team earned §a" + emeraldToEarn + "§6 emerald(s) !");
-                    team.set_money(team.get_money() + emeraldToEarn);
+
+                //We don't offer any resources to barbarians
+                if (team.get_id() != Team.BARBARIAN_TEAM_ID) {
+                    baseTime = team.get_birthDay() + team.get_age() * 24000;
+                    if ((currentTime - baseTime) > 24000) {
+                        Messages.sendMessage("Team " + team.get_name() + " is now older.", Messages.messageType.DEBUG,
+                                null);
+                        //We add 1 to the previous age
+                        int age = team.get_age();
+                        team.set_age(age + 1);
+
+                        //Test if we have to add emerald to the team treasure
+                        if (age % (Settings.waitingTime) == 0) {
+                            int emeraldToEarn = 0;
+                            emeraldToEarn += Settings.emeraldPerTeamMember * team.get_teamMembers().size();
+                            Messages.sendMessage("Daily count launched at " + currentTime + "!", Messages.messageType.DEBUG, null);
+                            team.sendMessage("Today, your team earned §a" + emeraldToEarn + "§6 emerald(s) !");
+                            team.set_money(team.get_money() + emeraldToEarn);
+                        }
+                    }
                 }
             }
         }
