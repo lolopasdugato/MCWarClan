@@ -8,9 +8,10 @@ teamSettings:
     maxNumberOfTeam: 10
 
     # Define how many players can join a single team when this team has no upgrade.
+    # You cannot change it in game at the moment.
     # Min value: 2
     # Max value: none
-    initialTeamSize: 5
+    initialTeamSize: 30
 
     # Define if players can hurts each others in the same team (except barbarian)
     friendlyFire: false
@@ -170,7 +171,7 @@ otherSettings:
 
   # Set to true if you are a developer :D
   # Do not set to true if you do not develop something based with this plugin, or you will experience some strange issues !
-  debugMode: true
+  debugMode: false
 
   # Define if the barbarian spawn is reloaded each time the barbarian player dies.
   randomBarbarianSpawn: true
@@ -186,4 +187,4 @@ otherSettings:
   # Number of minecraft days to wait before a team earn money.
   # Max value: none
   # Min value: 1
-  waitingTime: 1
+  waitingTime: 15
