@@ -39,6 +39,8 @@ public class Settings {
     public static Cost baseVariantIncrease;
     public static int[] radiusCost;
     public static int moneyloss;
+    public static int waitingTime;
+    public static int emeraldPerTeamMember;
 
     private Configuration _cfg;
 
@@ -75,6 +77,7 @@ public class Settings {
             matesNeededValue = secureValue(_cfg.getInt("teamSettings.matesNeeded.value"), 0, 100);
         else
             matesNeededValue = secureValue(_cfg.getInt("teamSettings.matesNeeded.value"), 0, -1);
+        emeraldPerTeamMember = secureValue(_cfg.getInt("teamSettings.emeraldPerTeamMembers"), 0, -1);
 
         initialRadius = secureValue(_cfg.getInt("baseSettings.initialRadius"), 5, -1);
         radiusHQBonus = secureValue(_cfg.getInt("baseSettings.radiusHQBonus"), 5, -1);
@@ -90,13 +93,13 @@ public class Settings {
         radiusCost[3] = secureValue(_cfg.getInt("baseSettings.radiusCostPerLevel.LEVEL_5"), radiusCost[2], -1);
         moneyloss = secureValue(_cfg.getInt("baseSettings.moneyloss"), 10, 50);
 
-
         uncensoredItemsAmount = secureValue(_cfg.getInt("otherSettings.uncensoredItemsAmount"), 1, -1);
         classicWorldName = _cfg.getString("otherSettings.classicWorldName");
         debugMode = _cfg.getBoolean("otherSettings.debugMode");
         randomBarbarianSpawn = _cfg.getBoolean("otherSettings.randomBarbarianSpawn");
         obsidianBreakable = _cfg.getBoolean("otherSettings.obsidianBreakable");
         allowCreeperDestroyFields = _cfg.getBoolean("otherSettings.allowCreeperDestroyFields");
+        waitingTime = secureValue(_cfg.getInt("otherSettings.waitingTime"), 1, -1);
 
 
         // Initializing blue entry cost

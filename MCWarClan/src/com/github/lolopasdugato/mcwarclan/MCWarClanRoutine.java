@@ -1,7 +1,11 @@
 package com.github.lolopasdugato.mcwarclan;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Server;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.ArrayList;
 
 /**
  * Created by Seb on 15/04/2014.
@@ -15,8 +19,7 @@ public abstract class MCWarClanRoutine extends BukkitRunnable {
     //////////////////////////////////////////////////////////////////////////////
 
 
-    protected MCWarClanRoutine(JavaPlugin plugin) {
-        _plugin = plugin;
+    protected MCWarClanRoutine() {
     }
 
 
@@ -28,8 +31,7 @@ public abstract class MCWarClanRoutine extends BukkitRunnable {
         private final int _FlagCapTime;
         private boolean _oneTimeMessage;
 
-        protected ContestedBaseRoutine(JavaPlugin plugin, Base base, Team opponents) {
-            super(plugin);
+        protected ContestedBaseRoutine(Base base, Team opponents) {
             _base = base;
             _opponents = opponents;
             _FlagCapTime = 6; // 1min = 12*5
@@ -136,5 +138,28 @@ public abstract class MCWarClanRoutine extends BukkitRunnable {
 
         }
 
+    }
+
+    public static class CountDaysRoutine extends MCWarClanRoutine {
+        TeamManager _teamManager;
+
+        protected CountDaysRoutine(TeamManager teamManager) {
+            _teamManager = teamManager;
+        }
+
+        @Override
+        public void run() {
+            ArrayList<Team> teams = _teamManager.get_teamArray();
+            long currentTime = Bukkit.getServer().getWorld(Settings.classicWorldName).getFullTime();
+            for (Team team : teams) {
+                if ((team.get_birthDay() - currentTime) % (Settings.waitingTime * 24000) == 0 && team.get_id() != Team.BARBARIAN_TEAM_ID) {
+                    int emeraldToEarn = 0;
+                    emeraldToEarn += Settings.emeraldPerTeamMember * team.get_teamMembers().size();
+                    Messages.sendMessage("Daily count launched at " + currentTime + "!", Messages.messageType.DEBUG, null);
+                    team.sendMessage("Today, your team earned §a" + emeraldToEarn + "§6 emerald(s) !");
+                    team.set_money(team.get_money() + emeraldToEarn);
+                }
+            }
+        }
     }
 }

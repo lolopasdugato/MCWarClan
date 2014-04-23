@@ -406,7 +406,7 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
                 attackingTeam.sendMessage("Your team is attacking " + attackedTeam.get_color().get_colorMark() + attackedTeam.get_name() + " !");
 
                 //Create a new thread in order to check if the enemies are defeated
-                BukkitTask tks = new MCWarClanRoutine.ContestedBaseRoutine(_plugin, currentBase,
+                BukkitTask tks = new MCWarClanRoutine.ContestedBaseRoutine(currentBase,
                         attackingTeam).runTaskTimer(_plugin,
                         0, 100);
             }

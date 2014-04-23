@@ -66,6 +66,11 @@ teamSettings:
       # Define if the number is a percentage or a fix number of player.
       percentage: true
 
+    # Define how many emeralds a team will earn each "waitingTime" (see otherSettings bellow) for a given number of members.
+    # Min value: 0
+    # Max value: none
+    emeraldPerTeamMembers: 1
+
 
 #####################
 #####################
@@ -177,3 +182,8 @@ otherSettings:
   # Allows creeper to interact with blocks in the world (by interacting, it means destroying blocks)
   # Set it to false to prevent war using creeper instead of TNT !
   allowCreeperDestroyFields: false
+
+  # Number of minecraft days to wait before a team earn money.
+  # Max value: none
+  # Min value: 1
+  waitingTime: 1

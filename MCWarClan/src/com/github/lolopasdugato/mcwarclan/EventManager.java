@@ -191,7 +191,7 @@ public class EventManager implements Listener {
                         attackingTeam.sendMessage("Your team is attacking " + attackedTeam.get_color().get_colorMark() + attackedTeam.get_name() + " !");
 
                         //Create a new thread in order to check if the enemies are defeated
-                        BukkitTask tks = new MCWarClanRoutine.ContestedBaseRoutine(_plugin, b,
+                        BukkitTask tks = new MCWarClanRoutine.ContestedBaseRoutine(b,
                                 attackingTeam).runTaskTimer(_plugin,
                                 0, 100);
                     }

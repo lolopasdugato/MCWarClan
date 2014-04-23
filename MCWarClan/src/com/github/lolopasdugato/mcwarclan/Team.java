@@ -1,6 +1,7 @@
 package com.github.lolopasdugato.mcwarclan;
 
 import com.github.lolopasdugato.mcwarclan.customexceptions.MaximumTeamCapacityReachedException;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -29,6 +30,7 @@ public class Team extends Object implements Serializable {
     private int _id;
     private boolean _hasLost;
     private int _money;
+    private long _birthDay;
 
 
     //////////////////////////////////////////////////////////////////////////////
@@ -66,6 +68,7 @@ public class Team extends Object implements Serializable {
         _hasLost = false;
         _numberOfCostIncrease = 1;
         _money = 0;
+        _birthDay = Bukkit.getServer().getWorld(Settings.classicWorldName).getFullTime();
     }
 
     public Team(Team t){
@@ -78,6 +81,10 @@ public class Team extends Object implements Serializable {
         _cost = t.get_cost();
         _bukkitTeam = t.get_bukkitTeam();
         _id = t.get_id();
+        _money = t.get_money();
+        _hasLost = t.is_hasLost();
+        _numberOfCostIncrease = t.get_numberOfCostIncrease();
+        _birthDay = t.get_birthDay();
     }
 
 
@@ -129,6 +136,18 @@ public class Team extends Object implements Serializable {
 
     public int get_money() {
         return _money;
+    }
+
+    public boolean is_hasLost() {
+        return _hasLost;
+    }
+
+    public long get_birthDay() {
+        return _birthDay;
+    }
+
+    public int get_numberOfCostIncrease() {
+        return _numberOfCostIncrease;
     }
 
     //////////////////////////////////////////////////////////////////////////////
