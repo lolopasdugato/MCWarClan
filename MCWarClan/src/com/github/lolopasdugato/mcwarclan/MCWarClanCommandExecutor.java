@@ -1,6 +1,8 @@
 package com.github.lolopasdugato.mcwarclan;
 
-import org.bukkit.*;
+import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -8,7 +10,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.text.NumberFormat;
 import java.util.ArrayList;
 
 public class MCWarClanCommandExecutor implements CommandExecutor {
@@ -544,6 +545,39 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
         return true;
     }
 
+    /**
+     * Show the treasure owned by your team
+     *
+     * @param sender
+     * @param args
+     * @return
+     */
+    public boolean treasureCommand(CommandSender sender, String[] args) {
+        if (args.length != 0)
+            return false;
+        if (sender instanceof Player) {
+            Player player = ((Player) sender).getPlayer();
+
+            //get the player's team
+            Team team = _tc.getPlayer(player.getUniqueId()).get_team();
+
+            if (team.get_id() == Team.BARBARIAN_TEAM_ID)
+                Messages.sendMessage("Barbarians don't have any treasure. Their destiny is to be poor, forever.",
+                        Messages.messageType.INGAME,
+                        sender);
+            else
+                Messages.sendMessage("Your team have for the moment §a" + team.get_money() + " emeralds§6 in your team " +
+                                "treasure.",
+                        Messages.messageType.INGAME,
+                        sender
+                );
+        } else {
+            Messages.sendMessage("You have to be a player to perform this command !", Messages.messageType.INGAME, sender);
+        }
+        return true;
+
+    }
+
     //////////////////////////////////////////////////////////////////////////////
     //---------------------------- onCommand Override ----------------------------
     //////////////////////////////////////////////////////////////////////////////
@@ -580,6 +614,8 @@ public class MCWarClanCommandExecutor implements CommandExecutor {
             return saveEmeraldsCommand(sender, args);
         } else if (label.equalsIgnoreCase("withdraw")) {
             return withdrawMoneyCommand(sender, args);
+        } else if (label.equalsIgnoreCase("treasure")) {
+            return treasureCommand(sender, args);
         }
 		return false;
 	}

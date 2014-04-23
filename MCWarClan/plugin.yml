@@ -64,6 +64,10 @@ commands:
   description: Allows a player to take emeralds from the team treasure. These emeralds will appear in the base he is currently in.
   permission: mcwarclan.withdraw
   usage: Type /<command> [amount]
+ treasure:
+  description: Allows a player to see the treasure owned by his team.
+  permission: mcwarclan.treasure
+  usage: Type /<command> to see the treasure your team owns.
   
 permissions:
  mcwarclan.*:
