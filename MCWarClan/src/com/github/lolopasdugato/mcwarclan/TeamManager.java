@@ -230,7 +230,7 @@ public class TeamManager implements Serializable {
      * @param teamName the team name.
      * @return returns teh team if it has found something, otherwise, returns null.
      */
-    public Team searchTeam(String teamName) {
+    public Team getTeam(String teamName) {
         for (int i = 0; i < _teamArray.size(); i++) {
             if (_teamArray.get(i).get_name().toUpperCase().equals(teamName.toUpperCase()))
                 return _teamArray.get(i);
@@ -244,7 +244,7 @@ public class TeamManager implements Serializable {
      * @param c the team color.
      * @return returns the team if it has found something, otherwise, returns null.
      */
-    public Team searchTeam(Color c) {
+    public Team getTeam(Color c) {
         for (int i = 0; i < _teamArray.size(); i++) {
             if (_teamArray.get(i).get_color().get_colorName().equals(c.get_colorName()))
                 return _teamArray.get(i);
@@ -390,5 +390,13 @@ public class TeamManager implements Serializable {
             }
         }
         return false;
+    }
+
+    /**
+     * Check if a team is full
+     * @return
+     */
+    public boolean isFull() {
+        return _teamArray.size() >= _maxTeams;
     }
 }

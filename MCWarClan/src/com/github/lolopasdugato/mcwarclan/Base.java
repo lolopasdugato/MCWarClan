@@ -305,4 +305,46 @@ public class Base implements Serializable {
         }
         return false;
     }
+
+    /**
+     * Check if the team which own this base is enemy to a_team.
+     * @param a_team
+     * @return
+     */
+    public boolean isEnemyToTeam(Team a_team) {
+        return _team.isEnemyToTeam(a_team);
+    }
+
+    /**
+     * Check if the base is enemy to
+     * @param player
+     * @return
+     */
+    public boolean isEnemyToPlayer(MCWarClanPlayer player) {
+        return player.isEnemyToTeam(_team);
+    }
+
+    /**
+     * Check if the bas that owns the team has enough team mates to be attacked.
+     * @return
+     */
+    public boolean hasEnoughTeamMatesToBeAttacked() {
+        return _team.enoughMatesToBeAttack();
+    }
+
+    /**
+     * Get the colored name of the team which own this base.
+     * @return
+     */
+    public String getTeamColoredName() {
+        return _team.getColoredName();
+    }
+
+    /**
+     * Check if the base is at its maximum level.
+     * @return
+     */
+    public boolean isLevelMax() {
+        return _level >= 5;
+    }
 }

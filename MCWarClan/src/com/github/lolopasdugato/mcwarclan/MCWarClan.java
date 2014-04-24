@@ -4,6 +4,7 @@
 
 package com.github.lolopasdugato.mcwarclan;
 
+import com.github.lolopasdugato.mcwarclan.commandexecutors.*;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
@@ -13,7 +14,7 @@ import java.util.logging.Logger;
 
 public class MCWarClan extends JavaPlugin implements Listener {
 
-    public static String VERSION = "v0.1";
+    public static String VERSION = "v1.0";
     public BukkitTask _tsk;
     protected TeamManager _tc;
     protected EventManager _em;
@@ -70,21 +71,21 @@ public class MCWarClan extends JavaPlugin implements Listener {
      *  Init all commands in the command executor
      */
 	public void InitCommandExecutor(){
-		getCommand("showteams").setExecutor(new MCWarClanCommandExecutor(_tc, getServer(), this));
-		getCommand("team").setExecutor(new MCWarClanCommandExecutor(_tc, getServer(), this));
-		getCommand("join").setExecutor(new MCWarClanCommandExecutor(_tc, getServer(), this));
-		getCommand("leave").setExecutor(new MCWarClanCommandExecutor(_tc, getServer(), this));
-		getCommand("assign").setExecutor(new MCWarClanCommandExecutor(_tc, getServer(), this));
-		getCommand("unassign").setExecutor(new MCWarClanCommandExecutor(_tc, getServer(), this));
-		getCommand("createteam").setExecutor(new MCWarClanCommandExecutor(_tc, getServer(), this));
-        getCommand("createhq").setExecutor(new MCWarClanCommandExecutor(_tc, getServer(), this));
-        getCommand("createbase").setExecutor(new MCWarClanCommandExecutor(_tc, getServer(), this));
-        getCommand("baseinfo").setExecutor(new MCWarClanCommandExecutor(_tc, getServer(), this));
-        getCommand("contest").setExecutor(new MCWarClanCommandExecutor(_tc, getServer(), this));
-        getCommand("upgrade").setExecutor(new MCWarClanCommandExecutor(_tc, getServer(), this));
-        getCommand("savemoney").setExecutor(new MCWarClanCommandExecutor(_tc, getServer(), this));
-        getCommand("withdraw").setExecutor(new MCWarClanCommandExecutor(_tc, getServer(), this));
-        getCommand("treasure").setExecutor(new MCWarClanCommandExecutor(_tc, getServer(), this));
+		getCommand("showteams").setExecutor(new TeamRelatedCommands(_tc));
+		getCommand("team").setExecutor(new TeamRelatedCommands(_tc));
+		getCommand("join").setExecutor(new TeamRelatedCommands(_tc));
+		getCommand("leave").setExecutor(new TeamRelatedCommands(_tc));
+        getCommand("createteam").setExecutor(new TeamRelatedCommands(_tc));
+		getCommand("assign").setExecutor(new AdminCommands(_tc));
+		getCommand("unassign").setExecutor(new AdminCommands(_tc));
+        getCommand("createhq").setExecutor(new BaseRelatedCommands(_tc, this));
+        getCommand("createbase").setExecutor(new BaseRelatedCommands(_tc, this));
+        getCommand("baseinfo").setExecutor(new BaseRelatedCommands(_tc, this));
+        getCommand("contest").setExecutor(new BaseRelatedCommands(_tc, this));
+        getCommand("upgrade").setExecutor(new BaseRelatedCommands(_tc, this));
+        getCommand("savemoney").setExecutor(new TeamBankRelatedCommands(_tc));
+        getCommand("withdraw").setExecutor(new TeamBankRelatedCommands(_tc));
+        getCommand("treasure").setExecutor(new TeamBankRelatedCommands(_tc));
 
     }
 

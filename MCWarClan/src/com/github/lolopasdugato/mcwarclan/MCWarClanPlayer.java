@@ -6,6 +6,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import sun.plugin2.message.Message;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ public class MCWarClanPlayer implements Serializable {
     //------------------------------- Constructors -------------------------------
     //////////////////////////////////////////////////////////////////////////////
 
-    public MCWarClanPlayer(Player player, Team team) {
+    public MCWarClanPlayer(Player player, Team team){
         _uuid = player.getUniqueId();
         _name = player.getName();
         _team = team;
@@ -39,17 +40,9 @@ public class MCWarClanPlayer implements Serializable {
     //--------------------------------- Getters ----------------------------------
     //////////////////////////////////////////////////////////////////////////////
 
-    public String get_name() {
-        return _name;
-    }
-
-    public UUID get_uuid() {
-        return _uuid;
-    }
-
-    public Team get_team() {
-        return _team;
-    }
+    public String get_name() { return _name; }
+    public UUID get_uuid() { return _uuid; }
+    public Team get_team() { return _team; }
 
     public void set_team(Team _team) {
         this._team = _team;
@@ -69,31 +62,28 @@ public class MCWarClanPlayer implements Serializable {
     //////////////////////////////////////////////////////////////////////////////
 
     /**
-     * Convert this MCWarClanPlayer to an online player.
-     *
+     *  Convert this MCWarClanPlayer to an online player.
      * @return an online player or null.
      */
-    public Player toOnlinePlayer() {
+    public Player toOnlinePlayer(){
         return Bukkit.getServer().getPlayer(_name);
     }
 
     /**
-     * Convert this MCWarClanPlayer to an OfflinePlayer.
-     *
+     *  Convert this MCWarClanPlayer to an OfflinePlayer.
      * @return an OfflinePlayer.
      */
-    public OfflinePlayer toOfflinePlayer() {
+    public OfflinePlayer toOfflinePlayer(){
         return Bukkit.getOfflinePlayer(_name);
     }
 
-    public boolean teamKick() {
+    public boolean teamKick(){
         _team = null;
         return true;
     }
 
     /**
-     * Use to search a random barbarian spawn using config.yml.
-     *
+     *  Use to search a random barbarian spawn using config.yml.
      * @param barbarianSpawnRadius
      * @return
      */
@@ -115,18 +105,16 @@ public class MCWarClanPlayer implements Serializable {
     }
 
     /**
-     * looks if you can spawn in this location.
-     *
+     *  looks if you can spawn in this location.
      * @param loc the position to check.
      * @return true if you can spawn there.
      */
     private boolean spawnOK(Location loc) {
-        return loc.getBlock().getType() == Material.AIR && loc.add(0, 1, 0).getBlock().getType() == Material.AIR;
+        return loc.getBlock().getType() == Material.AIR && loc.add(0,1,0).getBlock().getType() == Material.AIR;
     }
 
     /**
-     * Up the location (adds y to Y)
-     *
+     *  Up the location (adds y to Y)
      * @param loc the location to change.
      * @return the new location.
      */
@@ -136,19 +124,19 @@ public class MCWarClanPlayer implements Serializable {
     }
 
     /**
-     * Makes the player respawn.
+     *  Makes the player respawn.
      */
-    public void spawn() {
+    public void spawn(){
         _spawn.getLocation().getChunk().load();
         toOnlinePlayer().teleport(_spawn.getLocation());
     }
 
     /**
-     * reload the spawn for a player.
+     *  reload the spawn for a player.
      */
-    public void reloadSpawn() {
+    public void reloadSpawn(){
 
-        if (_team.get_bases().size() != 0 && _team.getHQ().isContested()) {
+        if (_team.get_bases().size() != 0 && _team.getHQ().isContested()){
             // Setting spawn to the border of the HQ.
             Base HQ = _team.getHQ();
             _spawn = new MCWarClanLocation(HQ.get_loc());
@@ -162,36 +150,40 @@ public class MCWarClanPlayer implements Serializable {
             double randomZ = ((new Random().nextInt(21) + HQ.get_radius()) * signZ + _spawn.get_z());
             _spawn.set_x(randomX);
             _spawn.set_z(randomZ);
-            Messages.sendMessage(_name + " will spawn in x:" + _spawn.get_x() + ", y:" + _spawn.get_y() + ", z:" + _spawn.get_z() + " (ContestedHQ).",
+            Messages.sendMessage( _name + " will spawn in x:" + _spawn.get_x() + ", y:" + _spawn.get_y() + ", z:" + _spawn.get_z() + " (ContestedHQ).",
                     Messages.messageType.DEBUG, null);
-        } else if (_team.get_bases().size() != 0) {
+        }
+        else if(_team.get_bases().size() != 0){
             _spawn = new MCWarClanLocation(_team.getHQ().get_loc());
             _spawn.set_x(_spawn.get_x() + 2);
-            Messages.sendMessage(_name + " will spawn in x:" + _spawn.get_x() + ", y:" + _spawn.get_y() + ", z:" + _spawn.get_z() + " (NormalHQState).",
+            Messages.sendMessage( _name + " will spawn in x:" + _spawn.get_x() + ", y:" + _spawn.get_y() + ", z:" + _spawn.get_z() + " (NormalHQState).",
                     Messages.messageType.DEBUG, null);
-        } else {                                  // Otherwise, it should be a barbarian or the player is handled like a barbarian because the team has no HQ.
+        }
+        else {                                  // Otherwise, it should be a barbarian or the player is handled like a barbarian because the team has no HQ.
             // define spawn as a barbarian spawn
             Location barbarianSpawn = getBarbarianSpawn(Settings.barbariansSpawnDistance);
-            while (!spawnOK(barbarianSpawn)) {
+            while(!spawnOK(barbarianSpawn)){
                 barbarianSpawn = upLocation(barbarianSpawn, 1);
             }
             _spawn = new MCWarClanLocation(barbarianSpawn);
-            Messages.sendMessage(_name + " will spawn in x:" + _spawn.get_x() + ", y:" + _spawn.get_y() + ", z:" + _spawn.get_z() + " (Barbarian).",
+            Messages.sendMessage( _name + " will spawn in x:" + _spawn.get_x() + ", y:" + _spawn.get_y() + ", z:" + _spawn.get_z() + " (Barbarian).",
                     Messages.messageType.DEBUG, null);
         }
     }
 
     /**
-     * Verify if a player can pay the asked tribute.
-     *
+     *  Verify if a player can pay the asked tribute.
      * @param cost
      * @return
      */
-    public boolean canPay(Cost cost) {
-        for (int i = 0; i < cost.get_costEquivalence().size(); i++) {
+    public boolean canPay(Cost cost){
+        for(int i = 0; i < cost.get_costEquivalence().size(); i++){
             // If the specified material is not recognize, just ignore it
-            if (Material.getMaterial(cost.get_costEquivalence().get(i).get_materialName()) != null) {
+            if(Material.getMaterial(cost.get_costEquivalence().get(i).get_materialName()) != null) {
                 if (!has(Material.getMaterial(cost.get_costEquivalence().get(i).get_materialName()), cost.get_costEquivalence().get(i).get_materialValue())) {
+                    Player player = toOnlinePlayer();
+                    Messages.sendMessage("You do not have enough resources, here is the exhaustive list of materials needed: ", Messages.messageType.INGAME, player);
+                    Messages.sendMessage(cost.getResourceTypes(), Messages.messageType.INGAME, player);
                     return false;
                 }
             }
@@ -200,43 +192,42 @@ public class MCWarClanPlayer implements Serializable {
     }
 
     /**
-     * Verify if the player has enough of the specified material.
-     *
+     *  Verify if the player has enough of the specified material.
      * @param material
      * @param valueToHave
      * @return
      */
-    public boolean has(Material material, int valueToHave) {
+    public boolean has(Material material, int valueToHave){
         Player player = this.toOnlinePlayer();
-        if (player != null) {
+        if(player != null){
             ItemStack[] inventory = player.getInventory().getContents();
-            if (inventory.length == 0) {
+            if(inventory.length == 0){
                 return false;
             }
             int amount = 0;
-            for (int i = 0; i < inventory.length; i++) {
-                if (inventory[i] != null && inventory[i].getType() == material) {
+            for(int i = 0; i < inventory.length; i++){
+                if(inventory[i] != null && inventory[i].getType() == material){
                     amount += inventory[i].getAmount();
                 }
             }
             return amount >= valueToHave;
-        } else {
+        }
+        else{
             Messages.sendMessage(_name + " does not exist or is not online !", Messages.messageType.ALERT, null);
         }
         return false;
     }
 
     /**
-     * Pay a tribute using a specified cost for a specified player.
-     *
+     *  Pay a tribute using a specified cost for a specified player.
      * @param cost
      * @return
      */
-    public boolean payTribute(Cost cost) {
-        for (int i = 0; i < cost.get_costEquivalence().size(); i++) {
+    public boolean payTribute(Cost cost){
+        for(int i = 0; i < cost.get_costEquivalence().size(); i++){
             // If the specified material is not recognize, just ignore it
-            if (Material.getMaterial(cost.get_costEquivalence().get(i).get_materialName()) != null) {
-                if (!pay(Material.getMaterial(cost.get_costEquivalence().get(i).get_materialName()), cost.get_costEquivalence().get(i).get_materialValue()))
+            if(Material.getMaterial(cost.get_costEquivalence().get(i).get_materialName()) != null) {
+                if(!pay(Material.getMaterial(cost.get_costEquivalence().get(i).get_materialName()), cost.get_costEquivalence().get(i).get_materialValue()))
                     return false;
             }
         }
@@ -244,25 +235,25 @@ public class MCWarClanPlayer implements Serializable {
     }
 
     /**
-     * Pay for a player a given number of a given material type.
-     *
+     *  Pay for a player a given number of a given material type.
      * @param material
      * @param valueToPay
      * @return
      */
-    public boolean pay(Material material, int valueToPay) {
+    public boolean pay(Material material, int valueToPay){
         Player player = this.toOnlinePlayer();
-        if (player == null) {
+        if(player == null){
             Messages.sendMessage(_name + " does not exist or is not online !", Messages.messageType.ALERT, null);
             return false;
         }
         ItemStack[] inventory = player.getInventory().getContents();
-        while (valueToPay > 0) {
+        while (valueToPay > 0){
             int j = player.getInventory().first(material);
-            if (inventory[j].getAmount() > valueToPay) {
+            if(inventory[j].getAmount() > valueToPay){
                 inventory[j].setAmount(inventory[j].getAmount() - valueToPay);
                 return true;
-            } else {
+            }
+            else{
                 valueToPay -= inventory[j].getAmount();
                 player.getInventory().clear(j);
             }
@@ -284,7 +275,8 @@ public class MCWarClanPlayer implements Serializable {
             Messages.sendMessage("Error : player not online. toOnlinePlayer return null value.",
                     Messages.messageType.DEBUG, null);
             return null;
-        } else if (p.isDead()) {
+        }
+        else if (p.isDead()){
             Messages.sendMessage("A player is not considered as being in a base if he is dead !", Messages.messageType.DEBUG, null);
             return null;
         }
@@ -300,21 +292,19 @@ public class MCWarClanPlayer implements Serializable {
 
     /**
      * Check if this player can contest a base.
-     *
      * @return true if he can.
      */
-    public boolean canContest() {
+    public boolean canContest(){
         return _team.get_bases().size() != 0 && _team.get_id() != Team.BARBARIAN_TEAM_ID;
     }
 
     /**
      * Switch a player from a team to a team.
-     *
      * @param teamToSwitchTo
      * @return
      */
-    public boolean switchTo(Team teamToSwitchTo) {
-        try {
+    public boolean switchTo(Team teamToSwitchTo){
+        try{
             _team.deleteTeamMate(this);
             teamToSwitchTo.addTeamMate(this);
         } catch (MaximumTeamCapacityReachedException e) {
@@ -329,17 +319,22 @@ public class MCWarClanPlayer implements Serializable {
 
     /**
      * Kick a player from it's current team to the barbarian team.
-     *
      * @return
      */
-    public boolean kick() {
+    public boolean kick(){
         Team Barbarians = _team.get_teamManager().getTeam(Team.BARBARIAN_TEAM_ID);
-        return switchTo(Barbarians);
+        Team currentTeam = _team;
+        if (switchTo(Barbarians)) {
+            Messages.sendMessage("You have been kicked from " + currentTeam.getColoredName() + ".", Messages.messageType.INGAME, toOnlinePlayer());
+            return true;
+        } else {
+            Messages.sendMessage("Cannot switch you to the " + Barbarians.getColoredName() + " team !", Messages.messageType.INGAME, toOnlinePlayer());
+            return false;
+        }
     }
 
     /**
      * Create a team for a specified player.
-     *
      * @param t
      * @return
      */
@@ -348,13 +343,13 @@ public class MCWarClanPlayer implements Serializable {
         try {
             TeamManager teamManager = _team.get_teamManager();
             teamManager.checkTeamValidity(t);
-            if (!canPay(teamManager.get_creatingCost())) {
+            if(!canPay(teamManager.get_creatingCost())) {
                 Messages.sendMessage("You need more resources to create this team. Here is an exhaustive list of all materials required: ", Messages.messageType.INGAME, player);
                 Messages.sendMessage(teamManager.get_creatingCost().getResourceTypes(), Messages.messageType.INGAME, player);
                 return false;
             }
             payTribute(teamManager.get_creatingCost());
-            if (!teamManager.addTeam(t)) {
+            if(!teamManager.addTeam(t)) {
                 Messages.sendMessage("Cannot add the team for unknown reason...", Messages.messageType.DEBUG, null);
                 Messages.sendMessage("Cannot add the team for unknown reason...", Messages.messageType.INGAME, player);
                 return false;
@@ -372,12 +367,12 @@ public class MCWarClanPlayer implements Serializable {
             Messages.sendMessage("Sorry, maximum number of team reached !", Messages.messageType.INGAME, player);
             return false;
         }
+        _team.get_teamManager().sendMessage(t.getColoredName() + " has been created by §a" + _name + "§6 let's prepare to surrender...");
         return true;
     }
 
     /**
      * Create a base which is an HQ.
-     *
      * @param baseLocation
      * @return
      */
@@ -396,7 +391,7 @@ public class MCWarClanPlayer implements Serializable {
             Base HQ = _team.getHQ();
             Messages.sendMessage("You can only create a single HeadQuarter ! Yours is called " + HQ.get_name() + "(id:§a" + HQ.get_id() + "§6).", Messages.messageType.INGAME, player);
             return false;
-        } else if (teams.isNearAnotherTerritory(true, baseLocation)) {
+        } else if (teams.isNearAnotherTerritory(true, baseLocation)){
             Messages.sendMessage("You cannot create an HQ too close from another base. Try somewhere else !", Messages.messageType.INGAME, player);
             return false;
         } else if (Bukkit.getWorld(Settings.classicWorldName).getSpawnLocation().distance(baseLocation)
@@ -428,7 +423,6 @@ public class MCWarClanPlayer implements Serializable {
 
     /**
      * Create a base at a specified position using a base for reference.
-     *
      * @param name
      * @param baseReferenceId
      * @param direction
@@ -444,8 +438,7 @@ public class MCWarClanPlayer implements Serializable {
             return false;
         } else {
             newBaseLocation = new MCWarClanLocation(baseReference.get_loc()).getLocation();
-        }
-        if (!canPay(_team.get_baseCreationCost()) && player.getGameMode() != GameMode.CREATIVE) {
+        } if (!canPay(_team.get_baseCreationCost()) && player.getGameMode() != GameMode.CREATIVE) {
             Messages.sendMessage("Sorry, you do not have enough materials to create the new base. Here is an exhaustive list of all materials required: ", Messages.messageType.INGAME, player);
             Messages.sendMessage(_team.get_baseCreationCost().getResourceTypes(), Messages.messageType.INGAME, player);
             return false;
@@ -464,16 +457,14 @@ public class MCWarClanPlayer implements Serializable {
         } else {
             Messages.sendMessage("The direction '" + direction + "' is not recognized.", Messages.messageType.INGAME, player);
             return false;
-        }
-        if (Bukkit.getWorld(Settings.classicWorldName).getSpawnLocation().distance(newBaseLocation)
+        } if (Bukkit.getWorld(Settings.classicWorldName).getSpawnLocation().distance(newBaseLocation)
                 < Settings.barbariansSpawnDistance + Settings.secureBarbarianDistance + Settings.radiusHQBonus + Settings.initialRadius) {
-            Messages.sendMessage(name + " is too close from the barbarian spawn ! Cannot create it !", Messages.messageType.INGAME, player);
+            Messages.sendMessage( name + " is too close from the barbarian spawn ! Cannot create it !", Messages.messageType.INGAME, player);
             return false;
-        } else if (teams.isNearAnotherTerritory(false, newBaseLocation)) {
+        } else if (teams.isNearAnotherTerritory(false, newBaseLocation)){
             Messages.sendMessage("You cannot create a base too close from another base. Try somewhere else !", Messages.messageType.INGAME, player);
             return false;
-        }
-        try {
+        } try {
             newBaseLocation.getBlock().getRelative(BlockFace.UP).breakNaturally();
             if (player.getGameMode() != GameMode.CREATIVE)
                 payTribute(_team.get_baseCreationCost());
@@ -496,7 +487,6 @@ public class MCWarClanPlayer implements Serializable {
 
     /**
      * Save Emeralds in the team treasure.
-     *
      * @param amount
      * @return
      */
@@ -525,4 +515,55 @@ public class MCWarClanPlayer implements Serializable {
         }
         return true;
     }
+
+    /**
+     * Return the colored name of the player's team.
+     * @return
+     */
+    public String getColoredTeamName() {
+        return _team.getColoredName();
+    }
+
+    /**
+     * Check if the player is an enemy to team t
+     * @param t
+     * @return
+     */
+    public boolean isEnemyToTeam(Team t) {
+        return _team.isEnemyToTeam(t);
+    }
+
+    /**
+     * Check if the player is a barbarian.
+     * @return
+     */
+    public boolean isBarbarian() {
+        return _team.isBarbarian();
+    }
+
+    /**
+     * Check if the player has a team that has bases.
+     * @return
+     */
+    public boolean hasBases() {
+        return _team.hasBases();
+    }
+
+    /**
+     * Get an allied base using a specific id.
+     * @param id
+     * @return
+     */
+    public Base getAlliedBase(int id) {
+        return _team.getBase(id);
+    }
+
+    /**
+     * Send a message to player's mates.
+     * @param message
+     */
+    public void sendMessageToMates(String message) {
+        _team.sendMessage(message);
+    }
+
 }
