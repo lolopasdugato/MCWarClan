@@ -77,10 +77,6 @@ public class MCWarClanPlayer implements Serializable {
         return Bukkit.getOfflinePlayer(_name);
     }
 
-    public boolean teamKick(){
-        _team = null;
-        return true;
-    }
 
     /**
      *  Use to search a random barbarian spawn using config.yml.
@@ -181,6 +177,9 @@ public class MCWarClanPlayer implements Serializable {
             // If the specified material is not recognize, just ignore it
             if(Material.getMaterial(cost.get_costEquivalence().get(i).get_materialName()) != null) {
                 if (!has(Material.getMaterial(cost.get_costEquivalence().get(i).get_materialName()), cost.get_costEquivalence().get(i).get_materialValue())) {
+                    Player player = toOnlinePlayer();
+                    Messages.sendMessage("You do not have enough resources, here is the exhaustive list of materials needed: ", Messages.messageType.INGAME, player);
+                    Messages.sendMessage(cost.getResourceTypes(), Messages.messageType.INGAME, player);
                     return false;
                 }
             }
@@ -320,7 +319,14 @@ public class MCWarClanPlayer implements Serializable {
      */
     public boolean kick(){
         Team Barbarians = _team.get_teamManager().getTeam(Team.BARBARIAN_TEAM_ID);
-        return switchTo(Barbarians);
+        Team currentTeam = _team;
+        if (switchTo(Barbarians)) {
+            Messages.sendMessage("You have been kicked from " + currentTeam.getColoredName() + ".", Messages.messageType.INGAME, toOnlinePlayer());
+            return true;
+        } else {
+            Messages.sendMessage("Cannot switch you to the " + Barbarians.getColoredName() + " team !", Messages.messageType.INGAME, toOnlinePlayer());
+            return false;
+        }
     }
 
     /**
@@ -357,6 +363,7 @@ public class MCWarClanPlayer implements Serializable {
             Messages.sendMessage("Sorry, maximum number of team reached !", Messages.messageType.INGAME, player);
             return false;
         }
+        _team.get_teamManager().sendMessage(t.getColoredName() + " has been created by §a" + _name + "§6 let's prepare to surrender...");
         return true;
     }
 
@@ -508,4 +515,55 @@ public class MCWarClanPlayer implements Serializable {
         }
         return true;
     }
+
+    /**
+     * Return the colored name of the player's team.
+     * @return
+     */
+    public String getColoredTeamName() {
+        return _team.getColoredName();
+    }
+
+    /**
+     * Check if the player is an enemy to team t
+     * @param t
+     * @return
+     */
+    public boolean isEnemyToTeam(Team t) {
+        return _team.isEnemyToTeam(t);
+    }
+
+    /**
+     * Check if the player is a barbarian.
+     * @return
+     */
+    public boolean isBarbarian() {
+        return _team.isBarbarian();
+    }
+
+    /**
+     * Check if the player has a team that has bases.
+     * @return
+     */
+    public boolean hasBases() {
+        return _team.hasBases();
+    }
+
+    /**
+     * Get an allied base using a specific id.
+     * @param id
+     * @return
+     */
+    public Base getAlliedBase(int id) {
+        return _team.getBase(id);
+    }
+
+    /**
+     * Send a message to player's mates.
+     * @param message
+     */
+    public void sendMessageToMates(String message) {
+        _team.sendMessage(message);
+    }
+
 }

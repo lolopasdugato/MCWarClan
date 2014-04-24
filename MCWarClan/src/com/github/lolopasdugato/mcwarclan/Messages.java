@@ -12,6 +12,8 @@ public class Messages {
     public static String _debugPrefix = "[DEBUG] ";
     public static String _MCWarClanPrefix = "§a[MCWarClan]§6 ";
     public static String _alertPrefix = "[ALERT] ";
+    public static String _specialCharColor = "§a";
+    public static String _classicPluginMessageColor = "§6";
 
     /**
      * @param message The message you wanted to send
@@ -29,7 +31,7 @@ public class Messages {
                 if (locutor != null) {
                     locutor.sendMessage(_MCWarClanPrefix + message);
                 } else if (Settings.debugMode) {
-                    System.out.println(_debugPrefix + "Null player value. Player not specified !");
+                    System.out.println(_debugPrefix + "Null player value. Player not specified or invalid !");
                 }
                 break;
             case CONSOLE:
@@ -103,14 +105,20 @@ public class Messages {
     }
 
     /**
-     *  Send a message to a group using a special type and a special prefix.
-     * @param message The message you wanted to send
-     * @param type The type of the message (see messageType)
-     * @param locutors An array of person who will receive the message
+     * Colors a specific message using plugin standards.
+     * @param message
+     * @return
      */
-//    public static void sendMessage(String message, messageType type, ArrayList<MCWarClanPlayer> locutors){
-//        for (MCWarClanPlayer locutor : locutors) {
-//            sendMessage(message, type, Bukkit.getPlayer(locutor.get_name()));
-//        }
-//    }
+    public static String color(String message) {
+        return _specialCharColor + message + _classicPluginMessageColor;
+    }
+
+    /**
+     * Colors a specific message using plugin standards.
+     * @param message
+     * @return
+     */
+    public static String color(int message) {
+        return _specialCharColor + message + _classicPluginMessageColor;
+    }
 }

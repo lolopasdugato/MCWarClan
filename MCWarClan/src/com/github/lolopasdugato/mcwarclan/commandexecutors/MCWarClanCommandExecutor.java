@@ -48,19 +48,19 @@ public abstract class MCWarClanCommandExecutor implements CommandExecutor {
      * @param name
      * @return
      */
-    public OfflinePlayer findPlayerByName(String name){
+    public OfflinePlayer getOfflinePlayer(String name){
         if(exist(name)){
             return Bukkit.getOfflinePlayer(name);
         }
         return null;
     }
 
-
-
-
-
-
-
+    public Player getPlayer(String name){
+        if(exist(name)){
+            return Bukkit.getPlayer(name);
+        }
+        return null;
+    }
 }
 
 

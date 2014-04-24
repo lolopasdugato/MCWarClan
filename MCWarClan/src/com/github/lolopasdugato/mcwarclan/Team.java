@@ -195,7 +195,7 @@ public class Team extends Object implements Serializable {
         return _id;
     }
 
-//////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////
     //--------------------------------- Functions --------------------------------
     //////////////////////////////////////////////////////////////////////////////
 
@@ -234,7 +234,6 @@ public class Team extends Object implements Serializable {
                 if (!_bukkitTeam.hasPlayer(player.toOfflinePlayer()))
                     _bukkitTeam.addPlayer(player.toOfflinePlayer());
                 player.reloadSpawn();
-
             // If the maximum team size is reached
             } else if (_teamMembers.size() >= _teamSize) {
                 throw new MaximumTeamCapacityReachedException("In addTeamMate, cannot add" + player.get_name() + " to team " + _name + " maximum size reached(" + _teamSize + "/" + _teamMembers.size() + ")");
@@ -246,6 +245,7 @@ public class Team extends Object implements Serializable {
                 if (!_bukkitTeam.hasPlayer(player.toOfflinePlayer()))
                     _bukkitTeam.addPlayer(player.toOfflinePlayer());
                 player.reloadSpawn();
+                sendMessage("Well, here is some more fresh meat ! §a" + player.get_name() + "§6 has joined the team !");
             }
         // Thrown by _bukkitTeam.addPlayer() && _bukkitTeam.hasPlayer()
         } catch (IllegalStateException e) {
@@ -259,6 +259,30 @@ public class Team extends Object implements Serializable {
     }
 
     /**
+     * Check if this is the barbarian team.
+     * @return
+     */
+    public boolean isBarbarian() {
+        return _id == BARBARIAN_TEAM_ID;
+    }
+
+    /**
+     * Check if a team is full
+     * @return
+     */
+    public boolean isFull() {
+        return _teamMembers.size() == _teamSize;
+    }
+
+    /**
+     * Check if a team is empty.
+     * @return
+     */
+    public boolean isEmpty() {
+        return _teamMembers.size() == 0;
+    }
+
+    /**
      * Delete a player from this team and the bukkit team
      * @param player
      * @return
@@ -268,6 +292,8 @@ public class Team extends Object implements Serializable {
             _teamMembers.remove(player);
             _bukkitTeam.removePlayer(player.toOfflinePlayer());
             player.set_team(null);
+            if (!isBarbarian())
+                sendMessage(player.get_name() + " has left the team !");
         } catch (IllegalStateException e) {
             e.printStackTrace();
             return false;
@@ -405,9 +431,7 @@ public class Team extends Object implements Serializable {
      */
     public void sendMessage(String message){
         for (MCWarClanPlayer _teamMember : _teamMembers) {
-            Player toInform = _teamMember.toOnlinePlayer();
-            if (toInform != null)
-                Messages.sendMessage(message, Messages.messageType.INGAME, toInform);
+            Messages.sendMessage(message, Messages.messageType.INGAME, _teamMember.toOnlinePlayer());
         }
     }
 
@@ -488,5 +512,11 @@ public class Team extends Object implements Serializable {
         }
     }
 
-
+    /**
+     * Check if a team has bases.
+     * @return
+     */
+    public boolean hasBases() {
+        return _bases.size() != 0;
+    }
 }

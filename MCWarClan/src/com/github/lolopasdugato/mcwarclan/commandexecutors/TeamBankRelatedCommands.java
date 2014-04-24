@@ -35,34 +35,36 @@ public class TeamBankRelatedCommands extends  MCWarClanCommandExecutor {
             MCWarClanPlayer mcPlayer = _tc.getPlayer(player.getUniqueId());
             if (args.length == 0) {
                 Base currentBase = mcPlayer.getCurrentBase();
-                if (currentBase == null || currentBase.get_team().isEnemyToTeam(mcPlayer.get_team())) {
+                if (currentBase == null || currentBase.isEnemyToPlayer(mcPlayer)) {
                     Messages.sendMessage("You should be in the base you want to upgrade to do so !", Messages.messageType.INGAME, player);
-                } else if (currentBase.get_level() >= 5) {
-                    Messages.sendMessage("§a" + currentBase.get_name() + "§6 has already reached the maximum level !", Messages.messageType.INGAME, player);
+                } else if (currentBase.isLevelMax()) {
+                    Messages.sendMessage(Messages.color(currentBase.get_name()) + " has already reached the maximum level !", Messages.messageType.INGAME, player);
                 } else if (!currentBase.upgrade()) {
-                    Messages.sendMessage("§a" + currentBase.get_name() + "§6 cannot upgrade to level §a" + currentBase.get_level() + 1 + " §6. Not enough money !", Messages.messageType.INGAME, player);
-                    Messages.sendMessage("Upgrading to level §a" + currentBase.get_level() + 1 + " §6cost §a" + Settings.radiusCost[currentBase.get_level() - 1] + "§6.", Messages.messageType.INGAME, player);
+                    Messages.sendMessage(Messages.color(currentBase.get_name()) + " cannot upgrade to level " + Messages.color(currentBase.get_level() + 1) + ". Not enough money !", Messages.messageType.INGAME, player);
+                    Messages.sendMessage("Upgrading to level " + Messages.color(currentBase.get_level() + 1) + " cost " + Messages.color(Settings.radiusCost[currentBase.get_level() - 1]) + ".", Messages.messageType.INGAME, player);
                 } else {
-                    Messages.sendMessage("Well done, §a" + currentBase.get_name() + " §6has been upgraded to level §a" + currentBase.get_level() + " §6 by §a" + mcPlayer.get_name() + "§6 !", Messages.messageType.INGAME, player);
+                    Messages.sendMessage("Well done, " + Messages.color(currentBase.get_name()) + " has been upgraded to level " + Messages.color(currentBase.get_level()) + " by " + Messages.color(mcPlayer.get_name()) + " !",
+                            Messages.messageType.INGAME, player);
                 }
             } else if (args.length == 1) {
                 int id;
                 try {
                     id = Integer.parseInt(args[0]);
                 } catch (NumberFormatException e) {
-                    Messages.sendMessage("No base found for id §a" + args[0] + "§6.", Messages.messageType.INGAME, player);
+                    Messages.sendMessage("No base found for id " + Messages.color(args[0]) + ".", Messages.messageType.INGAME, player);
                     return false;
                 }
-                Base baseAsked = mcPlayer.get_team().getBase(id);
+                Base baseAsked = mcPlayer.getAlliedBase(id);
                 if (baseAsked == null) {
-                    Messages.sendMessage("No base found for id §a" + args[0] + "§6.", Messages.messageType.INGAME, player);
-                } else if (baseAsked.get_level() >= 5) {
-                    Messages.sendMessage("§a" + baseAsked.get_name() + "§6 has already reached the maximum level !", Messages.messageType.INGAME, player);
+                    Messages.sendMessage("No base found for id " + Messages.color(args[0]) + ".", Messages.messageType.INGAME, player);
+                } else if (baseAsked.isLevelMax()) {
+                    Messages.sendMessage(Messages.color(baseAsked.get_name()) + " has already reached the maximum level !", Messages.messageType.INGAME, player);
                 } else if (!baseAsked.upgrade()) {
-                    Messages.sendMessage("§a" + baseAsked.get_name() + "§6 cannot upgrade to level §a" + baseAsked.get_level() + 1 + " §6. Not enough money !", Messages.messageType.INGAME, player);
-                    Messages.sendMessage("Upgrading to level §a" + baseAsked.get_level() + 1 + " §6cost §a" + Settings.radiusCost[baseAsked.get_level() - 2] + "§6.", Messages.messageType.INGAME, player);
+                    Messages.sendMessage(Messages.color(baseAsked.get_name()) + " cannot upgrade to level " + Messages.color(baseAsked.get_level() + 1) + ". Not enough money !", Messages.messageType.INGAME, player);
+                    Messages.sendMessage("Upgrading to level " + Messages.color(baseAsked.get_level() + 1) + " cost " + Messages.color(Settings.radiusCost[baseAsked.get_level() - 2]) + ".", Messages.messageType.INGAME, player);
                 } else {
-                    Messages.sendMessage("Well done, §a" + baseAsked.get_name() + " §6has been upgraded to level §a" + baseAsked.get_level() + " §6 by §a" + mcPlayer.get_name() + "§6 !", Messages.messageType.INGAME, player);
+                    Messages.sendMessage("Well done, " + Messages.color(baseAsked.get_name()) + " has been upgraded to level " + Messages.color(baseAsked.get_level()) + " by " + Messages.color(mcPlayer.get_name()) + " !",
+                            Messages.messageType.INGAME, player);
                 }
             } else {
                 return false;
@@ -88,17 +90,17 @@ public class TeamBankRelatedCommands extends  MCWarClanCommandExecutor {
                 try {
                     amount = Integer.parseInt(args[0]);
                 } catch (NumberFormatException e) {
-                    Messages.sendMessage("§a" + args[0] + " §6is not a valid amount of emeralds to store in the team treasure.", Messages.messageType.INGAME, player);
+                    Messages.sendMessage(Messages.color(args[0]) + " is not a valid amount of emeralds to store in the team treasure.", Messages.messageType.INGAME, player);
                     return false;
                 }
                 if (amount < 0) {
-                    Messages.sendMessage("§a" + args[0] + " §6is not a valid amount of emeralds to store in the team treasure.", Messages.messageType.INGAME, player);
+                    Messages.sendMessage(Messages.color(args[0]) + " is not a valid amount of emeralds to store in the team treasure.", Messages.messageType.INGAME, player);
                     return false;
                 } else if (!mcPlayer.save(amount)) {
-                    Messages.sendMessage("Sorry, you do not have §a" + args[0] + "§6 emerald(s) in your inventory !", Messages.messageType.INGAME, player);
+                    Messages.sendMessage("Sorry, you do not have " + Messages.color(args[0]) + " emerald(s) in your inventory !", Messages.messageType.INGAME, player);
                 } else {
-                    mcPlayer.get_team().sendMessage("§a" + mcPlayer.get_name() + "§6 saved §a" + amount + "§6 emerald(s) in the team treasure !");
-                    Messages.sendMessage("The treasure value is now §a" + mcPlayer.get_team().get_money() + "§6.", Messages.messageType.INGAME, player);
+                    mcPlayer.get_team().sendMessage(Messages.color(mcPlayer.get_name()) + " saved " + Messages.color(amount) + " emerald(s) in the team treasure !");
+                    Messages.sendMessage("The treasure value is now " + Messages.color(mcPlayer.get_team().get_money()) + ".", Messages.messageType.INGAME, player);
                 }
             } else {
                 return false;
@@ -129,18 +131,17 @@ public class TeamBankRelatedCommands extends  MCWarClanCommandExecutor {
                 }
                 Base currentBase = mcPlayer.getCurrentBase();
                 if (amount < 0) {
-
                     return false;
-                } else if (currentBase == null || currentBase.get_team().isEnemyToTeam(mcPlayer.get_team())) {
+                } else if (currentBase == null || currentBase.isEnemyToPlayer(mcPlayer)) {
                     Messages.sendMessage("You have to be in one of your bases to withdraw money !", Messages.messageType.INGAME, player);
                 } else if (amount <= mcPlayer.get_team().get_money()) {
                     Location locationToDrop = currentBase.get_loc().getLocation();
                     locationToDrop.add(2, 0, 0);
                     mcPlayer.get_team().dropEmeralds(amount, locationToDrop);
-                    mcPlayer.get_team().sendMessage("§a" + mcPlayer.get_name() + "§6 just take §a" + amount + " §6 emerald(s) from the team treasure at §a" + currentBase.get_name() + "§6!");
-                    Messages.sendMessage("Don't forget emerald(s) ! you will find them in front of §a" + currentBase.get_name() + " §6flag.", Messages.messageType.INGAME, player);
+                    mcPlayer.sendMessageToMates(Messages.color(mcPlayer.get_name())+ " just take " + Messages.color(amount) + " emerald(s) from the team treasure at " + Messages.color(currentBase.get_name()) + " !");
+                    Messages.sendMessage("Don't forget emerald(s) ! you will find them in front of " + Messages.color(currentBase.get_name()) + " flag.", Messages.messageType.INGAME, player);
                 } else {
-                    Messages.sendMessage("Your team does not have §a" + args[0] + "§6 emerald(s) !", Messages.messageType.INGAME, player);
+                    Messages.sendMessage("Your team does not have " + Messages.color(args[0]) + " emerald(s) !", Messages.messageType.INGAME, player);
                 }
             } else {
                 return false;
@@ -163,16 +164,14 @@ public class TeamBankRelatedCommands extends  MCWarClanCommandExecutor {
             return false;
         if (sender instanceof Player) {
             Player player = ((Player) sender).getPlayer();
+            MCWarClanPlayer mcPlayer = _tc.getPlayer(player.getUniqueId());
 
-            //get the player's team
-            Team team = _tc.getPlayer(player.getUniqueId()).get_team();
-
-            if (team.get_id() == Team.BARBARIAN_TEAM_ID)
-                Messages.sendMessage("Barbarians don't have any treasure. Their destiny is to be poor, forever.",
+            if (mcPlayer.isBarbarian())
+                Messages.sendMessage(mcPlayer.getColoredTeamName() + " don't have any treasure. Their destiny is to be poor, forever.",
                         Messages.messageType.INGAME,
                         sender);
             else
-                Messages.sendMessage("Your team have for the moment §a" + team.get_money() + " emeralds§6 in your team " +
+                Messages.sendMessage("Your team have for the moment §a" + mcPlayer.get_team().get_money() + " emeralds§6 in your team " +
                                 "treasure.",
                         Messages.messageType.INGAME,
                         sender
