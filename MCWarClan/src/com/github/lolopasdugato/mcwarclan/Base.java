@@ -3,30 +3,23 @@ package com.github.lolopasdugato.mcwarclan;
 
 import com.github.lolopasdugato.mcwarclan.customexceptions.InvalidFlagLocationException;
 import com.github.lolopasdugato.mcwarclan.customexceptions.NotEnoughSpaceException;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.block.BlockState;
-import org.bukkit.entity.Player;
-import org.bukkit.material.Wool;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 
 public class Base implements Serializable {
-	
-	static private final long serialVersionUID = 5;
+
+    static private final long serialVersionUID = 5;
     private static int _idMaster = 0;
     private boolean _HQ;            // Determine if this is an HQ or not
     private int _initialRadius;     // First radius of protection for a normal base
-    private int _radius; 			// Determine the radius protection effect of this base.
+    private int _radius;            // Determine the radius protection effect of this base.
     private int _bonusRadius;       // Determine the radius bonus for the HQ.
-	private Team _team;				// Team which this object is attached to
-	private Flag _flag;				// The flag attached to this base
-	private MCWarClanLocation _loc;	// Represent the location of a base
-//    private Cost _cost;             // The cost to create a new base
+    private Team _team;                // Team which this object is attached to
+    private Flag _flag;                // The flag attached to this base
+    private MCWarClanLocation _loc;    // Represent the location of a base
+    //    private Cost _cost;             // The cost to create a new base
     private String _name;
     private int _id;
     private boolean _contested;
@@ -38,6 +31,7 @@ public class Base implements Serializable {
 
     /**
      * Classic Base constructor.
+     *
      * @param HQ
      * @param team
      * @param loc
@@ -57,13 +51,16 @@ public class Base implements Serializable {
         if (_HQ) {
             _radius = _initialRadius + _bonusRadius;
             _level = 5;
-        }
-        else {
+            _flag = new Flag(this, Flag.FlagType.HQ);
+        } else {
             _radius = _initialRadius;
             _level = 1;
+            _flag = new Flag(this, Flag.FlagType.CLASSIC);
         }
-        //Test if the flag can be created, and throw NotEnoughSpaceException is not.
-        _flag = new Flag(this);
+
+        if (Settings.debugMode)
+            createMaxBorderShower();
+        createBaseBorder();
 
         _contested = false;
     }
@@ -73,7 +70,9 @@ public class Base implements Serializable {
     //////////////////////////////////////////////////////////////////////////////
 
 
-    public String get_name() { return _name; }
+    public String get_name() {
+        return _name;
+    }
 
     public int get_initialRadius() {
         return _initialRadius;
@@ -107,18 +106,24 @@ public class Base implements Serializable {
         return _radius;
     }
 
-    public int get_id() { return _id; }
+    public void set_radius(int _radius) {
+        this._radius = _radius;
+    }
 
-    public int get_level() {
-        return _level;
+    public int get_id() {
+        return _id;
     }
 
     //////////////////////////////////////////////////////////////////////////////
     //--------------------------------- Setters ----------------------------------
     //////////////////////////////////////////////////////////////////////////////
 
-    public void set_radius(int _radius) {
-        this._radius = _radius;
+    public int get_level() {
+        return _level;
+    }
+
+    public void set_level(int _level) {
+        this._level = _level;
     }
 
     public int get_bonusRadius() {
@@ -145,30 +150,27 @@ public class Base implements Serializable {
         _contested = contested;
     }
 
-    public void set_level(int _level) {
-        this._level = _level;
-    }
-
     //////////////////////////////////////////////////////////////////////////////
     //--------------------------------- Functions --------------------------------
     //////////////////////////////////////////////////////////////////////////////
 
     /**
-     *  refresh settings that should be reloaded if config.yml has been changed.
+     * refresh settings that should be reloaded if config.yml has been changed.
      */
-    public void refresh(){
-        if(_idMaster < _id)
+    public void refresh() {
+        if (_idMaster < _id)
             _idMaster = _id;
         _contested = false;
     }
 
     /**
      * Check if the location loc is near this base
+     *
      * @param includeSafeZone if we include the safe zone, we will include the minimum distance between 2 HQ in the math.
      * @param loc
      * @return true or false.
      */
-    public boolean isNearBase(boolean includeSafeZone, Location loc){
+    public boolean isNearBase(boolean includeSafeZone, Location loc) {
         int tmpRadius = (_initialRadius + _bonusRadius) * 2;    // Maximum radius * 2
         if (includeSafeZone)
             tmpRadius += Settings.baseMinHQDistanceToOthers;
@@ -182,16 +184,17 @@ public class Base implements Serializable {
     }
 
     /**
-     *  Says if the location is in this base.
+     * Says if the location is in this base.
+     *
      * @param loc the location to check.
      * @return True if the location is in this base.
      */
-    public boolean isInBase(Location loc){
+    public boolean isInBase(Location loc) {
         boolean isInXAxe = false;
         boolean isInZAxe = false;
-        if(loc.getX() < _loc.get_x() + _radius + 1 && loc.getX() > _loc.get_x() - _radius - 1)
+        if (loc.getX() < _loc.get_x() + _radius + 1 && loc.getX() > _loc.get_x() - _radius - 1)
             isInXAxe = true;
-        if(loc.getZ() < _loc.get_z() + _radius + 1 && loc.getZ() > _loc.get_z() - _radius - 1)
+        if (loc.getZ() < _loc.get_z() + _radius + 1 && loc.getZ() > _loc.get_z() - _radius - 1)
             isInZAxe = true;
         return (isInXAxe && isInZAxe);
     }
@@ -200,92 +203,57 @@ public class Base implements Serializable {
      * Useful function for borderlands debug.
      */
     public void createMaxBorderShower() {
+
         Location baseLoc = _loc.getLocation();
-        // North east
-        baseLoc.add((Settings.initialRadius + Settings.radiusHQBonus), 0, (Settings.initialRadius + Settings.radiusHQBonus ) * (-1));
-        Block highestBlock = baseLoc.getWorld().getHighestBlockAt(baseLoc);
-        highestBlock.setType(Material.FENCE);
-        highestBlock.getRelative(BlockFace.UP).setType(Material.FENCE);
-        highestBlock.getRelative(BlockFace.UP).getRelative(BlockFace.UP).setType(Material.TORCH);
-        baseLoc = _loc.getLocation();
-        // North west
-        baseLoc.add((Settings.initialRadius + Settings.radiusHQBonus) * (-1), 0, (Settings.initialRadius + Settings.radiusHQBonus) * (-1));
-        highestBlock = baseLoc.getWorld().getHighestBlockAt(baseLoc);
-        highestBlock.setType(Material.FENCE);
-        highestBlock.getRelative(BlockFace.UP).setType(Material.FENCE);
-        highestBlock.getRelative(BlockFace.UP).getRelative(BlockFace.UP).setType(Material.TORCH);
-        baseLoc = _loc.getLocation();
-        // south east
-        baseLoc.add((Settings.initialRadius + Settings.radiusHQBonus), 0, (Settings.initialRadius + Settings.radiusHQBonus));
-        highestBlock = baseLoc.getWorld().getHighestBlockAt(baseLoc);
-        highestBlock.setType(Material.FENCE);
-        highestBlock.getRelative(BlockFace.UP).setType(Material.FENCE);
-        highestBlock.getRelative(BlockFace.UP).getRelative(BlockFace.UP).setType(Material.TORCH);
-        baseLoc = _loc.getLocation();
-        // south west
-        baseLoc.add((Settings.initialRadius + Settings.radiusHQBonus) * (-1), 0, (Settings.initialRadius + Settings.radiusHQBonus));
-        highestBlock = baseLoc.getWorld().getHighestBlockAt(baseLoc);
-        highestBlock.setType(Material.FENCE);
-        highestBlock.getRelative(BlockFace.UP).setType(Material.FENCE);
-        highestBlock.getRelative(BlockFace.UP).getRelative(BlockFace.UP).setType(Material.TORCH);
+        BorderShower b;
+        int x = (Settings.initialRadius + Settings.radiusHQBonus);
+        int z = x;
+
+        for (int i = 0; i < 4; i++) {
+
+            if ((i % 2) == 0)
+                x = -x;
+            else
+                z = -z;
+
+            baseLoc.add(x, 0, z);
+            b = new BorderShower(baseLoc);
+            b.generate(_team.get_color());
+            baseLoc = _loc.getLocation();
+        }
     }
 
     /**
      * Create indicators at the base border (the limit of the base protection)
      */
     public void createBaseBorder() {
+
         Location baseLoc = _loc.getLocation();
-        // North east
-        baseLoc.add((_radius), 0, (_radius) * (-1));
-        Block highestBlock = baseLoc.getWorld().getHighestBlockAt(baseLoc);
-        highestBlock.setType(Material.WOOL);
-        BlockState bs = highestBlock.getState();
-        Wool wool = (Wool) bs.getData();
-        wool.setColor(_team.get_color().get_dye());
-        bs.update();
-        highestBlock.getRelative(BlockFace.UP).setType(Material.FENCE);
-        highestBlock.getRelative(BlockFace.UP).getRelative(BlockFace.UP).setType(Material.TORCH);
-        baseLoc = _loc.getLocation();
-        // North west
-        baseLoc.add((_radius) * (-1), 0, (_radius) * (-1));
-        highestBlock = baseLoc.getWorld().getHighestBlockAt(baseLoc);
-        highestBlock.setType(Material.WOOL);
-        bs = highestBlock.getState();
-        wool = (Wool) bs.getData();
-        wool.setColor(_team.get_color().get_dye());
-        bs.update();
-        highestBlock.getRelative(BlockFace.UP).setType(Material.FENCE);
-        highestBlock.getRelative(BlockFace.UP).getRelative(BlockFace.UP).setType(Material.TORCH);
-        baseLoc = _loc.getLocation();
-        // south east
-        baseLoc.add((_radius), 0, (_radius));
-        highestBlock = baseLoc.getWorld().getHighestBlockAt(baseLoc);
-        highestBlock.setType(Material.WOOL);
-        bs = highestBlock.getState();
-        wool = (Wool) bs.getData();
-        wool.setColor(_team.get_color().get_dye());
-        bs.update();
-        highestBlock.getRelative(BlockFace.UP).setType(Material.FENCE);
-        highestBlock.getRelative(BlockFace.UP).getRelative(BlockFace.UP).setType(Material.TORCH);
-        baseLoc = _loc.getLocation();
-        // south west
-        baseLoc.add((_radius) * (-1), 0, (_radius));
-        highestBlock = baseLoc.getWorld().getHighestBlockAt(baseLoc);
-        highestBlock.setType(Material.WOOL);
-        bs = highestBlock.getState();
-        wool = (Wool) bs.getData();
-        wool.setColor(_team.get_color().get_dye());
-        bs.update();
-        highestBlock.getRelative(BlockFace.UP).setType(Material.FENCE);
-        highestBlock.getRelative(BlockFace.UP).getRelative(BlockFace.UP).setType(Material.TORCH);
+        BorderBlock b;
+        int x = _radius;
+        int z = x;
+
+        for (int i = 0; i < 4; i++) {
+
+            if ((i % 2) == 0)
+                x = -x;
+            else
+                z = -z;
+
+            baseLoc.add(x, 0, z);
+            b = new BorderBlock(baseLoc);
+            b.generate(_team.get_color());
+            baseLoc = _loc.getLocation();
+        }
     }
 
     /**
      * Gets the minimum information about this base in one line.
+     *
      * @return
      */
     public String getMinimalInfo() {
-        if(_contested)
+        if (_contested)
             return "§a" + _name + "§6(§a" + _id + "§6) is under attack.";
         else
             return "§a" + _name + "§6(§a" + _id + "§6).";
@@ -293,6 +261,7 @@ public class Base implements Serializable {
 
     /**
      * Gets the maximum information about this base.
+     *
      * @return
      */
     public String[] getInfo() {
@@ -305,7 +274,7 @@ public class Base implements Serializable {
             info.add("§a" + _name + " §6is currently contested !");
         else
             info.add("§a" + _name + " §6is not contested at the moment.");
-        if(_HQ)
+        if (_HQ)
             info.add("§a" + _name + " §6is your Head Quarter.");
         String[] infoArray = new String[info.size()];
         for (int i = 0; i < info.size(); i++) {
@@ -316,6 +285,7 @@ public class Base implements Serializable {
 
     /**
      * Upgrade the base level.
+     *
      * @return
      */
     public boolean upgrade() {
@@ -327,8 +297,8 @@ public class Base implements Serializable {
             if (_level == 5)
                 _radius = _initialRadius + _bonusRadius;
             else {
-                int quarter = _bonusRadius/4;
-                _radius = _initialRadius + quarter*(_level - 1);
+                int quarter = _bonusRadius / 4;
+                _radius = _initialRadius + quarter * (_level - 1);
             }
             createBaseBorder();
             return true;

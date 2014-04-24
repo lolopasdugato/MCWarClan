@@ -14,7 +14,6 @@ public class BlockModule implements Serializable{
 
     static private final long serialVersionUID = 11;
 
-    private Pattern _pattern;
     private MCWarClanLocation _location;
     private Material _material;
 
@@ -22,10 +21,9 @@ public class BlockModule implements Serializable{
     //------------------------------- Constructors -------------------------------
     //////////////////////////////////////////////////////////////////////////////
 
-    public BlockModule(Material material, MCWarClanLocation location, Pattern pattern){
+    public BlockModule(Material material, MCWarClanLocation location) {
         _material = material;
         _location = location;
-        _pattern = pattern;
     }
 
     //////////////////////////////////////////////////////////////////////////////
@@ -52,13 +50,13 @@ public class BlockModule implements Serializable{
     /**
      * Transform a BlockModule into a block in the real minecraft world
      */
-    public void toBlock(){
+    public void toBlock(Color color) {
         Location loc = _location.getLocation();
         loc.getBlock().setType(_material);
         if (loc.getBlock().getType() == Material.WOOL){
             BlockState bs = loc.getBlock().getState();
             Wool wool = (Wool) bs.getData();
-            wool.setColor(_pattern.get_woolColor().get_dye());
+            wool.setColor(color.get_dye());
             bs.update();
         }
     }

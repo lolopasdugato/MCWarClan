@@ -63,7 +63,6 @@ public class Team extends Object implements Serializable {
         _id = _idMaster;
         if (_name.equals("Barbarians"))
             BARBARIAN_TEAM_ID = _id;
-//        testBase();
         initCost();
         Messages.sendMessage("I am team " + _name + " and my id is: " + _id + " (masterId:" + _idMaster + ")", Messages.messageType.DEBUG, null);
         _hasLost = false;
@@ -72,7 +71,7 @@ public class Team extends Object implements Serializable {
         _birthDay = Bukkit.getServer().getWorld(Settings.classicWorldName).getFullTime();
     }
 
-    public Team(Team t){
+    public Team(Team t) {
         _color = t.get_color();
         _name = t.get_name();
         _teamMembers = t.get_teamMembers();
@@ -133,7 +132,9 @@ public class Team extends Object implements Serializable {
         this._teamManager = _teamManager;
     }
 
-    public Cost get_baseCreationCost() { return _baseCreationCost; }
+    public Cost get_baseCreationCost() {
+        return _baseCreationCost;
+    }
 
     public int get_money() {
         return _money;
@@ -201,6 +202,7 @@ public class Team extends Object implements Serializable {
 
     /**
      * Return a colored name.
+     *
      * @return
      */
     public String getColoredName() {
@@ -221,9 +223,10 @@ public class Team extends Object implements Serializable {
 
     /**
      * Add a player to this team.
+     *
      * @param player
-     * @throws MaximumTeamCapacityReachedException
      * @return
+     * @throws MaximumTeamCapacityReachedException
      */
     public boolean addTeamMate(MCWarClanPlayer player) throws MaximumTeamCapacityReachedException {
         try {
@@ -235,7 +238,7 @@ public class Team extends Object implements Serializable {
                     _bukkitTeam.addPlayer(player.toOfflinePlayer());
                 player.reloadSpawn();
 
-            // If the maximum team size is reached
+                // If the maximum team size is reached
             } else if (_teamMembers.size() >= _teamSize) {
                 throw new MaximumTeamCapacityReachedException("In addTeamMate, cannot add" + player.get_name() + " to team " + _name + " maximum size reached(" + _teamSize + "/" + _teamMembers.size() + ")");
 
@@ -247,7 +250,7 @@ public class Team extends Object implements Serializable {
                     _bukkitTeam.addPlayer(player.toOfflinePlayer());
                 player.reloadSpawn();
             }
-        // Thrown by _bukkitTeam.addPlayer() && _bukkitTeam.hasPlayer()
+            // Thrown by _bukkitTeam.addPlayer() && _bukkitTeam.hasPlayer()
         } catch (IllegalStateException e) {
             e.printStackTrace();
             return false;
@@ -260,6 +263,7 @@ public class Team extends Object implements Serializable {
 
     /**
      * Delete a player from this team and the bukkit team
+     *
      * @param player
      * @return
      */
@@ -280,6 +284,7 @@ public class Team extends Object implements Serializable {
 
     /**
      * list all player's name in this team
+     *
      * @return Return a list of player in the team.
      */
     public String[] playerList() {
@@ -296,6 +301,7 @@ public class Team extends Object implements Serializable {
 
     /**
      * Check if the team is enemy to the player team.
+     *
      * @param playerTeam, the team of the player.
      * @return If true, this team is enemy to the player team.
      */
@@ -305,6 +311,7 @@ public class Team extends Object implements Serializable {
 
     /**
      * Returns the team's HQ.
+     *
      * @return
      */
     public Base getHQ() {
@@ -346,6 +353,7 @@ public class Team extends Object implements Serializable {
 
     /**
      * Check if a location is in the team territory
+     *
      * @param loc the location to check
      * @return Return the base if found, otherwise returns null.
      */
@@ -359,10 +367,11 @@ public class Team extends Object implements Serializable {
 
     /**
      * Calculate if there is enough team mates connected to be attacked.
+     *
      * @return
      */
-    public boolean enoughMatesToBeAttack(){
-        if (!Settings.matesNeededIgnore){
+    public boolean enoughMatesToBeAttack() {
+        if (!Settings.matesNeededIgnore) {
             if (_teamMembers.size() == 0)
                 return false;
             int playerOnline = 0;
@@ -371,8 +380,8 @@ public class Team extends Object implements Serializable {
                 if (_teamMember.toOnlinePlayer() != null)
                     playerOnline++;
             }
-            if (Settings.matesNeededIsPercentage){
-                playerOnline = (int) (((double)playerOnline/(double)_teamMembers.size())*100.0);
+            if (Settings.matesNeededIsPercentage) {
+                playerOnline = (int) (((double) playerOnline / (double) _teamMembers.size()) * 100.0);
             }
             return playerOnline >= Settings.matesNeededValue;
         }
@@ -382,28 +391,29 @@ public class Team extends Object implements Serializable {
     /**
      * Called when a team lost its HQ so that the team is deleted from every container. Every teamMembers will became barbarians.
      */
-    public void loose(){
+    public void loose() {
         _hasLost = true;
         Team teamToDelete = new Team(this);
-        for (int i = 0; i < _bases.size(); i++){
+        for (int i = 0; i < _bases.size(); i++) {
             // Delete flag ?
             _bases.remove(_bases.get(i));
             // Do not delete the link between base and team to prevent nullPointerException if other battles are in progress at the same time.
         }
         _bases = null;  // Destroying the container.
-        for (int i = 0; i < teamToDelete.get_teamMembers().size(); i++){
+        for (int i = 0; i < teamToDelete.get_teamMembers().size(); i++) {
             teamToDelete.get_teamMembers().get(i).kick();
         }
-        if(!_teamManager.deleteTeam(this)){
+        if (!_teamManager.deleteTeam(this)) {
             Messages.sendMessage(_name + " cannot be deleted because of bukkitTeam Exception !", Messages.messageType.DEBUG, null);
         }
     }
 
     /**
      * Send a message to all team members.
+     *
      * @param message the message to send.
      */
-    public void sendMessage(String message){
+    public void sendMessage(String message) {
         for (MCWarClanPlayer _teamMember : _teamMembers) {
             Player toInform = _teamMember.toOnlinePlayer();
             if (toInform != null)
@@ -413,32 +423,35 @@ public class Team extends Object implements Serializable {
 
     /**
      * Simply delete softly a base.
+     *
      * @param baseToDelete
      */
-    public void deleteBase(Base baseToDelete){
-        baseToDelete.get_flag().destroy();
+    public void deleteBase(Base baseToDelete) {
+        baseToDelete.get_flag().erase();
         _bases.remove(baseToDelete);
     }
 
     /**
      * Change a base characteristics to make this base become a new base of this team.
+     *
      * @param baseToCapture
      */
-    public void captureBase(Base baseToCapture){
+    public void captureBase(Base baseToCapture) {
         baseToCapture.isContested(false);
         baseToCapture.set_HQ(false);
         baseToCapture.set_radius(baseToCapture.get_initialRadius());
         baseToCapture.set_team(this);
         baseToCapture.set_level(1);
-        baseToCapture.get_flag().forceDestroy();
+        baseToCapture.get_flag().forceErase();
         _bases.add(baseToCapture);
-        baseToCapture.get_flag().get_pattern().set_woolColor(_color);
-        baseToCapture.get_flag().get_pattern().generate();
+//        baseToCapture.get_flag().get_pattern().set_woolColor(_color);
+        baseToCapture.get_flag().generate(baseToCapture.get_team().get_color());
         baseToCapture.createBaseBorder();
     }
 
     /**
      * Get a base using it's unique ID.
+     *
      * @param id
      * @return
      */
@@ -463,6 +476,7 @@ public class Team extends Object implements Serializable {
 
     /**
      * Pay a certain amount of money.
+     *
      * @param amount
      */
     public void pay(int amount) {
@@ -471,6 +485,7 @@ public class Team extends Object implements Serializable {
 
     /**
      * Drop a certain amount of Emeralds at a certain position.
+     *
      * @param amount
      * @param locToDropEmeralds
      */
