@@ -51,7 +51,7 @@ public class TeamRelatedCommands extends MCWarClanCommandExecutor {
             if (player != null)
                 Messages.sendMessage(player.get_team().playerList(), Messages.messageType.INGAME, sender);
             else
-                Messages.sendMessage("§a" + args[0] + "§6 does not exist !", Messages.messageType.INGAME, sender);
+                Messages.sendMessage(Messages.color(args[0]) + " does not exist !", Messages.messageType.INGAME, sender);
         } else
             return false;
         return true;
@@ -125,7 +125,7 @@ public class TeamRelatedCommands extends MCWarClanCommandExecutor {
      */
     public boolean createteamCommand(CommandSender sender, String[] args){
         if(_tc.isFull()){
-            Messages.sendMessage("The maximum number of team is already reach !(§a" + _tc.get_maxTeams() + "§6)", Messages.messageType.INGAME, sender);
+            Messages.sendMessage("The maximum number of team is already reach !(" + Messages.color(_tc.get_maxTeams()) + ").", Messages.messageType.INGAME, sender);
             return true;
         } else if(sender instanceof Player){
             if(args.length == 2) {

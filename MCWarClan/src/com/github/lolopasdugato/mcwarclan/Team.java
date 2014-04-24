@@ -228,7 +228,7 @@ public class Team extends Object implements Serializable {
     public boolean addTeamMate(MCWarClanPlayer player) throws MaximumTeamCapacityReachedException {
         try {
             // If the current team is the barbarian one, there is no limit
-            if (_id == BARBARIAN_TEAM_ID) {
+            if (isBarbarian()) {
                 _teamMembers.add(player);
                 player.set_team(this);
                 if (!_bukkitTeam.hasPlayer(player.toOfflinePlayer()))
@@ -236,9 +236,8 @@ public class Team extends Object implements Serializable {
                 player.reloadSpawn();
 
             // If the maximum team size is reached
-            } else if (_teamMembers.size() >= _teamSize) {
+            } else if (isFull()) {
                 throw new MaximumTeamCapacityReachedException("In addTeamMate, cannot add" + player.get_name() + " to team " + _name + " maximum size reached(" + _teamSize + "/" + _teamMembers.size() + ")");
-
                 // Normal case
             } else {
                 player.set_team(this);
@@ -246,7 +245,7 @@ public class Team extends Object implements Serializable {
                 if (!_bukkitTeam.hasPlayer(player.toOfflinePlayer()))
                     _bukkitTeam.addPlayer(player.toOfflinePlayer());
                 player.reloadSpawn();
-                sendMessage("Well, here is some more fresh meat ! §a" + player.get_name() + "§6 has joined the team !");
+                sendMessage("Well, here is some more fresh meat ! " + Messages.color(player.get_name()) + " has joined the team !");
             }
         // Thrown by _bukkitTeam.addPlayer() && _bukkitTeam.hasPlayer()
         } catch (IllegalStateException e) {
@@ -294,7 +293,7 @@ public class Team extends Object implements Serializable {
             _bukkitTeam.removePlayer(player.toOfflinePlayer());
             player.set_team(null);
             if (!isBarbarian())
-                sendMessage(player.get_name() + " has left the team !");
+                sendMessage(Messages.color(player.get_name()) + " has left the team !");
         } catch (IllegalStateException e) {
             e.printStackTrace();
             return false;
@@ -311,12 +310,13 @@ public class Team extends Object implements Serializable {
      */
     public String[] playerList() {
         String[] mates = new String[_teamMembers.size() + 1];
-        mates[0] = _color.get_colorMark() + _name + ":";
-        for (int i = 0; i < _teamMembers.size(); i++) {
-            mates[i + 1] = _teamMembers.get(i).get_name();
-        }
-        if (_teamMembers.size() == 0) {
-            mates[0] = _color.get_colorMark() + _name + "§f is empty !";
+        if (isEmpty()) {
+            mates[0] = getColoredName() + " is empty !";
+        } else {
+            mates[0] = getColoredName() + ":";
+            for (int i = 0; i < _teamMembers.size(); i++) {
+                mates[i + 1] = _teamMembers.get(i).get_name();
+            }
         }
         return mates;
     }
@@ -390,12 +390,12 @@ public class Team extends Object implements Serializable {
      */
     public boolean enoughMatesToBeAttack(){
         if (!Settings.matesNeededIgnore){
-            if (_teamMembers.size() == 0)
+            if (isEmpty())
                 return false;
             int playerOnline = 0;
 
             for (MCWarClanPlayer _teamMember : _teamMembers) {
-                if (_teamMember.toOnlinePlayer() != null)
+                if (_teamMember.isOnline())
                     playerOnline++;
             }
             if (Settings.matesNeededIsPercentage){
@@ -411,16 +411,13 @@ public class Team extends Object implements Serializable {
      */
     public void loose(){
         _hasLost = true;
-        Team teamToDelete = new Team(this);
         for (int i = 0; i < _bases.size(); i++){
             // Delete flag ?
             _bases.remove(_bases.get(i));
             // Do not delete the link between base and team to prevent nullPointerException if other battles are in progress at the same time.
         }
         _bases = null;  // Destroying the container.
-        for (int i = 0; i < teamToDelete.get_teamMembers().size(); i++){
-            teamToDelete.get_teamMembers().get(i).kick();
-        }
+        kickPlayers();
         if(!_teamManager.deleteTeam(this)){
             Messages.sendMessage(_name + " cannot be deleted because of bukkitTeam Exception !", Messages.messageType.DEBUG, null);
         }
@@ -450,16 +447,8 @@ public class Team extends Object implements Serializable {
      * @param baseToCapture
      */
     public void captureBase(Base baseToCapture){
-        baseToCapture.isContested(false);
-        baseToCapture.set_HQ(false);
-        baseToCapture.set_radius(baseToCapture.get_initialRadius());
-        baseToCapture.set_team(this);
-        baseToCapture.set_level(1);
-        baseToCapture.get_flag().forceErase();
         _bases.add(baseToCapture);
-//        baseToCapture.get_flag().get_pattern().set_woolColor(_color);
-        baseToCapture.get_flag().generate(baseToCapture.get_team().get_color());
-        baseToCapture.createBaseBorder();
+        baseToCapture.reset(this);
     }
 
     /**
@@ -519,5 +508,53 @@ public class Team extends Object implements Serializable {
      */
     public boolean hasBases() {
         return _bases.size() != 0;
+    }
+
+    /**
+     * Remove a specified base form the team.
+     * @param b
+     */
+    public void removeBase(Base b) {
+        _bases.remove(b);
+    }
+
+    /**
+     * Kick all team members from the team.
+     */
+    public void kickPlayers() {
+        for (MCWarClanPlayer _teamMember : _teamMembers) {
+            _teamMember.kick();
+        }
+    }
+
+    /**
+     * Get the time this team has been alive.
+     * @return
+     */
+    public long getLivingTime() {
+        return _birthDay + _age * 24000;
+    }
+
+    /**
+     * Increment the team age.
+     */
+    public void incrementAge() {
+        _age++;
+    }
+
+    /**
+     * Return the number of members in the team.
+     * @return
+     */
+    public int getSize() {
+        return _teamMembers.size();
+    }
+
+    /**
+     * Make the team earn a particular amount of money.
+     * @param amount
+     */
+    public void earnMoney(int amount) {
+        _money += amount;
     }
 }

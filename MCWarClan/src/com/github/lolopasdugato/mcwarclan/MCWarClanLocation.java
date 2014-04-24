@@ -77,8 +77,24 @@ public class MCWarClanLocation implements Serializable {
     //--------------------------------- Functions --------------------------------
     //////////////////////////////////////////////////////////////////////////////
 
+    /**
+     * Transform a MCWarClanLocation into a minecraft Location.
+     * @return
+     */
     public Location getLocation(){
         return new Location(Bukkit.getServer().getWorld(_worldName), _x, _y, _z);
+    }
+
+    /**
+     * Add these x,y,z values to the corresponding coordinates.
+     * @param x
+     * @param y
+     * @param z
+     */
+    public void add(int x, int y, int z) {
+        _x += x;
+        _y += y;
+        _z += z;
     }
 
     /**

@@ -19,7 +19,6 @@ public class Base implements Serializable {
     private Team _team;                // Team which this object is attached to
     private Flag _flag;                // The flag attached to this base
     private MCWarClanLocation _loc;    // Represent the location of a base
-    //    private Cost _cost;             // The cost to create a new base
     private String _name;
     private int _id;
     private boolean _contested;
@@ -45,7 +44,6 @@ public class Base implements Serializable {
         _loc = loc;
         _initialRadius = Settings.initialRadius;    // WARNING: shouldn't be reloaded ! (except if it doesn't change during the game)
         _bonusRadius = Settings.radiusHQBonus;      // WARNING: shouldn't be reloaded ! (except if it doesn't change during the game)
-//        _cost = Settings.baseInitialCost;   // WARNING shouldn't be reload !
         _name = name;
         _id = _idMaster;
         if (_HQ) {
@@ -254,9 +252,9 @@ public class Base implements Serializable {
      */
     public String getMinimalInfo() {
         if (_contested)
-            return "§a" + _name + "§6(§a" + _id + "§6) is under attack.";
+            return Messages.color(_name) + "(" + Messages.color(_id) + ") is under attack.";
         else
-            return "§a" + _name + "§6(§a" + _id + "§6).";
+            return Messages.color(_name) + "(" + _id + ").";
     }
 
     /**
@@ -346,5 +344,47 @@ public class Base implements Serializable {
      */
     public boolean isLevelMax() {
         return _level >= 5;
+    }
+
+    /**
+     * Reset a base using a specified team.
+     * @param t
+     */
+    public void reset(Team t) {
+        _team.removeBase(this);
+        _contested = false;
+        _initialRadius = Settings.initialRadius;
+        _bonusRadius = Settings.radiusHQBonus;
+        _team = t;
+        _level = 1;
+        _flag.forceErase();
+        _flag.generate(_team.get_color());
+        createBaseBorder();
+    }
+
+    /**
+     * Check if the two bases are the same.
+     * @param b
+     * @return
+     */
+    public boolean isBase(Base b) {
+        return _id == b.get_id();
+    }
+
+    /**
+     * Check if the flag of this base is destroyed.
+     * @param percentage
+     * @return
+     */
+    public boolean isFlagDestroyed(int percentage) {
+        return _flag.isDestroyed(percentage);
+    }
+
+    /**
+     * get the location of this base.
+     * @return
+     */
+    public Location getLocation() {
+        return _loc.getLocation();
     }
 }

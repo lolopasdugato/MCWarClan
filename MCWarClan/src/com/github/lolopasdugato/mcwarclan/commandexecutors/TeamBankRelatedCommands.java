@@ -93,15 +93,7 @@ public class TeamBankRelatedCommands extends  MCWarClanCommandExecutor {
                     Messages.sendMessage(Messages.color(args[0]) + " is not a valid amount of emeralds to store in the team treasure.", Messages.messageType.INGAME, player);
                     return false;
                 }
-                if (amount < 0) {
-                    Messages.sendMessage(Messages.color(args[0]) + " is not a valid amount of emeralds to store in the team treasure.", Messages.messageType.INGAME, player);
-                    return false;
-                } else if (!mcPlayer.save(amount)) {
-                    Messages.sendMessage("Sorry, you do not have " + Messages.color(args[0]) + " emerald(s) in your inventory !", Messages.messageType.INGAME, player);
-                } else {
-                    mcPlayer.get_team().sendMessage(Messages.color(mcPlayer.get_name()) + " saved " + Messages.color(amount) + " emerald(s) in the team treasure !");
-                    Messages.sendMessage("The treasure value is now " + Messages.color(mcPlayer.get_team().get_money()) + ".", Messages.messageType.INGAME, player);
-                }
+                mcPlayer.save(amount);
             } else {
                 return false;
             }
@@ -126,7 +118,7 @@ public class TeamBankRelatedCommands extends  MCWarClanCommandExecutor {
                 try {
                     amount = Integer.parseInt(args[0]);
                 } catch (NumberFormatException e) {
-                    Messages.sendMessage("§a" + args[0] + " §6is not a valid amount of emeralds to store in the team treasure.", Messages.messageType.INGAME, player);
+                    Messages.sendMessage(Messages.color(args[0]) + " is not a valid amount of emeralds to store in the team treasure.", Messages.messageType.INGAME, player);
                     return false;
                 }
                 Base currentBase = mcPlayer.getCurrentBase();

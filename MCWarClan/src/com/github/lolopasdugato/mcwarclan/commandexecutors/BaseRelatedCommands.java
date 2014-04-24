@@ -68,7 +68,7 @@ public class BaseRelatedCommands extends MCWarClanCommandExecutor {
                 try {
                     referenceID = Integer.parseInt(args[1]);
                 } catch (NumberFormatException e) {
-                    Messages.sendMessage(args[1] + " is not a number.", Messages.messageType.INGAME, sender);
+                    Messages.sendMessage(Messages.color(args[1]) + " is not a number.", Messages.messageType.INGAME, sender);
                     return false;
                 }
                 player.createBase(args[0], referenceID, args[2]);
@@ -114,7 +114,7 @@ public class BaseRelatedCommands extends MCWarClanCommandExecutor {
                     try {
                         id = Integer.parseInt(args[0]);
                     } catch (NumberFormatException e) {
-                        Messages.sendMessage("No allied base found for id: " + args[0] + ".", Messages.messageType.INGAME, player);
+                        Messages.sendMessage("No allied base found for id: " + Messages.color(args[0]) + ".", Messages.messageType.INGAME, player);
                         return false;
                     }
                     Base baseAsked = mcPlayer.getAlliedBase(id);

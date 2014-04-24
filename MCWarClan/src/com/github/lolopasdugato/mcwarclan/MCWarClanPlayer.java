@@ -70,6 +70,14 @@ public class MCWarClanPlayer implements Serializable {
     }
 
     /**
+     * Check if this player is online or not.
+     * @return
+     */
+    public boolean isOnline() {
+        return toOnlinePlayer() != null;
+    }
+
+    /**
      *  Convert this MCWarClanPlayer to an OfflinePlayer.
      * @return an OfflinePlayer.
      */
@@ -492,27 +500,35 @@ public class MCWarClanPlayer implements Serializable {
      */
     public boolean save(int amount) {
         Player player = toOnlinePlayer();
-        int amountToSave = amount;
-        PlayerInventory playerInventory = player.getInventory();
-        if (playerInventory.contains(Material.EMERALD, amount)) {
-            do {
-                int index = playerInventory.first(Material.EMERALD);
-                ItemStack itemStack = playerInventory.getItem(index);
-                if (itemStack.getAmount() > amount) {
-                    itemStack.setAmount(itemStack.getAmount() - amount);
-                    playerInventory.setItem(index, itemStack);
-                    amount = 0;
-                } else {
-                    amount -= itemStack.getAmount();
-                    itemStack.setAmount(0);
-                    playerInventory.setItem(index, itemStack);
-                }
-            } while (amount != 0);
-            _team.set_money(_team.get_money() + amountToSave);
-            player.updateInventory();
-        } else {
+        if (amount < 0) {
+            Messages.sendMessage(Messages.color(amount) + " is not a valid amount of emeralds to store in the team treasure.", Messages.messageType.INGAME, player);
             return false;
+        } else {
+            int amountToSave = amount;
+            PlayerInventory playerInventory = player.getInventory();
+            if (playerInventory.contains(Material.EMERALD, amount)) {
+                do {
+                    int index = playerInventory.first(Material.EMERALD);
+                    ItemStack itemStack = playerInventory.getItem(index);
+                    if (itemStack.getAmount() > amount) {
+                        itemStack.setAmount(itemStack.getAmount() - amount);
+                        playerInventory.setItem(index, itemStack);
+                        amount = 0;
+                    } else {
+                        amount -= itemStack.getAmount();
+                        itemStack.setAmount(0);
+                        playerInventory.setItem(index, itemStack);
+                    }
+                } while (amount != 0);
+                _team.earnMoney(amountToSave);
+                player.updateInventory();
+            } else {
+                Messages.sendMessage("Sorry, you do not have " + Messages.color(amount) + " emerald(s) in your inventory !", Messages.messageType.INGAME, player);
+                return false;
+            }
         }
+        _team.sendMessage(Messages.color(_name) + " saved " + Messages.color(amount) + " emerald(s) in the team treasure !");
+        Messages.sendMessage("The treasure value is now " + Messages.color(_team.get_money()) + ".", Messages.messageType.INGAME, player);
         return true;
     }
 

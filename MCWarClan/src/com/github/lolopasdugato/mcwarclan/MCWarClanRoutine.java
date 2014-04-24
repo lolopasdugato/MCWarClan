@@ -58,7 +58,7 @@ public abstract class MCWarClanRoutine extends BukkitRunnable {
             while (i < _opponents.get_teamMembers().size() && !alive) {
                 // If there is still an opponent in the contested base, the war continue.
                 Base currentOppoBase = _opponents.get_teamMembers().get(i).getCurrentBase();
-                if (currentOppoBase != null && currentOppoBase.get_id() == _base.get_id()){
+                if (currentOppoBase != null && currentOppoBase.isBase(_base)){
                     alive = true;
                     Messages.sendMessage(_opponents.get_teamMembers().get(i).get_name() + "(" + _opponents.get_teamMembers().get(i).get_team().get_name() + ") is still attacking " + _base.get_team().get_name() + " (" + _base.get_team().get_color().get_colorName() + ")."
                             , Messages.messageType.DEBUG, null);
@@ -70,30 +70,31 @@ public abstract class MCWarClanRoutine extends BukkitRunnable {
             //If there are not any enemy in the base
             Messages.sendMessage("Alive= " + alive, Messages.messageType.DEBUG, null);
             if(alive){
-                if(_base.get_flag().isDestroyed(Settings.destroyFlagPercentage) && _flagCapCounter > 0){
+                if(_base.isFlagDestroyed(Settings.destroyFlagPercentage) && _flagCapCounter > 0){
                     _flagCapCounter--;
                     if(!_oneTimeMessage) {
-                        attackedTeam.sendMessage("§a" + _base.get_name() + "§6 is being captured by " + _opponents.getColoredName() + " ! Defend it !");
+                        attackedTeam.sendMessage(Messages.color(_base.get_name()) + " is being captured by " + _opponents.getColoredName() + " ! Defend it !");
                         _opponents.sendMessage("Capture process began ! Hold the position !");
                         _oneTimeMessage = true;
                     }
                 }
                 // If time elapsed
-                else if (_base.get_flag().isDestroyed(Settings.destroyFlagPercentage) && _flagCapCounter <= 0){
-                    _opponents.sendMessage("Well done ! You just captured §a" + _base.get_name() + "§6, a " + attackedTeam.getColoredName() + " base !");
-                    attackedTeam.sendMessage("You just lost §a" + _base.get_name() + "§6 against " + _opponents.getColoredName() + " kids... you could have done it in a better way...");
+                else if (_base.isFlagDestroyed(Settings.destroyFlagPercentage) && _flagCapCounter <= 0){
+                    _opponents.sendMessage("Well done ! You just captured " + Messages.color(_base.get_name()) + ", a " + attackedTeam.getColoredName() + " base !");
+                    attackedTeam.sendMessage("You just lost " + Messages.color(_base.get_name()) + " against " + _opponents.getColoredName() + " kids... you could have done it in a better way...");
                     // If the attacked team lost their main base (HeadQuarter)
                     if(_base.is_HQ()){
                         TeamManager teamManager = _opponents.get_teamManager();
                         teamManager.sendMessage(attackedTeam.getColoredName() + " lost and will be destroyed ! They just lost their HeadQuarters like kids...");
-                        attackedTeam.dropEmeralds(attackedTeam.get_money(), _base.get_loc().getLocation());
+                        attackedTeam.dropEmeralds(attackedTeam.get_money(), _base.getLocation());
                         attackedTeam.loose();
                         _opponents.captureBase(_base);
                     }
                     // If the attacked team los a simple base
                     else{
-                        System.out.println("moneyloss: " + Settings.moneyloss + ", money that should be dropped: " + (int)((Settings.moneyloss/100.0) * attackedTeam.get_money()) + " " + attackedTeam.get_name() + " money: " + attackedTeam.get_money());
-                        attackedTeam.dropEmeralds((int) ((Settings.moneyloss/100.0) * attackedTeam.get_money()), _base.get_loc().getLocation());
+                        Messages.sendMessage("moneyloss: " + Settings.moneyloss + ", money that should be dropped: " + (int) ((Settings.moneyloss / 100.0) * attackedTeam.get_money()) + " " + attackedTeam.get_name() + " money: " + attackedTeam.get_money(),
+                                Messages.messageType.DEBUG, null);
+                        attackedTeam.dropEmeralds((int) ((Settings.moneyloss/100.0) * attackedTeam.get_money()), _base.getLocation());
                         attackedTeam.deleteBase(_base);
                         _opponents.captureBase(_base);
                     }
@@ -109,7 +110,7 @@ public abstract class MCWarClanRoutine extends BukkitRunnable {
             }
             else {
                 //Send the messages to all the winning team
-                attackedTeam.sendMessage("§a" + _base.get_name() + "§6 is'nt contested anymore ! " + _opponents.getColoredName() + " are defeated ! Well done !");
+                attackedTeam.sendMessage(Messages.color(_base.get_name()) + " is not contested anymore ! " + _opponents.getColoredName() + " are defeated ! Well done !");
                 _opponents.sendMessage("You lost the battle against " + attackedTeam.getColoredName() + " kids...");
 
                 //Change to non contested status
@@ -141,22 +142,21 @@ public abstract class MCWarClanRoutine extends BukkitRunnable {
             for (Team team : teams) {
 
                 //We don't offer any resources to barbarians
-                if (team.get_id() != Team.BARBARIAN_TEAM_ID) {
-                    baseTime = team.get_birthDay() + team.get_age() * 24000;
+                if (!team.isBarbarian()) {
+                    baseTime = team.getLivingTime();
                     if ((currentTime - baseTime) > 24000) {
                         Messages.sendMessage("Team " + team.get_name() + " is now older.", Messages.messageType.DEBUG,
                                 null);
                         //We add 1 to the previous age
-                        int age = team.get_age();
-                        team.set_age(age + 1);
+                        team.incrementAge();
 
                         //Test if we have to add emerald to the team treasure
-                        if (age % (Settings.waitingTime) == 0) {
+                        if (team.get_age() % (Settings.waitingTime) == 0) {
                             int emeraldToEarn = 0;
-                            emeraldToEarn += Settings.emeraldPerTeamMember * team.get_teamMembers().size();
+                            emeraldToEarn += Settings.emeraldPerTeamMember * team.getSize();
                             Messages.sendMessage("Daily count launched at " + currentTime + "!", Messages.messageType.DEBUG, null);
-                            team.sendMessage("Today, your team earned §a" + emeraldToEarn + "§6 emerald(s) !");
-                            team.set_money(team.get_money() + emeraldToEarn);
+                            team.sendMessage("Today, your team earned " + Messages.color(emeraldToEarn ) + " emerald(s) !");
+                            team.earnMoney(emeraldToEarn);
                         }
                     }
                 }

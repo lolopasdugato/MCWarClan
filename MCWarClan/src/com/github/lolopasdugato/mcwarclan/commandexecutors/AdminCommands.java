@@ -67,10 +67,10 @@ public class AdminCommands extends MCWarClanCommandExecutor {
                     }
                     player.kick();
                 }
-                Messages.sendMessage(args[0] + " does not exist in MCWarClan database !", Messages.messageType.INGAME, sender);
+                Messages.sendMessage(Messages.color(args[0]) + " does not exist in MCWarClan database !", Messages.messageType.INGAME, sender);
             }
             else
-                Messages.sendMessage(args[0] + " does not exist !", Messages.messageType.INGAME, sender);
+                Messages.sendMessage(Messages.color(args[0]) + " does not exist !", Messages.messageType.INGAME, sender);
             return true;
         }
         return false;
