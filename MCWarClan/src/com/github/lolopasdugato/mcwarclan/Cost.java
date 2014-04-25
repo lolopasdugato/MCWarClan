@@ -13,6 +13,7 @@ public class Cost implements Serializable{
     static private final long serialVersionUID = 7;
 
     private ArrayList<Equivalence> _costEquivalence;            // The Equivalence between a cost and a material
+    private int _totalMaterial;
 
     //////////////////////////////////////////////////////////////////////////////
     //------------------------------- Constructors -------------------------------
@@ -23,6 +24,7 @@ public class Cost implements Serializable{
      */
     public Cost(){
         _costEquivalence = new ArrayList<Equivalence>();
+        _totalMaterial = 0;
     }
 
     /**
@@ -58,32 +60,38 @@ public class Cost implements Serializable{
      * @return
      */
     public boolean addValue(String materialName, int numberOfMaterials){
-        if (numberOfMaterials > 256) {
-            numberOfMaterials = 256;
-            Messages.sendMessage("Cannot ask for more than 256 " + materialName, Messages.messageType.DEBUG, null);
-        }
-
-        int totalNumberOfMaterials = 0;
-        for (Equivalence a_costEquivalence : _costEquivalence) {
-            totalNumberOfMaterials += a_costEquivalence.get_materialValue();
-        }
-        if (totalNumberOfMaterials + numberOfMaterials > 2304) {
-            Messages.sendMessage("Cannot add " + materialName + " or a unique player would not be able to pay this tribute due to inventory capacity.", Messages.messageType.ALERT, null);
-            return false;
-        }
-        int i = 0;
-        boolean materialFound = false;
-        while (i < _costEquivalence.size() && !materialFound) {
-            if (_costEquivalence.get(i).get_materialName().equalsIgnoreCase(materialName)) {
-                _costEquivalence.get(i).set_materialValue(_costEquivalence.get(i).get_materialValue() + numberOfMaterials);
-                materialFound = true;
+        if (Material.getMaterial(materialName) != null) {
+            if (numberOfMaterials <= 0) {
+                return false;
             }
-            i++;
+            Equivalence newEqui = new Equivalence(materialName, numberOfMaterials);
+            if (numberOfMaterials > 256) {
+                numberOfMaterials = 256;
+                Messages.sendMessage("Cannot ask for more than 256 " + materialName, Messages.messageType.DEBUG, null);
+            }
+            _totalMaterial += numberOfMaterials;
+            if (_totalMaterial > 2304) {
+                Messages.sendMessage("Cannot add " + materialName + " or a unique player would not be able to pay this tribute due to inventory capacity.", Messages.messageType.ALERT, null);
+                _totalMaterial -= numberOfMaterials;
+                return false;
+            }
+            int i = 0;
+            boolean materialFound = false;
+            while (i < _costEquivalence.size() && !materialFound) {
+                Equivalence currentEqui = _costEquivalence.get(i);
+                if (currentEqui.is(newEqui)) {
+                    currentEqui.add(numberOfMaterials);
+                    materialFound = true;
+                }
+                i++;
+            }
+            if (!materialFound) {
+                _costEquivalence.add(newEqui);
+            }
+            return true;
         }
-        if (!materialFound) {
-            _costEquivalence.add(new Equivalence(materialName, numberOfMaterials));
-        }
-        return Material.getMaterial(materialName) != null && numberOfMaterials >= 0;
+        Messages.sendMessage(materialName + " not recognized ! Ignoring it...", Messages.messageType.ALERT, null);
+        return false;
     }
 
     /**

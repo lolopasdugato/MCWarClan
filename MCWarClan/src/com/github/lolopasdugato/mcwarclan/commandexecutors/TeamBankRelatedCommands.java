@@ -33,19 +33,9 @@ public class TeamBankRelatedCommands extends  MCWarClanCommandExecutor {
         if (sender instanceof Player) {
             Player player = ((Player) sender).getPlayer();
             MCWarClanPlayer mcPlayer = _tc.getPlayer(player.getUniqueId());
+            Base toUpgrade;
             if (args.length == 0) {
-                Base currentBase = mcPlayer.getCurrentBase();
-                if (currentBase == null || currentBase.isEnemyToPlayer(mcPlayer)) {
-                    Messages.sendMessage("You should be in the base you want to upgrade to do so !", Messages.messageType.INGAME, player);
-                } else if (currentBase.isLevelMax()) {
-                    Messages.sendMessage(Messages.color(currentBase.get_name()) + " has already reached the maximum level !", Messages.messageType.INGAME, player);
-                } else if (!currentBase.upgrade()) {
-                    Messages.sendMessage(Messages.color(currentBase.get_name()) + " cannot upgrade to level " + Messages.color(currentBase.get_level() + 1) + ". Not enough money !", Messages.messageType.INGAME, player);
-                    Messages.sendMessage("Upgrading to level " + Messages.color(currentBase.get_level() + 1) + " cost " + Messages.color(Settings.radiusCost[currentBase.get_level() - 1]) + ".", Messages.messageType.INGAME, player);
-                } else {
-                    Messages.sendMessage("Well done, " + Messages.color(currentBase.get_name()) + " has been upgraded to level " + Messages.color(currentBase.get_level()) + " by " + Messages.color(mcPlayer.get_name()) + " !",
-                            Messages.messageType.INGAME, player);
-                }
+                toUpgrade = mcPlayer.getCurrentBase();
             } else if (args.length == 1) {
                 int id;
                 try {
@@ -54,20 +44,20 @@ public class TeamBankRelatedCommands extends  MCWarClanCommandExecutor {
                     Messages.sendMessage("No base found for id " + Messages.color(args[0]) + ".", Messages.messageType.INGAME, player);
                     return false;
                 }
-                Base baseAsked = mcPlayer.getAlliedBase(id);
-                if (baseAsked == null) {
-                    Messages.sendMessage("No base found for id " + Messages.color(args[0]) + ".", Messages.messageType.INGAME, player);
-                } else if (baseAsked.isLevelMax()) {
-                    Messages.sendMessage(Messages.color(baseAsked.get_name()) + " has already reached the maximum level !", Messages.messageType.INGAME, player);
-                } else if (!baseAsked.upgrade()) {
-                    Messages.sendMessage(Messages.color(baseAsked.get_name()) + " cannot upgrade to level " + Messages.color(baseAsked.get_level() + 1) + ". Not enough money !", Messages.messageType.INGAME, player);
-                    Messages.sendMessage("Upgrading to level " + Messages.color(baseAsked.get_level() + 1) + " cost " + Messages.color(Settings.radiusCost[baseAsked.get_level() - 2]) + ".", Messages.messageType.INGAME, player);
-                } else {
-                    Messages.sendMessage("Well done, " + Messages.color(baseAsked.get_name()) + " has been upgraded to level " + Messages.color(baseAsked.get_level()) + " by " + Messages.color(mcPlayer.get_name()) + " !",
-                            Messages.messageType.INGAME, player);
-                }
+                toUpgrade = mcPlayer.getAlliedBase(id);
             } else {
                 return false;
+            }
+            if (toUpgrade == null || toUpgrade.isEnemyToPlayer(mcPlayer)) {
+                Messages.sendMessage("No base found ! Maybe you should precise a valid number or stay in one of your bases ?", Messages.messageType.INGAME, player);
+            } else if (toUpgrade.isLevelMax()) {
+                Messages.sendMessage(Messages.color(toUpgrade.get_name()) + " has already reached the maximum level !", Messages.messageType.INGAME, player);
+            } else if (!toUpgrade.upgrade()) {
+                Messages.sendMessage(Messages.color(toUpgrade.get_name()) + " cannot upgrade to level " + Messages.color(toUpgrade.get_level() + 1) + ". Not enough money !", Messages.messageType.INGAME, player);
+                Messages.sendMessage("Upgrading to level " + Messages.color(toUpgrade.get_level() + 1) + " cost " + Messages.color(Settings.radiusCost[toUpgrade.get_level() - 1]) + " emerald(s).", Messages.messageType.INGAME, player);
+            } else {
+                Messages.sendMessage("Well done, " + Messages.color(toUpgrade.get_name()) + " has been upgraded to level " + Messages.color(toUpgrade.get_level()) + " by " + Messages.color(mcPlayer.get_name()) + " !",
+                        Messages.messageType.INGAME, player);
             }
         } else {
             Messages.sendMessage("You have to be a player to perform this command !", Messages.messageType.INGAME, sender);

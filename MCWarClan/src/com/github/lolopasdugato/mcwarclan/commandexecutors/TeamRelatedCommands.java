@@ -52,8 +52,9 @@ public class TeamRelatedCommands extends MCWarClanCommandExecutor {
                 Messages.sendMessage(player.get_team().playerList(), Messages.messageType.INGAME, sender);
             else
                 Messages.sendMessage(Messages.color(args[0]) + " does not exist !", Messages.messageType.INGAME, sender);
-        } else
+        } else {
             return false;
+        }
         return true;
     }
 
@@ -75,10 +76,13 @@ public class TeamRelatedCommands extends MCWarClanCommandExecutor {
                     return true;
                 } else
                     player.switchTo(Barbarians);
-            } else
+            } else {
                 Messages.sendMessage("You have to be a player to perform this command !", Messages.messageType.INGAME, sender);
+            }
+        } else {
+            return false;
         }
-        return false;
+        return true;
     }
 
     /**
@@ -99,7 +103,6 @@ public class TeamRelatedCommands extends MCWarClanCommandExecutor {
                 if (toJoin != null) {
                     if (toJoin.get_id() == toLeave.get_id()) {
                         Messages.sendMessage("You cannot join " + toJoin.getColoredName() + " team ! You're already in !", Messages.messageType.INGAME, sender);
-                        return true;
                     } else if (toJoin.isBarbarian()) {
                         return leaveCommand(sender, args);
                     } else {
@@ -110,10 +113,12 @@ public class TeamRelatedCommands extends MCWarClanCommandExecutor {
                 } else {
                     Messages.sendMessage("This team does not exist.", Messages.messageType.INGAME, sender);
                 }
+            } else {
+                Messages.sendMessage("You have to be a player to perform this command !", Messages.messageType.INGAME, sender);
             }
-            Messages.sendMessage("You have to be a player to perform this command !", Messages.messageType.INGAME, sender);
-        } else
+        } else {
             return false;
+        }
         return true;
     }
 
@@ -126,7 +131,6 @@ public class TeamRelatedCommands extends MCWarClanCommandExecutor {
     public boolean createteamCommand(CommandSender sender, String[] args){
         if(_tc.isFull()){
             Messages.sendMessage("The maximum number of team is already reach !(" + Messages.color(_tc.get_maxTeams()) + ").", Messages.messageType.INGAME, sender);
-            return true;
         } else if(sender instanceof Player){
             if(args.length == 2) {
                 Team toJoin = new Team(new Color(args[1]), args[0], Settings.initialTeamSize, _tc);
@@ -134,12 +138,12 @@ public class TeamRelatedCommands extends MCWarClanCommandExecutor {
                 if (player.createTeam(toJoin)) {
                     player.switchTo(toJoin);
                 }
-            } else
+            } else {
                 return false;
+            }
         }
-        else{
+        else {
             Messages.sendMessage("You have to be a player to perform this command !", Messages.messageType.INGAME, sender);
-            return true;
         }
         return true;
     }

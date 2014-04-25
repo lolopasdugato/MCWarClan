@@ -36,16 +36,16 @@ public class AdminCommands extends MCWarClanCommandExecutor {
             MCWarClanPlayer player = _tc.getPlayer(args[0]);
             if (toJoin == null)
                 toJoin = _tc.getTeam(new Color(args[1])); // Search by colorName
-
             if (toJoin != null){
                 if (player.switchTo(toJoin))
                     Messages.sendMessage(player.get_name() + " has successfully been added to " + toJoin.getColoredName(), Messages.messageType.INGAME, sender);
             } else {
                 Messages.sendMessage("Invalid team or color name.", Messages.messageType.INGAME, sender);
-                return true;
             }
+        } else {
+            return false;
         }
-        return false;
+        return true;
     }
 
     /**
@@ -63,17 +63,18 @@ public class AdminCommands extends MCWarClanCommandExecutor {
                 if (player != null) {
                     if (toLeave.isBarbarian()) {
                         Messages.sendMessage("You cannot remove someone from the " + toLeave.getColoredName() + " team !", Messages.messageType.INGAME, sender);
-                        return true;
                     }
                     player.kick();
+                } else {
+                    Messages.sendMessage(Messages.color(args[0]) + " does not exist in MCWarClan database !", Messages.messageType.INGAME, sender);
                 }
-                Messages.sendMessage(Messages.color(args[0]) + " does not exist in MCWarClan database !", Messages.messageType.INGAME, sender);
-            }
-            else
+            } else {
                 Messages.sendMessage(Messages.color(args[0]) + " does not exist !", Messages.messageType.INGAME, sender);
-            return true;
+            }
+        } else {
+            return false;
         }
-        return false;
+        return true;
     }
 
     //////////////////////////////////////////////////////////////////////////////

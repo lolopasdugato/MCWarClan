@@ -50,6 +50,23 @@ public class Equivalence implements Serializable {
     //////////////////////////////////////////////////////////////////////////////
 
     /**
+     * Check if these two objects represents the same material.
+     * @param e
+     * @return
+     */
+    public boolean is(Equivalence e) {
+        return e.get_materialName().equalsIgnoreCase(_materialName);
+    }
+
+    /**
+     * Increment the number of material using the specified amount.
+     * @param amount
+     */
+    public void add(int amount) {
+        _materialValue += amount;
+    }
+
+    /**
      *  refresh settings that should be reloaded if config.yml has been changed.
      */
     public void refresh(){

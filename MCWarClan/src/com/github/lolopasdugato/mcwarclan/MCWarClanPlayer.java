@@ -392,7 +392,7 @@ public class MCWarClanPlayer implements Serializable {
             Messages.sendMessage("Sorry, but MCWarClan does not support other Environment than normal world. You cannot create you HeadQuarter there.", Messages.messageType.INGAME, player);
             return false;
         }
-        if (_team.get_id() == Team.BARBARIAN_TEAM_ID) {
+        if (_team.isBarbarian()) {
             Messages.sendMessage("You cannot create HeadQuarter as a §7barbarian§6 !", Messages.messageType.INGAME, player);
             return false;
         } else if (_team.get_bases().size() > 0) {
