@@ -17,7 +17,7 @@ public class BorderShower extends Pattern {
 
         for (int i = 0; i < 3; i++) {
             loc = new MCWarClanLocation(highestBlock);
-            loc.add(0, 1, 0);
+            loc.add(0, i, 0);
 
             switch (i) {
                 case 2:
