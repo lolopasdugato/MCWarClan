@@ -68,7 +68,7 @@ commands:
   description: Allows a player to see the treasure owned by his team.
   permission: mcwarclan.treasure
   usage: Type /<command> to see the treasure your team owns.
-  
+
 permissions:
  mcwarclan.*:
   description: Gives access to all MCWarClan commands.

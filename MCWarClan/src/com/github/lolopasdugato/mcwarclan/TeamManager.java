@@ -126,8 +126,13 @@ public class TeamManager implements Serializable {
      * @param t the team to add.
      */
     public void checkTeamValidity(Team t) throws InvalidColorException, InvalidNameException, MaximumNumberOfTeamReachedException {
-        if(_teamArray.size() >= Settings.maxNumberOfTeam)
+        if (_teamArray.size() >= Settings.maxNumberOfTeam) {
             throw new MaximumNumberOfTeamReachedException("In createTeam, The maximum number of team is reached (" + _teamArray.size() + "/" + Settings.maxNumberOfTeam + ") !");
+        } else if (t.get_name().length() < 4) {
+            throw new InvalidNameException("In checkTeamValidity, " + t.get_name() + " is too short (must have a minimum of 4 letters).");
+        } else if (t.get_name().contains(" ")) {
+            throw new InvalidNameException("In checkTeamValidity, the name shouldn't contain any space.");
+        }
         for (Team a_team : _teamArray) {
             // Check color
             if (t.get_color().get_colorName().equals(a_team.get_color().get_colorName()) || !t.get_color().is_validColor())

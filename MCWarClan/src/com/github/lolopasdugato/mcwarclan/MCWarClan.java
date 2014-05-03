@@ -5,6 +5,10 @@
 package com.github.lolopasdugato.mcwarclan;
 
 import com.github.lolopasdugato.mcwarclan.commandexecutors.*;
+import com.github.lolopasdugato.mcwarclan.commands.BaseCommands;
+import com.github.lolopasdugato.mcwarclan.commands.CommandHandler;
+import com.github.lolopasdugato.mcwarclan.commands.TeamCommands;
+import com.github.lolopasdugato.mcwarclan.commands.TreasureCommands;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
@@ -89,6 +93,17 @@ public class MCWarClan extends JavaPlugin implements Listener {
 
     }
 
+    public void registerCommands() {
+        CommandHandler handler = new CommandHandler();
+        handler.register("team", new TeamCommands(_tc));
+        handler.register("base", new BaseCommands());
+        handler.register("treasure", new TreasureCommands());
+
+        getCommand("team").setExecutor(handler);
+        getCommand("base").setExecutor(handler);
+        getCommand("treasure").setExecutor(handler);
+    }
+
     private void initRoutines() {
         //Create task and set time before recall
         //Info : 20 ticks ~= 1 second
@@ -128,6 +143,7 @@ public class MCWarClan extends JavaPlugin implements Listener {
 
             log.info("|-_MCWARCLAN_-| Setting command Executor...");
             InitCommandExecutor();
+            // registerCommands();
             log.info("|-_MCWARCLAN_-| OK !");
             // Could be perfless but nee exact precision.
             // Moreover, very light task.

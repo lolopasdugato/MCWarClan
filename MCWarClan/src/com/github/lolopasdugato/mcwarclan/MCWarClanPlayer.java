@@ -369,7 +369,7 @@ public class MCWarClanPlayer implements Serializable {
             return false;
         } catch (InvalidNameException e) {
             e.sendDebugMessage();
-            Messages.sendMessage("Sorry, this name is already taken !", Messages.messageType.INGAME, player);
+            Messages.sendMessage("Sorry, this name is invalid (The name should not be taken and have a minimum of 4 letters and no space) !", Messages.messageType.INGAME, player);
             return false;
         } catch (MaximumNumberOfTeamReachedException e) {
             Messages.sendMessage("Sorry, maximum number of team reached !", Messages.messageType.INGAME, player);
