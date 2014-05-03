@@ -87,6 +87,7 @@ permissions:
    mcwarclan.upgrade: true
    mcwarclan.savemoney: true
    mcwarclan.withdraw: true
+   mcwarclan.treasure: true
  mcwarclan.showteams:
   description: List all teams in the game.
   default: true
@@ -128,4 +129,7 @@ permissions:
   default: true
  mcwarclan.withdraw:
   description: Allows a player to take emeralds from the team treasure. These emeralds will appear in the base he is currently in.
+  default: true
+ mcwarclan.treasure:
+  description: Allows a player to see the treasure owned by his team.
   default: true

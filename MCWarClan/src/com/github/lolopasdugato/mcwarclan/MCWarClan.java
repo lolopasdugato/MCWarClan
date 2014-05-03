@@ -82,7 +82,7 @@ public class MCWarClan extends JavaPlugin implements Listener {
         getCommand("createbase").setExecutor(new BaseRelatedCommands(_tc, this));
         getCommand("baseinfo").setExecutor(new BaseRelatedCommands(_tc, this));
         getCommand("contest").setExecutor(new BaseRelatedCommands(_tc, this));
-        getCommand("upgrade").setExecutor(new BaseRelatedCommands(_tc, this));
+        getCommand("upgrade").setExecutor(new TeamBankRelatedCommands(_tc));
         getCommand("savemoney").setExecutor(new TeamBankRelatedCommands(_tc));
         getCommand("withdraw").setExecutor(new TeamBankRelatedCommands(_tc));
         getCommand("treasure").setExecutor(new TeamBankRelatedCommands(_tc));
