@@ -4,7 +4,10 @@
 
 package com.github.lolopasdugato.mcwarclan;
 
-import com.github.lolopasdugato.mcwarclan.commandexecutors.*;
+import com.github.lolopasdugato.mcwarclan.commandexecutors.AdminCommands;
+import com.github.lolopasdugato.mcwarclan.commandexecutors.BaseRelatedCommands;
+import com.github.lolopasdugato.mcwarclan.commandexecutors.TeamBankRelatedCommands;
+import com.github.lolopasdugato.mcwarclan.commandexecutors.TeamRelatedCommands;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
@@ -14,7 +17,7 @@ import java.util.logging.Logger;
 
 public class MCWarClan extends JavaPlugin implements Listener {
 
-    public static String VERSION = "v1.0";
+    public static String VERSION = "v1.0.1";
     public BukkitTask _tsk;
     protected TeamManager _tc;
     protected EventManager _em;
