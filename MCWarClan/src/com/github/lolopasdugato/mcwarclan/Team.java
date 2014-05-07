@@ -1,15 +1,19 @@
 package com.github.lolopasdugato.mcwarclan;
 
 import com.github.lolopasdugato.mcwarclan.customexceptions.MaximumTeamCapacityReachedException;
+import com.github.lolopasdugato.mcwarclan.roles.MCWarClanBarbarian;
+import com.github.lolopasdugato.mcwarclan.roles.McWarClanChief;
+import com.github.lolopasdugato.mcwarclan.roles.McWarClanRole;
+import com.github.lolopasdugato.mcwarclan.roles.McWarClanTeamMember;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.UUID;
 
 public class Team extends Object implements Serializable {
 
@@ -63,7 +67,6 @@ public class Team extends Object implements Serializable {
         _id = _idMaster;
         if (_name.equals("Barbarians"))
             BARBARIAN_TEAM_ID = _id;
-//        testBase();
         initCost();
         Messages.sendMessage("I am team " + _name + " and my id is: " + _id + " (masterId:" + _idMaster + ")", Messages.messageType.DEBUG, null);
         _hasLost = false;
@@ -155,6 +158,7 @@ public class Team extends Object implements Serializable {
         return _age;
     }
 
+
     //////////////////////////////////////////////////////////////////////////////
     //--------------------------------- Setters ----------------------------------
     //////////////////////////////////////////////////////////////////////////////
@@ -208,6 +212,35 @@ public class Team extends Object implements Serializable {
     }
 
     /**
+     * Search a player in a team based on his uuid.
+     * @param uuid the uuid of the player we are looking for.
+     * @return The player if found, null else.
+     */
+    public MCWarClanPlayer getPlayer(UUID uuid) {
+        for (MCWarClanPlayer _teamMember : _teamMembers) {
+            if (_teamMember.get_uuid().equals(uuid)) {
+                return _teamMember;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Search a player in a team based on his name.
+     *
+     * @param playerName the name of the player we are looking for.
+     * @return The player if found, null else.
+     */
+    public MCWarClanPlayer getPlayer(String playerName) {
+        for (MCWarClanPlayer _teamMember : _teamMembers) {
+            if (_teamMember.get_name().equals(playerName)) {
+                return _teamMember;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Initialize the join cost, depending on the team.
      */
     public void initCost() {
@@ -231,6 +264,7 @@ public class Team extends Object implements Serializable {
             if (isBarbarian()) {
                 _teamMembers.add(player);
                 player.set_team(this);
+                player.set_role(new MCWarClanBarbarian(player));
                 if (!_bukkitTeam.hasPlayer(player.toOfflinePlayer()))
                     _bukkitTeam.addPlayer(player.toOfflinePlayer());
                 player.reloadSpawn();
@@ -240,6 +274,14 @@ public class Team extends Object implements Serializable {
                 throw new MaximumTeamCapacityReachedException("In addTeamMate, cannot add" + player.get_name() + " to team " + _name + " maximum size reached(" + _teamSize + "/" + _teamMembers.size() + ")");
                 // Normal case
             } else {
+                if (isEmpty()) {
+                    player.set_role(new McWarClanChief(player, this));
+                    Messages.sendMessage("Congratulations ! You are the new chief of the team " + get_color()
+                                    .get_colorMark() + get_name(),
+                            Messages.messageType.INGAME, player.toOnlinePlayer()
+                    );
+                } else
+                    player.set_role(new McWarClanTeamMember(player));
                 player.set_team(this);
                 _teamMembers.add(player);
                 if (!_bukkitTeam.hasPlayer(player.toOfflinePlayer()))
@@ -291,7 +333,15 @@ public class Team extends Object implements Serializable {
         try {
             _teamMembers.remove(player);
             _bukkitTeam.removePlayer(player.toOfflinePlayer());
+            if (player.get_role().get_name() == McWarClanRole.RoleType.CHIEF && !isEmpty()) {
+
+                //We have to define a new chief for the team
+                _teamMembers.get(0).set_role(new McWarClanChief(player, this));
+                sendMessage("Because your chief " + Messages.color(player.get_name()) + " leave your team, " +
+                        "" + Messages.color(_teamMembers.get(0).get_name()) + " is now your new chief.");
+            }
             player.set_team(null);
+            player.set_role(null);
             if (!isBarbarian())
                 sendMessage(Messages.color(player.get_name()) + " has left the team !");
         } catch (IllegalStateException e) {

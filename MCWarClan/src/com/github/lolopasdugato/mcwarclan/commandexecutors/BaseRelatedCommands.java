@@ -7,8 +7,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.ArrayList;
-
 /**
  * Created by Loïc on 23/04/2014.
  */
@@ -90,25 +88,11 @@ public class BaseRelatedCommands extends MCWarClanCommandExecutor {
             Player player = ((Player) sender).getPlayer();
             MCWarClanPlayer mcPlayer = _tc.getPlayer(player.getUniqueId());
             if (args.length == 0) {
-                Base playerBase = mcPlayer.getCurrentBase();
-                if (playerBase != null && !playerBase.isEnemyToPlayer(mcPlayer)) {
-                    Messages.sendMessage("Here are the detailed information about the base you're in at the moment: ", Messages.messageType.INGAME, player);
-                    Messages.sendMessage(playerBase.getInfo(), Messages.messageType.INGAME, player);
-                } else {
-                    Messages.sendMessage("Currently, you're not in any allied base.", Messages.messageType.INGAME, player);
-                }
+                //Get the information about the current base
+                mcPlayer.infoCurrentBase();
             } else if (args.length == 1) {
                 if (args[0].equalsIgnoreCase("all")) {
-                    ArrayList<Base> playerBases = mcPlayer.get_team().get_bases();
-                    String[] info = new String[playerBases.size()];
-                    for (int i = 0; i < playerBases.size(); i++) {
-                        info[i] = playerBases.get(i).getMinimalInfo();
-                    }
-                    if (info.length == 0) {
-                        Messages.sendMessage("Your team don't own any base at the moment !", Messages.messageType.INGAME, player);
-                    }
-                    Messages.sendMessage("Here is a shortened list of details about your bases: ", Messages.messageType.INGAME, player);
-                    Messages.sendMessage(info, Messages.messageType.INGAME, player);
+                    mcPlayer.infoAllBases();
                 } else {
                     int id;
                     try {
@@ -117,10 +101,10 @@ public class BaseRelatedCommands extends MCWarClanCommandExecutor {
                         Messages.sendMessage("No allied base found for id: " + Messages.color(args[0]) + ".", Messages.messageType.INGAME, player);
                         return false;
                     }
+
                     Base baseAsked = mcPlayer.getAlliedBase(id);
                     if (baseAsked != null) {
-                        Messages.sendMessage("Here are the detailed information about the base you're asking for :", Messages.messageType.INGAME, player);
-                        Messages.sendMessage(baseAsked.getInfo(), Messages.messageType.INGAME, player);
+                        mcPlayer.infoBase(baseAsked);
                     } else {
                         Messages.sendMessage("No allied base found for id: " + args[0] + ".", Messages.messageType.INGAME, player);
                     }
@@ -144,31 +128,20 @@ public class BaseRelatedCommands extends MCWarClanCommandExecutor {
         if (args.length != 0) {
             return false;
         } else if (sender instanceof  Player) {
-            Player player = ((Player) sender).getPlayer();
-            MCWarClanPlayer mcPlayer = _tc.getPlayer(player.getUniqueId());
-            Base currentBase = mcPlayer.getCurrentBase();
-            if (mcPlayer.isBarbarian()) {
-                Messages.sendMessage("You cannot contest a base when you are a member of " + mcPlayer.getColoredTeamName(), Messages.messageType.INGAME, player);
-            } else if (currentBase != null && !currentBase.isEnemyToPlayer(mcPlayer)) {
-                Messages.sendMessage("Use your mind... you cannot attack your own team base !", Messages.messageType.INGAME, player);
-            } else if (!mcPlayer.hasBases()) {
-                Messages.sendMessage("You need at least one Head Quarter, then you could launch any battle you want !", Messages.messageType.INGAME, player);
-            } else if (currentBase == null) {
-                Messages.sendMessage("You're not in an enemy base, you cannot contest this territory.", Messages.messageType.INGAME, player);
-            } else if (!currentBase.hasEnoughTeamMatesToBeAttacked()) {
-                Messages.sendMessage("Not enough players connected in " + currentBase.getTeamColoredName() + " to attack them.", Messages.messageType.INGAME, player);
-            } else if (currentBase.isContested()) {
-                Messages.sendMessage("This team is already attacked by another team. But nothing forbid you to help one of these two...", Messages.messageType.INGAME, player);
-            } else {
-                currentBase.isContested(true);
+            MCWarClanPlayer player = _tc.getPlayer(((Player) sender).getUniqueId());
+
+            Base baseContest = player.canContestCurrentBase();
+            if (baseContest != null) {
+
+                baseContest.isContested(true);
                 // Inform the two teams !
-                Team attackedTeam = currentBase.get_team();
-                Team attackingTeam = mcPlayer.get_team();
-                attackedTeam.sendMessage(currentBase.get_name() + " is attacked by " + attackingTeam.getColoredName() + " !");
+                Team attackedTeam = baseContest.get_team();
+                Team attackingTeam = player.get_team();
+                attackedTeam.sendMessage(baseContest.get_name() + " is attacked by " + attackingTeam.getColoredName() + " !");
                 attackingTeam.sendMessage("Your team is attacking " + attackedTeam.getColoredName() + " !");
 
                 //Create a new thread in order to check if the enemies are defeated
-                BukkitTask tks = new MCWarClanRoutine.ContestedBaseRoutine(currentBase,
+                BukkitTask tks = new MCWarClanRoutine.ContestedBaseRoutine(baseContest,
                         attackingTeam).runTaskTimer(_plugin,
                         0, 100);
             }

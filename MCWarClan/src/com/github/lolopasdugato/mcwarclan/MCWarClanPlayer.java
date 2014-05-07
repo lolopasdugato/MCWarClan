@@ -1,12 +1,13 @@
 package com.github.lolopasdugato.mcwarclan;
 
-import com.github.lolopasdugato.mcwarclan.customexceptions.*;
-import org.bukkit.*;
-import org.bukkit.block.BlockFace;
+import com.github.lolopasdugato.mcwarclan.customexceptions.MaximumTeamCapacityReachedException;
+import com.github.lolopasdugato.mcwarclan.roles.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
-import sun.plugin2.message.Message;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -24,15 +25,31 @@ public class MCWarClanPlayer implements Serializable {
     private String _name;
     private Team _team;
     private MCWarClanLocation _spawn;
+    private McWarClanRole _role;
 
     //////////////////////////////////////////////////////////////////////////////
     //------------------------------- Constructors -------------------------------
     //////////////////////////////////////////////////////////////////////////////
 
-    public MCWarClanPlayer(Player player, Team team){
+    public MCWarClanPlayer(Player player, Team team, McWarClanRole.RoleType role) {
         _uuid = player.getUniqueId();
         _name = player.getName();
         _team = team;
+        switch (role) {
+            case CHIEF:
+                _role = new McWarClanChief(this, _team);
+                break;
+            case TREASURER:
+                _role = new MCWarClanTreasurer(this);
+                break;
+            case TEAM_MEMBER:
+                _role = new McWarClanTeamMember(this);
+                break;
+            case BARBARIAN:
+                System.out.println("coucou");
+                _role = new MCWarClanBarbarian(this);
+                break;
+        }
         reloadSpawn();
     }
 
@@ -48,14 +65,21 @@ public class MCWarClanPlayer implements Serializable {
         this._team = _team;
     }
 
-    //////////////////////////////////////////////////////////////////////////////
-    //--------------------------------- Setters ----------------------------------
-    //////////////////////////////////////////////////////////////////////////////
-
     public MCWarClanLocation get_spawn() {
         return _spawn;
     }
 
+    //////////////////////////////////////////////////////////////////////////////
+    //--------------------------------- Setters ----------------------------------
+    //////////////////////////////////////////////////////////////////////////////
+
+    public McWarClanRole get_role() {
+        return _role;
+    }
+
+    public void set_role(McWarClanRole role) {
+        _role = role;
+    }
 
     //////////////////////////////////////////////////////////////////////////////
     //--------------------------------- Functions --------------------------------
@@ -298,13 +322,6 @@ public class MCWarClanPlayer implements Serializable {
         return null;
     }
 
-    /**
-     * Check if this player can contest a base.
-     * @return true if he can.
-     */
-    public boolean canContest(){
-        return _team.get_bases().size() != 0 && _team.get_id() != Team.BARBARIAN_TEAM_ID;
-    }
 
     /**
      * Switch a player from a team to a team.
@@ -312,6 +329,7 @@ public class MCWarClanPlayer implements Serializable {
      * @return
      */
     public boolean switchTo(Team teamToSwitchTo){
+        String prevTeam = _team.get_name();
         try{
             _team.deleteTeamMate(this);
             teamToSwitchTo.addTeamMate(this);
@@ -322,6 +340,8 @@ public class MCWarClanPlayer implements Serializable {
                 Messages.sendMessage("Too many members in " + teamToSwitchTo.getColoredName() + " cannot switch you to this team !", Messages.messageType.INGAME, toOnlinePlayer());
             return false;
         }
+        Messages.sendMessage("You have been successfully moved from " + Messages.color(prevTeam) + " to "
+                + Messages.color(_team.get_name()), Messages.messageType.INGAME, toOnlinePlayer());
         return true;
     }
 
@@ -341,92 +361,28 @@ public class MCWarClanPlayer implements Serializable {
         }
     }
 
+
+    //////////////////////////////////////////////////////////////////////////////
+    //---------------------------- Bridges to roles ------------------------------
+    //////////////////////////////////////////////////////////////////////////////
+
+
     /**
      * Create a team for a specified player.
-     * @param t
-     * @return
+     * @param t The team we wanted to create
+     * @return True if the creation succeed, otherwise false.
      */
     public boolean createTeam(Team t) {
-        Player player = toOnlinePlayer();
-        try {
-            TeamManager teamManager = _team.get_teamManager();
-            teamManager.checkTeamValidity(t);
-            if(!canPay(teamManager.get_creatingCost())) {
-                Messages.sendMessage("You need more resources to create this team. Here is an exhaustive list of all materials required: ", Messages.messageType.INGAME, player);
-                Messages.sendMessage(teamManager.get_creatingCost().getResourceTypes(), Messages.messageType.INGAME, player);
-                return false;
-            }
-            payTribute(teamManager.get_creatingCost());
-            if(!teamManager.addTeam(t)) {
-                Messages.sendMessage("Cannot add the team for unknown reason...", Messages.messageType.DEBUG, null);
-                Messages.sendMessage("Cannot add the team for unknown reason...", Messages.messageType.INGAME, player);
-                return false;
-            }
-        } catch (InvalidColorException e) {
-            e.sendDebugMessage();
-            Messages.sendMessage("Sorry, but name or color is already taken by another team. Here is the colorname list: ", Messages.messageType.INGAME, player);
-            Messages.sendMessage("§2GREEN, §eYELLOW, §0BLACK, §dMAGENTA, §5PURPRLE, §3CYAN, §bLIGHTBLUE", Messages.messageType.INGAME, player);
-            return false;
-        } catch (InvalidNameException e) {
-            e.sendDebugMessage();
-            Messages.sendMessage("Sorry, this name is already taken !", Messages.messageType.INGAME, player);
-            return false;
-        } catch (MaximumNumberOfTeamReachedException e) {
-            Messages.sendMessage("Sorry, maximum number of team reached !", Messages.messageType.INGAME, player);
-            return false;
-        }
-        _team.get_teamManager().sendMessage(t.getColoredName() + " has been created by §a" + _name + "§6 let's prepare to surrender...");
-        return true;
+        return _role.createTeam(t);
     }
 
     /**
      * Create a base which is an HQ.
      * @param baseLocation
-     * @return
+     * @return True if succeed, otherwise false
      */
     public boolean createHQ(Location baseLocation, String baseName) {
-        Player player = toOnlinePlayer();
-        TeamManager teams = _team.get_teamManager();
-        Base newBase = null;
-        if (player.getWorld().getEnvironment() != World.Environment.NORMAL) {
-            Messages.sendMessage("Sorry, but MCWarClan does not support other Environment than normal world. You cannot create you HeadQuarter there.", Messages.messageType.INGAME, player);
-            return false;
-        }
-        if (_team.isBarbarian()) {
-            Messages.sendMessage("You cannot create HeadQuarter as a §7barbarian§6 !", Messages.messageType.INGAME, player);
-            return false;
-        } else if (_team.get_bases().size() > 0) {
-            Base HQ = _team.getHQ();
-            Messages.sendMessage("You can only create a single HeadQuarter ! Yours is called " + HQ.get_name() + "(id:§a" + HQ.get_id() + "§6).", Messages.messageType.INGAME, player);
-            return false;
-        } else if (teams.isNearAnotherTerritory(true, baseLocation)){
-            Messages.sendMessage("You cannot create an HQ too close from another base. Try somewhere else !", Messages.messageType.INGAME, player);
-            return false;
-        } else if (Bukkit.getWorld(Settings.classicWorldName).getSpawnLocation().distance(baseLocation)
-                < Settings.barbariansSpawnDistance + Settings.secureBarbarianDistance + Settings.radiusHQBonus + Settings.initialRadius) {
-            Messages.sendMessage("You cannot create a base too close from the barbarian spawn !", Messages.messageType.INGAME, player);
-            return false;
-        } else {
-            try {
-                newBase = new Base(true, _team, baseName, new MCWarClanLocation(baseLocation));
-                _team.get_bases().add(newBase);
-                for (int k = 0; k < _team.get_teamMembers().size(); k++) {
-                    _team.get_teamMembers().get(k).reloadSpawn();
-                }
-
-                teams.sendMessage(_team.getColoredName() + " just created their first base ! So much time wasted...");
-                _team.sendMessage(baseName + " is your first base. Its unique id is §a" + newBase.get_id() + "§6 be careful, to build the others, you will need to find some materials ! You can capture enemy bases as well...");
-            } catch (InvalidFlagLocationException e) {
-                e.sendDebugMessage();
-                Messages.sendMessage("Cannot create the flag for the following reason: " + e.getMessage(), Messages.messageType.INGAME, player);
-                return false;
-            } catch (NotEnoughSpaceException e) {
-                e.sendDebugMessage();
-                Messages.sendMessage("Please try to create the flag somewhere else. " + e.getMessage(), Messages.messageType.INGAME, player);
-                return false;
-            }
-        }
-        return true;
+        return _role.createHQ(baseLocation, baseName);
     }
 
     /**
@@ -434,103 +390,69 @@ public class MCWarClanPlayer implements Serializable {
      * @param name
      * @param baseReferenceId
      * @param direction
-     * @return
+     * @return True if succeed, otherwise false
      */
     public boolean createBase(String name, int baseReferenceId, String direction) {
-        Player player = toOnlinePlayer();
-        TeamManager teams = _team.get_teamManager();
-        Base baseReference = _team.getBase(baseReferenceId);
-        Location newBaseLocation;
-        if (baseReference == null) {
-            Messages.sendMessage("Bad base reference id. This ID does not match any of your base.", Messages.messageType.INGAME, player);
-            return false;
-        } else {
-            newBaseLocation = new MCWarClanLocation(baseReference.get_loc()).getLocation();
-        } if (!canPay(_team.get_baseCreationCost()) && player.getGameMode() != GameMode.CREATIVE) {
-            Messages.sendMessage("Sorry, you do not have enough materials to create the new base. Here is an exhaustive list of all materials required: ", Messages.messageType.INGAME, player);
-            Messages.sendMessage(_team.get_baseCreationCost().getResourceTypes(), Messages.messageType.INGAME, player);
-            return false;
-        } else if (direction.equalsIgnoreCase("north")) {
-            newBaseLocation.add(0, 0, (Settings.initialRadius + Settings.radiusHQBonus) * (-2) - 1);
-            newBaseLocation.setY(newBaseLocation.getWorld().getHighestBlockYAt(newBaseLocation) - 1);
-        } else if (direction.equalsIgnoreCase("south")) {
-            newBaseLocation.add(0, 0, (Settings.initialRadius + Settings.radiusHQBonus) * (2) + 1);
-            newBaseLocation.setY(newBaseLocation.getWorld().getHighestBlockYAt(newBaseLocation) - 1);
-        } else if (direction.equalsIgnoreCase("east")) {
-            newBaseLocation.add((Settings.initialRadius + Settings.radiusHQBonus) * (2) + 1, 0, 0);
-            newBaseLocation.setY(newBaseLocation.getWorld().getHighestBlockYAt(newBaseLocation) - 1);
-        } else if (direction.equalsIgnoreCase("west")) {
-            newBaseLocation.add((Settings.initialRadius + Settings.radiusHQBonus) * (-2) - 1, 0, 0);
-            newBaseLocation.setY(newBaseLocation.getWorld().getHighestBlockYAt(newBaseLocation) - 1);
-        } else {
-            Messages.sendMessage("The direction '" + direction + "' is not recognized.", Messages.messageType.INGAME, player);
-            return false;
-        } if (Bukkit.getWorld(Settings.classicWorldName).getSpawnLocation().distance(newBaseLocation)
-                < Settings.barbariansSpawnDistance + Settings.secureBarbarianDistance + Settings.radiusHQBonus + Settings.initialRadius) {
-            Messages.sendMessage( name + " is too close from the barbarian spawn ! Cannot create it !", Messages.messageType.INGAME, player);
-            return false;
-        } else if (teams.isNearAnotherTerritory(false, newBaseLocation)){
-            Messages.sendMessage("You cannot create a base too close from another base. Try somewhere else !", Messages.messageType.INGAME, player);
-            return false;
-        } try {
-            newBaseLocation.getBlock().getRelative(BlockFace.UP).breakNaturally();
-            if (player.getGameMode() != GameMode.CREATIVE)
-                payTribute(_team.get_baseCreationCost());
-            Base newBase = new Base(false, _team, name, new MCWarClanLocation(newBaseLocation));
-            _team.get_bases().add(newBase);
-
-            _team.increaseBaseCreationCost();
-            teams.sendMessage("Well done " + _team.getColoredName() + ", " + _name + " just created " + name + " (id:§a" + newBase.get_id() + "§6) in the " + direction + " of " + baseReference.get_name() + " ! Its current protection radius is " + newBase.get_radius() + ".");
-        } catch (InvalidFlagLocationException e) {
-            e.sendDebugMessage();
-            Messages.sendMessage("Cannot create the flag for the following reason: " + e.getMessage(), Messages.messageType.INGAME, player);
-            return false;
-        } catch (NotEnoughSpaceException e) {
-            e.sendDebugMessage();
-            Messages.sendMessage("Please try to create the flag somewhere else. " + e.getMessage(), Messages.messageType.INGAME, player);
-            return false;
-        }
-        return true;
+        return _role.createBase(name, baseReferenceId, direction);
     }
 
     /**
      * Save Emeralds in the team treasure.
-     * @param amount
-     * @return
+     * @param amount the amount of emeralds the player have in his inventory
+     * @return True if succeed, otherwise false
      */
     public boolean save(int amount) {
-        Player player = toOnlinePlayer();
-        if (amount < 0) {
-            Messages.sendMessage(Messages.color(amount) + " is not a valid amount of emeralds to store in the team treasure.", Messages.messageType.INGAME, player);
-            return false;
-        } else {
-            int amountToSave = amount;
-            PlayerInventory playerInventory = player.getInventory();
-            if (playerInventory.contains(Material.EMERALD, amount)) {
-                do {
-                    int index = playerInventory.first(Material.EMERALD);
-                    ItemStack itemStack = playerInventory.getItem(index);
-                    if (itemStack.getAmount() > amount) {
-                        itemStack.setAmount(itemStack.getAmount() - amount);
-                        playerInventory.setItem(index, itemStack);
-                        amount = 0;
-                    } else {
-                        amount -= itemStack.getAmount();
-                        itemStack.setAmount(0);
-                        playerInventory.setItem(index, itemStack);
-                    }
-                } while (amount != 0);
-                _team.earnMoney(amountToSave);
-                player.updateInventory();
-            } else {
-                Messages.sendMessage("Sorry, you do not have " + Messages.color(amount) + " emerald(s) in your inventory !", Messages.messageType.INGAME, player);
-                return false;
-            }
-        }
-        _team.sendMessage(Messages.color(_name) + " saved " + Messages.color(amount) + " emerald(s) in the team treasure !");
-        Messages.sendMessage("The treasure value is now " + Messages.color(_team.get_money()) + ".", Messages.messageType.INGAME, player);
-        return true;
+        return _role.saveMoney(amount);
     }
+
+
+    public boolean infoAllBases() {
+        return _role.infoAllBases();
+    }
+
+    public void infoBase(Base base) {
+        _role.infoBase(base);
+    }
+
+    public boolean infoCurrentBase() {
+        return _role.infoCurrentBase();
+    }
+
+
+    public boolean infoBaseMini(Base base) {
+        return _role.infoBaseMini(base);
+    }
+
+
+    /**
+     * Check if this player can contest a base.
+     * @return The base if possible, otherwise return null
+     */
+    public Base canContestCurrentBase() {
+        return _role.canContestCurrentBase();
+    }
+
+    /**
+     * Check the amount of money (emeralds) store in the team treasure
+     *
+     * @return the number of emeralds
+     */
+    public int checkAccount() {
+        return _role.checkAccount();
+    }
+
+    public boolean upgradeBase(Base toUpgrade) {
+        return _role.upgradeBase(toUpgrade);
+    }
+
+    public boolean withdrawMoney(int amount) {
+        return _role.withdrawMoney(amount);
+    }
+
+
+    //////////////////////////////////////////////////////////////////////////////
+    //----------------------------- Other functions ------------------------------
+    //////////////////////////////////////////////////////////////////////////////
 
     /**
      * Return the colored name of the player's team.
@@ -581,5 +503,4 @@ public class MCWarClanPlayer implements Serializable {
     public void sendMessageToMates(String message) {
         _team.sendMessage(message);
     }
-
 }

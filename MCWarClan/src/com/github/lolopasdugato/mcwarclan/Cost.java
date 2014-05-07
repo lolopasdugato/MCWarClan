@@ -8,7 +8,7 @@ import java.util.ArrayList;
 /**
  * Created by Loïc on 05/04/2014.
  */
-public class Cost implements Serializable{
+public class Cost implements Serializable {
 
     static private final long serialVersionUID = 7;
 
@@ -20,18 +20,19 @@ public class Cost implements Serializable{
     //////////////////////////////////////////////////////////////////////////////
 
     /**
-     *  Classic Cost constructor
+     * Classic Cost constructor
      */
-    public Cost(){
+    public Cost() {
         _costEquivalence = new ArrayList<Equivalence>();
         _totalMaterial = 0;
     }
 
     /**
-     *  Cost copy constructor
+     * Cost copy constructor
+     *
      * @param c
      */
-    public Cost(Cost c){
+    public Cost(Cost c) {
         _costEquivalence = c.get_costEquivalence();
     }
 
@@ -47,19 +48,22 @@ public class Cost implements Serializable{
     //--------------------------------- Setters ----------------------------------
     //////////////////////////////////////////////////////////////////////////////
 
-    public void set_costEquivalence(ArrayList<Equivalence> _costEquivalence) { this._costEquivalence = _costEquivalence; }
+    public void set_costEquivalence(ArrayList<Equivalence> _costEquivalence) {
+        this._costEquivalence = _costEquivalence;
+    }
 
     //////////////////////////////////////////////////////////////////////////////
     //--------------------------------- Functions --------------------------------
     //////////////////////////////////////////////////////////////////////////////
 
     /**
-     *  Add a value to a cost.
+     * Add a value to a cost.
+     *
      * @param materialName
      * @param numberOfMaterials
      * @return
      */
-    public boolean addValue(String materialName, int numberOfMaterials){
+    public boolean addValue(String materialName, int numberOfMaterials) {
         if (Material.getMaterial(materialName) != null) {
             if (numberOfMaterials <= 0) {
                 return false;
@@ -96,14 +100,15 @@ public class Cost implements Serializable{
 
     /**
      * Add a cost to another.
+     *
      * @param costToAdd
      * @return
      */
     public boolean addCost(Cost costToAdd) {
         ArrayList<Equivalence> costToAddEqui = costToAdd.get_costEquivalence();
         Cost newCost = new Cost(this);
-        for (int i = 0; i < costToAddEqui.size(); i++) {
-            if(!newCost.addValue(costToAddEqui.get(i).get_materialName(), costToAddEqui.get(i).get_materialValue()))
+        for (Equivalence aCostToAddEqui : costToAddEqui) {
+            if (!newCost.addValue(aCostToAddEqui.get_materialName(), aCostToAddEqui.get_materialValue()))
                 return false;
         }
         _costEquivalence = newCost.get_costEquivalence();
@@ -111,26 +116,27 @@ public class Cost implements Serializable{
     }
 
     /**
-     *  Returns a string list containing all resources types in a cost, linked with their needed amount.
+     * Returns a string list containing all resources types in a cost, linked with their needed amount.
+     *
      * @return
      */
-    public String[] getResourceTypes(){
+    public String[] getResourceTypes() {
         ArrayList<String> resources = new ArrayList<String>();
-        for(int i = 0; i < _costEquivalence.size(); i++){
-            if(_costEquivalence.get(i).get_materialValue() != 0)
-                resources.add("§6" + _costEquivalence.get(i).get_materialName() + " : " + _costEquivalence.get(i).get_materialValue() + ".");
+        for (Equivalence a_costEquivalence : _costEquivalence) {
+            if (a_costEquivalence.get_materialValue() != 0)
+                resources.add("§6" + a_costEquivalence.get_materialName() + " : " + a_costEquivalence.get_materialValue() + ".");
         }
         String[] toReturn = new String[resources.size()];
-        for(int i = 0; i < resources.size(); i++){
+        for (int i = 0; i < resources.size(); i++) {
             toReturn[i] = resources.get(i);
         }
         return toReturn;
     }
 
     /**
-     *  refresh settings that should be reloaded if config.yml has been changed.
+     * refresh settings that should be reloaded if config.yml has been changed.
      */
-    public void refresh(){
+    public void refresh() {
         // No settings to refresh
     }
 }

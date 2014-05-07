@@ -123,10 +123,11 @@ public class TeamManager implements Serializable {
 
     /**
      * Verify if the team could be added to the TeamManager.
+     *
      * @param t the team to add.
      */
     public void checkTeamValidity(Team t) throws InvalidColorException, InvalidNameException, MaximumNumberOfTeamReachedException {
-        if(_teamArray.size() >= Settings.maxNumberOfTeam)
+        if (_teamArray.size() >= Settings.maxNumberOfTeam)
             throw new MaximumNumberOfTeamReachedException("In createTeam, The maximum number of team is reached (" + _teamArray.size() + "/" + Settings.maxNumberOfTeam + ") !");
         for (Team a_team : _teamArray) {
             // Check color
@@ -178,6 +179,7 @@ public class TeamManager implements Serializable {
 
     /**
      * Delete a team from both teamContainer
+     *
      * @param t the team to delete
      * @return if the removing action has worked, it returns true.
      */
@@ -194,16 +196,17 @@ public class TeamManager implements Serializable {
 
     /**
      * Search a player through the different teams in the teamContainer.
+     *
      * @param playerName the name of the player.
      * @return returns the player if it works, otherwise, it will return null.
      */
     public MCWarClanPlayer getPlayer(String playerName) {
+        MCWarClanPlayer out = null;
         for (Team a_team : _teamArray) {
-            for (int j = 0; j < a_team.get_teamMembers().size(); j++) {
-                if (a_team.get_teamMembers().get(j).get_name().equals(playerName)) {
-                    return a_team.get_teamMembers().get(j);
-                }
-            }
+            out = a_team.getPlayer(playerName);
+            if (out != null)
+                return out;
+
         }
         return null;
     }
@@ -214,12 +217,11 @@ public class TeamManager implements Serializable {
      * Search a player through the different teams in the teamContainer.
      */
     public MCWarClanPlayer getPlayer(UUID uuid) {
+        MCWarClanPlayer out = null;
         for (Team a_team : _teamArray) {
-            for (int j = 0; j < a_team.get_teamMembers().size(); j++) {
-                if (a_team.get_teamMembers().get(j).get_uuid().equals(uuid)) {
-                    return a_team.get_teamMembers().get(j);
-                }
-            }
+            out = a_team.getPlayer(uuid);
+            if (out != null)
+                return out;
         }
         return null;
     }
@@ -227,6 +229,7 @@ public class TeamManager implements Serializable {
 
     /**
      * Search a team using the team name.
+     *
      * @param teamName the team name.
      * @return returns teh team if it has found something, otherwise, returns null.
      */
@@ -336,6 +339,7 @@ public class TeamManager implements Serializable {
 
     /**
      * Get a team using it's ID.
+     *
      * @param id
      * @return
      */
@@ -349,6 +353,7 @@ public class TeamManager implements Serializable {
 
     /**
      * Returns the base area where the location is if so, return null if no results matches.
+     *
      * @param loc
      * @return
      */
@@ -366,6 +371,7 @@ public class TeamManager implements Serializable {
 
     /**
      * Send a message to all players.
+     *
      * @param message
      */
     public void sendMessage(String message) {
@@ -376,6 +382,7 @@ public class TeamManager implements Serializable {
 
     /**
      * Says if the current location to verify is near a territory.
+     *
      * @param isHQ
      * @param locationToVerify
      * @return
@@ -394,6 +401,7 @@ public class TeamManager implements Serializable {
 
     /**
      * Check if a team is full
+     *
      * @return
      */
     public boolean isFull() {
