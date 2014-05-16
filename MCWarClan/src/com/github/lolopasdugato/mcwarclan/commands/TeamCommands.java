@@ -25,10 +25,11 @@ public class TeamCommands implements CommandInterface {
                     return leaveCommand(sender);
                 } else if (args[0].equalsIgnoreCase("list") && args.length < 3) {
                     return listCommand(sender, args);
-                } else if (args[0].equalsIgnoreCase("create") && args.length == 3) {
-
+                } else if (args[0].equalsIgnoreCase("create") && args.length > 1) {
+                    return createTeamCommand(sender, args);
                 } else if (args[0].equalsIgnoreCase("upgrade") && args.length < 3) {
-
+                    Messages.sendMessage("Not yet implemented...", Messages.messageType.INGAME, sender);
+                    return false;
                 } else if (args[0].equalsIgnoreCase("info") && args.length == 1) {
 
                 } else if (args[0].equalsIgnoreCase("?") && args.length == 1) {
@@ -128,6 +129,34 @@ public class TeamCommands implements CommandInterface {
             }
         } else {
             Messages.sendMessage(CommandInterface.NO_PERMISSION_MESSAGE, Messages.messageType.INGAME, sender);
+        }
+        return true;
+    }
+
+    /**
+     *  Allows someone to create a team.
+     * @param sender
+     * @param args
+     * @return
+     */
+    public boolean createTeamCommand(CommandSender sender, String[] args){
+        if(_teamManager.isFull()){
+            Messages.sendMessage("The maximum number of team is already reach !(" + Messages.color(_teamManager.get_maxTeams()) + ").", Messages.messageType.INGAME, sender);
+        } else if (args.length == 2 && args[1].equalsIgnoreCase("?")) {
+            Messages.sendMessage("Permitted argument: <Team name>.", Messages.messageType.INGAME, sender);
+        } else if (args.length == 3 && args[2].equalsIgnoreCase("?")) {
+            Messages.sendMessage("Permitted argument: <Team color>.", Messages.messageType.INGAME, sender);
+        } else if(args.length == 3) {
+            Team toJoin = new Team(new Color(args[1]), args[0], Settings.initialTeamSize, _teamManager);
+            MCWarClanPlayer player = _teamManager.getPlayer(sender.getName());
+            if (player.createTeam(toJoin)) {
+                player.switchTo(toJoin);
+            } else {
+                return false;
+            }
+        }
+        else {
+            Messages.sendMessage("You have to be a player to perform this command !", Messages.messageType.INGAME, sender);
         }
         return true;
     }
