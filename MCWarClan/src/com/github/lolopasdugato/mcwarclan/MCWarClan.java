@@ -4,11 +4,10 @@
 
 package com.github.lolopasdugato.mcwarclan;
 
-import com.github.lolopasdugato.mcwarclan.commandexecutors.*;
-import com.github.lolopasdugato.mcwarclan.commands.BaseCommands;
-import com.github.lolopasdugato.mcwarclan.commands.CommandHandler;
-import com.github.lolopasdugato.mcwarclan.commands.TeamCommands;
-import com.github.lolopasdugato.mcwarclan.commands.TreasureCommands;
+import com.github.lolopasdugato.mcwarclan.commandexecutors.AdminCommands;
+import com.github.lolopasdugato.mcwarclan.commandexecutors.BaseRelatedCommands;
+import com.github.lolopasdugato.mcwarclan.commandexecutors.TeamBankRelatedCommands;
+import com.github.lolopasdugato.mcwarclan.commandexecutors.TeamRelatedCommands;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
@@ -64,9 +63,13 @@ public class MCWarClan extends JavaPlugin implements Listener {
 		}
 		else {
             Messages.sendMessage("File cannot be read !", Messages.messageType.DEBUG, null);
-            tc.addTeam(new Team(new Color("RED"), "HellRangers", getConfig().getInt("teamSettings.initialTeamSize"), tc));
-            tc.addTeam(new Team(new Color("BLUE"), "ElvenSoldiers", getConfig().getInt("teamSettings.initialTeamSize"), tc));
-            tc.addTeam(new Team(new Color("LIGHTGREY"), "Barbarians", getConfig().getInt("teamSettings.initialTeamSize"), tc));
+//            tc.addTeam(new Team(new Color("RED"), "HellRangers", getConfig().getInt("teamSettings.initialTeamSize"), tc));
+//            tc.addTeam(new Team(new Color("BLUE"), "ElvenSoldiers", getConfig().getInt("teamSettings.initialTeamSize"), tc));
+//            tc.addTeam(new Team(new Color("LIGHTGREY"), "Barbarians", getConfig().getInt("teamSettings.initialTeamSize"), tc));
+
+
+            tc.addTeam(new Team(new Color("LIGHTGREY"), "Barbarians", getConfig().getInt("teamSettings" +
+                    ".initialTeamSize"), tc));
         }
         return tc;
 	}
@@ -90,6 +93,7 @@ public class MCWarClan extends JavaPlugin implements Listener {
         getCommand("savemoney").setExecutor(new TeamBankRelatedCommands(_tc));
         getCommand("withdraw").setExecutor(new TeamBankRelatedCommands(_tc));
         getCommand("treasure").setExecutor(new TeamBankRelatedCommands(_tc));
+        getCommand("showrights").setExecutor(new TeamRelatedCommands((_tc)));
 
     }
 

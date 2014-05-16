@@ -1,7 +1,9 @@
 package com.github.lolopasdugato.mcwarclan.commandexecutors;
 
-import com.github.lolopasdugato.mcwarclan.*;
-import org.bukkit.Location;
+import com.github.lolopasdugato.mcwarclan.Base;
+import com.github.lolopasdugato.mcwarclan.MCWarClanPlayer;
+import com.github.lolopasdugato.mcwarclan.Messages;
+import com.github.lolopasdugato.mcwarclan.TeamManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -9,7 +11,7 @@ import org.bukkit.entity.Player;
 /**
  * Created by Loïc on 23/04/2014.
  */
-public class TeamBankRelatedCommands extends  MCWarClanCommandExecutor {
+public class TeamBankRelatedCommands extends MCWarClanCommandExecutor {
 
     //////////////////////////////////////////////////////////////////////////////
     //------------------------------- Constructors -------------------------------
@@ -48,17 +50,7 @@ public class TeamBankRelatedCommands extends  MCWarClanCommandExecutor {
             } else {
                 return false;
             }
-            if (toUpgrade == null || toUpgrade.isEnemyToPlayer(mcPlayer)) {
-                Messages.sendMessage("No base found ! Maybe you should precise a valid number or stay in one of your bases ?", Messages.messageType.INGAME, player);
-            } else if (toUpgrade.isLevelMax()) {
-                Messages.sendMessage(Messages.color(toUpgrade.get_name()) + " has already reached the maximum level !", Messages.messageType.INGAME, player);
-            } else if (!toUpgrade.upgrade()) {
-                Messages.sendMessage(Messages.color(toUpgrade.get_name()) + " cannot upgrade to level " + Messages.color(toUpgrade.get_level() + 1) + ". Not enough money !", Messages.messageType.INGAME, player);
-                Messages.sendMessage("Upgrading to level " + Messages.color(toUpgrade.get_level() + 1) + " cost " + Messages.color(Settings.radiusCost[toUpgrade.get_level() - 1]) + " emerald(s).", Messages.messageType.INGAME, player);
-            } else {
-                Messages.sendMessage("Well done, " + Messages.color(toUpgrade.get_name()) + " has been upgraded to level " + Messages.color(toUpgrade.get_level()) + " by " + Messages.color(mcPlayer.get_name()) + " !",
-                        Messages.messageType.INGAME, player);
-            }
+            mcPlayer.upgradeBase(toUpgrade);
         } else {
             Messages.sendMessage("You have to be a player to perform this command !", Messages.messageType.INGAME, sender);
         }
@@ -111,20 +103,7 @@ public class TeamBankRelatedCommands extends  MCWarClanCommandExecutor {
                     Messages.sendMessage(Messages.color(args[0]) + " is not a valid amount of emeralds to store in the team treasure.", Messages.messageType.INGAME, player);
                     return false;
                 }
-                Base currentBase = mcPlayer.getCurrentBase();
-                if (amount < 0) {
-                    return false;
-                } else if (currentBase == null || currentBase.isEnemyToPlayer(mcPlayer)) {
-                    Messages.sendMessage("You have to be in one of your bases to withdraw money !", Messages.messageType.INGAME, player);
-                } else if (amount <= mcPlayer.get_team().get_money()) {
-                    Location locationToDrop = currentBase.get_loc().getLocation();
-                    locationToDrop.add(2, 0, 0);
-                    mcPlayer.get_team().dropEmeralds(amount, locationToDrop);
-                    mcPlayer.sendMessageToMates(Messages.color(mcPlayer.get_name())+ " just take " + Messages.color(amount) + " emerald(s) from the team treasure at " + Messages.color(currentBase.get_name()) + " !");
-                    Messages.sendMessage("Don't forget emerald(s) ! you will find them in front of " + Messages.color(currentBase.get_name()) + " flag.", Messages.messageType.INGAME, player);
-                } else {
-                    Messages.sendMessage("Your team does not have " + Messages.color(args[0]) + " emerald(s) !", Messages.messageType.INGAME, player);
-                }
+                mcPlayer.withdrawMoney(amount);
             } else {
                 return false;
             }
@@ -148,16 +127,7 @@ public class TeamBankRelatedCommands extends  MCWarClanCommandExecutor {
             Player player = ((Player) sender).getPlayer();
             MCWarClanPlayer mcPlayer = _tc.getPlayer(player.getUniqueId());
 
-            if (mcPlayer.isBarbarian())
-                Messages.sendMessage(mcPlayer.getColoredTeamName() + " don't have any treasure. Their destiny is to be poor, forever.",
-                        Messages.messageType.INGAME,
-                        sender);
-            else
-                Messages.sendMessage("Your team have for the moment §a" + mcPlayer.get_team().get_money() + " emeralds§6 in your team " +
-                                "treasure.",
-                        Messages.messageType.INGAME,
-                        sender
-                );
+            mcPlayer.checkAccount();
         } else {
             Messages.sendMessage("You have to be a player to perform this command !", Messages.messageType.INGAME, sender);
         }

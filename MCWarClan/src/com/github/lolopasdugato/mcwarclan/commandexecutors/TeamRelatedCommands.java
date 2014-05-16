@@ -39,22 +39,21 @@ public class TeamRelatedCommands extends MCWarClanCommandExecutor {
      * @return
      */
     public boolean teamCommand(CommandSender sender, String[] args){
-        if(args.length == 0){
-            if(sender instanceof Player){
+        if (sender instanceof Player) {
+            if (args.length == 0) {
                 MCWarClanPlayer player = _tc.getPlayer(((Player) sender).getUniqueId());
                 Messages.sendMessage(player.get_team().playerList(), Messages.messageType.INGAME, sender);
+            } else if (args.length == 1) {
+                MCWarClanPlayer player = _tc.getPlayer(args[0]);
+                if (player != null)
+                    Messages.sendMessage(player.get_team().playerList(), Messages.messageType.INGAME, sender);
+                else
+                    Messages.sendMessage(Messages.color(args[0]) + " does not exist !", Messages.messageType.INGAME, sender);
+            } else {
+                return false;
             }
+        } else
             Messages.sendMessage("You have to be a player to perform this command !", Messages.messageType.INGAME, sender);
-        }
-        else if (args.length == 1) {
-            MCWarClanPlayer player = _tc.getPlayer(args[0]);
-            if (player != null)
-                Messages.sendMessage(player.get_team().playerList(), Messages.messageType.INGAME, sender);
-            else
-                Messages.sendMessage(Messages.color(args[0]) + " does not exist !", Messages.messageType.INGAME, sender);
-        } else {
-            return false;
-        }
         return true;
     }
 
@@ -148,6 +147,26 @@ public class TeamRelatedCommands extends MCWarClanCommandExecutor {
         return true;
     }
 
+    /**
+     * Command to display player's rights
+     *
+     * @param sender
+     * @param args
+     * @return
+     */
+    public boolean showrightsCommand(CommandSender sender, String[] args) {
+        if (sender instanceof Player) {
+            if (args.length != 0)
+                return false;
+            else {
+                MCWarClanPlayer mcPlayer = _tc.getPlayer(((Player) sender).getUniqueId());
+                mcPlayer.get_role().showRights();
+            }
+        } else
+            Messages.sendMessage("You have to be a player to perform this command !", Messages.messageType.INGAME, sender);
+        return true;
+    }
+
     //////////////////////////////////////////////////////////////////////////////
     //---------------------------- onCommand Override ----------------------------
     //////////////////////////////////////////////////////////////////////////////
@@ -164,6 +183,8 @@ public class TeamRelatedCommands extends MCWarClanCommandExecutor {
             return joinCommand(sender, args);
         } else if (label.toLowerCase().equals("createteam")) {
             return createteamCommand(sender, args);
+        } else if (label.toLowerCase().equals("showrights")) {
+            return showrightsCommand(sender, args);
         }
         return false;
     }

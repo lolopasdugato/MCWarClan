@@ -1,6 +1,7 @@
 package com.github.lolopasdugato.mcwarclan;
 
 import com.github.lolopasdugato.mcwarclan.customexceptions.MaximumTeamCapacityReachedException;
+import com.github.lolopasdugato.mcwarclan.roles.McWarClanRole;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -55,7 +56,7 @@ public class EventManager implements Listener {
             if (player == null) {
                 Messages.sendMessage("Welcome, this server is using MCWarClan " + MCWarClan.VERSION + ", have fun !", Messages.messageType.INGAME, evt.getPlayer());
                 Team barbarians = _tc.getTeam(Team.BARBARIAN_TEAM_ID);
-                player = new MCWarClanPlayer(evt.getPlayer(), barbarians);
+                player = new MCWarClanPlayer(evt.getPlayer(), barbarians, McWarClanRole.RoleType.BARBARIAN);
                 barbarians.addTeamMate(player);
                 player.spawn();
                 Messages.sendMessage(player.get_name() + " has spawn in x:" + player.get_spawn().get_x() + ", y:" + player.get_spawn().get_y() + ", z:" + player.get_spawn().get_z(), Messages.messageType.DEBUG, null);
@@ -169,32 +170,24 @@ public class EventManager implements Listener {
             if (ent.getType() == EntityType.PLAYER) {
                 //Get the player
                 MCWarClanPlayer player = _tc.getPlayer(ent.getUniqueId());
-                //If the player is in enemy territory
-                Base b = player.getCurrentBase();
-                if (b != null && b.get_team().isEnemyToTeam(player.get_team()) && player.get_team().get_id() != Team.BARBARIAN_TEAM_ID) {
-                    if(b.get_team().enoughMatesToBeAttack() && player.canContest()){
 
-                        //A war may be beginning, so the base is now contested.
+                //See if we can contest the current base
+                Base b = player.canContestCurrentBase();
 
-                        if (b.isContested()) {
-                            return;
-                            //We do nothing because another thread is already running.
-                        }
+                if (b != null) {
+                    //A war begin, so the base is now contested.
+                    b.isContested(true);
 
-                        //else we must create a thread
-                        b.isContested(true);
+                    // Inform the two teams !
+                    Team attackedTeam = b.get_team();
+                    Team attackingTeam = player.get_team();
+                    attackedTeam.sendMessage(b.get_name() + " is attacked by " + attackingTeam.get_color().get_colorMark() + attackingTeam.get_name() + " !");
+                    attackingTeam.sendMessage("Your team is attacking " + attackedTeam.get_color().get_colorMark() + attackedTeam.get_name() + " !");
 
-                        // Inform the two teams !
-                        Team attackedTeam = b.get_team();
-                        Team attackingTeam = player.get_team();
-                        attackedTeam.sendMessage(b.get_name() + " is attacked by " + attackingTeam.get_color().get_colorMark() + attackingTeam.get_name() + " !");
-                        attackingTeam.sendMessage("Your team is attacking " + attackedTeam.get_color().get_colorMark() + attackedTeam.get_name() + " !");
-
-                        //Create a new thread in order to check if the enemies are defeated
-                        BukkitTask tks = new MCWarClanRoutine.ContestedBaseRoutine(b,
-                                attackingTeam).runTaskTimer(_plugin,
-                                0, 100);
-                    }
+                    //Create a new thread in order to check if the enemies are defeated
+                    BukkitTask tks = new MCWarClanRoutine.ContestedBaseRoutine(b,
+                            attackingTeam).runTaskTimer(_plugin,
+                            0, 100);
                 }
             }
         }

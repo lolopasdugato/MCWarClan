@@ -203,12 +203,12 @@ public class TeamManager implements Serializable {
      * @return returns the player if it works, otherwise, it will return null.
      */
     public MCWarClanPlayer getPlayer(String playerName) {
+        MCWarClanPlayer out = null;
         for (Team a_team : _teamArray) {
-            for (int j = 0; j < a_team.get_teamMembers().size(); j++) {
-                if (a_team.get_teamMembers().get(j).get_name().equals(playerName)) {
-                    return a_team.get_teamMembers().get(j);
-                }
-            }
+            out = a_team.getPlayer(playerName);
+            if (out != null)
+                return out;
+
         }
         return null;
     }
@@ -219,12 +219,11 @@ public class TeamManager implements Serializable {
      * Search a player through the different teams in the teamContainer.
      */
     public MCWarClanPlayer getPlayer(UUID uuid) {
+        MCWarClanPlayer out = null;
         for (Team a_team : _teamArray) {
-            for (int j = 0; j < a_team.get_teamMembers().size(); j++) {
-                if (a_team.get_teamMembers().get(j).get_uuid().equals(uuid)) {
-                    return a_team.get_teamMembers().get(j);
-                }
-            }
+            out = a_team.getPlayer(uuid);
+            if (out != null)
+                return out;
         }
         return null;
     }

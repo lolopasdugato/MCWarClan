@@ -68,7 +68,11 @@ commands:
   description: Allows a player to see the treasure owned by his team.
   permission: mcwarclan.treasure
   usage: Type /<command> to see the treasure your team owns.
-
+ showrights:
+   description: List all the rights you have depending on your role.
+   aliases: [sr]
+   permission: mcwarclan.showrights
+   usage: Type /<command> to list all your rights.
 permissions:
  mcwarclan.*:
   description: Gives access to all MCWarClan commands.
@@ -128,4 +132,7 @@ permissions:
   default: true
  mcwarclan.withdraw:
   description: Allows a player to take emeralds from the team treasure. These emeralds will appear in the base he is currently in.
+  default: true
+ mcwarclan.showrights:
+  description: List all the rights you have depending on your role.
   default: true
