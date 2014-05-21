@@ -301,6 +301,7 @@ public class MCWarClanPlayer implements Serializable {
      * @return
      */
     public boolean switchTo(Team teamToSwitchTo){
+        Team toLeave = _team;
         try{
             _team.deleteTeamMate(this);
             teamToSwitchTo.addTeamMate(this);
@@ -309,6 +310,12 @@ public class MCWarClanPlayer implements Serializable {
             Player player = toOnlinePlayer();
             if (player != null)
                 Messages.sendMessage("Too many members in " + teamToSwitchTo.getColoredName() + " cannot switch you to this team !", Messages.messageType.INGAME, toOnlinePlayer());
+            try {
+                toLeave.addTeamMate(this);
+            } catch (MaximumTeamCapacityReachedException e2) {
+                e2.sendDebugMessage();
+                Messages.sendMessage("Unknown capacity error for team " + _team.get_name() + ".", Messages.messageType.ALERT, null);
+            }
             return false;
         }
         return true;

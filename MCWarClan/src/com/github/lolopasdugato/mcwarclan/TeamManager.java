@@ -200,7 +200,7 @@ public class TeamManager implements Serializable {
     public MCWarClanPlayer getPlayer(String playerName) {
         for (Team a_team : _teamArray) {
             for (int j = 0; j < a_team.get_teamMembers().size(); j++) {
-                if (a_team.get_teamMembers().get(j).get_name().equals(playerName)) {
+                if (a_team.get_teamMembers().get(j).get_name().equalsIgnoreCase(playerName)) {
                     return a_team.get_teamMembers().get(j);
                 }
             }

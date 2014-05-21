@@ -122,12 +122,11 @@ public class TeamRelatedCommands extends MCWarClanCommandExecutor {
                                 if (toLeave.get_id() != Team.BARBARIAN_TEAM_ID) {
                                     toLeave.sendMessage(player.get_name() + " left the team !");
                                 }
-                            }
-
-                            if (!player.payTribute(toJoin.get_cost())) {
-                                Messages.sendMessage("Due to an unknown error, you cannot pay the tribute. Please tell this to an admin before doing anything.", Messages.messageType.INGAME, sender);
-                                Messages.sendMessage(player.get_name() + " cannot pay the tribute to enter " + toLeave.get_name() + ".", Messages.messageType.ALERT, null);
-                                return true;
+                                if (!player.payTribute(toJoin.get_cost())) {
+                                    Messages.sendMessage("Due to an unknown error, you cannot pay the tribute. Please tell this to an admin before doing anything.", Messages.messageType.INGAME, sender);
+                                    Messages.sendMessage(player.get_name() + " cannot pay the tribute to enter " + toLeave.get_name() + ".", Messages.messageType.ALERT, null);
+                                    return true;
+                                }
                             }
                         } else {
                             Messages.sendMessage("You do not have enough resources, here is the exhaustive list of materials needed: ", Messages.messageType.INGAME, sender);
