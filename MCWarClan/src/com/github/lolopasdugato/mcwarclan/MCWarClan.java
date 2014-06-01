@@ -17,7 +17,7 @@ import java.util.logging.Logger;
 
 public class MCWarClan extends JavaPlugin implements Listener {
 
-    public static String VERSION = "v1.0.1";
+    public static String VERSION = "v1.0.2";
     public BukkitTask _tsk;
     protected TeamManager _tc;
     protected EventManager _em;
